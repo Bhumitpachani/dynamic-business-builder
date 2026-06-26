@@ -1,4 +1,4 @@
-import { createFileRoute, useParams, notFound } from "@tanstack/react-router";
+import { createFileRoute, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { store, isExpired, newId, type Business, type Inquiry, type Appointment } from "@/lib/store";
 import { Phone, MessageCircle, MapPin, Globe, Star, Facebook, Instagram, Twitter, Linkedin, Youtube, UserPlus, QrCode, X } from "lucide-react";
