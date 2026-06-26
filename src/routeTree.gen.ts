@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SuperAdminLoginRouteImport } from './routes/super-admin.login'
 import { Route as SuperAdminDashboardRouteImport } from './routes/super-admin.dashboard'
+import { Route as SiteSlugRouteImport } from './routes/site.$slug'
 import { Route as ClientLoginRouteImport } from './routes/client.login'
+import { Route as ClientDashboardRouteImport } from './routes/client.dashboard'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,28 +31,44 @@ const SuperAdminDashboardRoute = SuperAdminDashboardRouteImport.update({
   path: '/super-admin/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SiteSlugRoute = SiteSlugRouteImport.update({
+  id: '/site/$slug',
+  path: '/site/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ClientLoginRoute = ClientLoginRouteImport.update({
   id: '/client/login',
   path: '/client/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ClientDashboardRoute = ClientDashboardRouteImport.update({
+  id: '/client/dashboard',
+  path: '/client/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/client/dashboard': typeof ClientDashboardRoute
   '/client/login': typeof ClientLoginRoute
+  '/site/$slug': typeof SiteSlugRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/login': typeof SuperAdminLoginRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/client/dashboard': typeof ClientDashboardRoute
   '/client/login': typeof ClientLoginRoute
+  '/site/$slug': typeof SiteSlugRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/login': typeof SuperAdminLoginRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/client/dashboard': typeof ClientDashboardRoute
   '/client/login': typeof ClientLoginRoute
+  '/site/$slug': typeof SiteSlugRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/login': typeof SuperAdminLoginRoute
 }
@@ -58,22 +76,34 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/client/dashboard'
     | '/client/login'
+    | '/site/$slug'
     | '/super-admin/dashboard'
     | '/super-admin/login'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/client/login' | '/super-admin/dashboard' | '/super-admin/login'
+  to:
+    | '/'
+    | '/client/dashboard'
+    | '/client/login'
+    | '/site/$slug'
+    | '/super-admin/dashboard'
+    | '/super-admin/login'
   id:
     | '__root__'
     | '/'
+    | '/client/dashboard'
     | '/client/login'
+    | '/site/$slug'
     | '/super-admin/dashboard'
     | '/super-admin/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ClientDashboardRoute: typeof ClientDashboardRoute
   ClientLoginRoute: typeof ClientLoginRoute
+  SiteSlugRoute: typeof SiteSlugRoute
   SuperAdminDashboardRoute: typeof SuperAdminDashboardRoute
   SuperAdminLoginRoute: typeof SuperAdminLoginRoute
 }
@@ -101,6 +131,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuperAdminDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/site/$slug': {
+      id: '/site/$slug'
+      path: '/site/$slug'
+      fullPath: '/site/$slug'
+      preLoaderRoute: typeof SiteSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/client/login': {
       id: '/client/login'
       path: '/client/login'
@@ -108,12 +145,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClientLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/client/dashboard': {
+      id: '/client/dashboard'
+      path: '/client/dashboard'
+      fullPath: '/client/dashboard'
+      preLoaderRoute: typeof ClientDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ClientDashboardRoute: ClientDashboardRoute,
   ClientLoginRoute: ClientLoginRoute,
+  SiteSlugRoute: SiteSlugRoute,
   SuperAdminDashboardRoute: SuperAdminDashboardRoute,
   SuperAdminLoginRoute: SuperAdminLoginRoute,
 }
