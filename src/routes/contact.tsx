@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Phone, Mail, MapPin, Clock, CheckCircle, ArrowRight, MessageSquare } from "lucide-react";
+import { Phone, Mail, Clock, CheckCircle, ArrowRight, MessageSquare } from "lucide-react";
 import { PublicLayout } from "@/components/public-layout";
+import { contactInquiries } from "@/lib/store";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -65,23 +67,16 @@ const CONTACT_INFO = [
   {
     icon: Phone,
     title: "Call Us",
-    lines: ["+91 98765 43210", "+91 91234 56789"],
+    lines: ["+91 6351717272"],
     sub: "Mon–Sat, 9am – 7pm IST",
-    href: "tel:+919876543210",
+    href: "tel:+916351717272",
   },
   {
     icon: Mail,
     title: "Email Us",
-    lines: ["hello@tapvybe.in", "support@tapvybe.in"],
+    lines: ["tapvybe@gmail.com"],
     sub: "Response within 2 hours",
-    href: "mailto:hello@tapvybe.in",
-  },
-  {
-    icon: MapPin,
-    title: "Find Us",
-    lines: ["tapvybe HQ", "Bandra West, Mumbai 400050"],
-    sub: "Maharashtra, India",
-    href: "#",
+    href: "mailto:tapvybe@gmail.com",
   },
   {
     icon: Clock,
@@ -102,11 +97,26 @@ function ContactForm() {
     setForm((f) => ({ ...f, [k]: v }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) return;
     setLoading(true);
-    setTimeout(() => { setLoading(false); setSent(true); }, 1200);
+    try {
+      await contactInquiries.add({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        interest: form.interest,
+        message: form.message,
+        createdAt: new Date().toISOString(),
+      });
+      setSent(true);
+      toast.success("Message sent! We'll get back to you within 2 hours.");
+    } catch {
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   const inputClass = "w-full px-4 py-3 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:border-[#6B3EF0] transition-colors placeholder:text-gray-400";
@@ -151,7 +161,7 @@ function ContactForm() {
       <div className="grid sm:grid-cols-2 gap-5">
         <div>
           <label className="block text-xs font-bold text-black uppercase tracking-wider mb-1.5">Phone Number</label>
-          <input type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+91 98765 43210" className={inputClass} />
+          <input type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+91 63517 17272" className={inputClass} />
         </div>
         <div>
           <label className="block text-xs font-bold text-black uppercase tracking-wider mb-1.5">I'm interested in</label>
@@ -202,7 +212,7 @@ function MainSection() {
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
 
         {/* Contact info cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-14">
+        <div className="grid sm:grid-cols-3 gap-4 mb-14">
           {CONTACT_INFO.map((c) => (
             <a
               key={c.title}
@@ -233,44 +243,41 @@ function MainSection() {
 
           {/* Sidebar */}
           <div className="lg:col-span-2 space-y-5">
-            {/* Map placeholder */}
-            <div className="bg-gray-100 rounded-3xl overflow-hidden aspect-square flex items-center justify-center border border-gray-200">
-              <div className="text-center">
-                <div
-                  className="h-16 w-16 rounded-2xl grid place-items-center mx-auto mb-3"
-                  style={{ backgroundColor: "#EDE8FE" }}
-                >
-                  <MapPin className="h-8 w-8" style={{ color: "#6B3EF0" }} />
-                </div>
-                <p className="font-bold text-gray-800 text-sm">Bandra West</p>
-                <p className="text-xs text-gray-500">Mumbai, Maharashtra</p>
-                <a
-                  href="https://maps.google.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 mt-3 text-xs font-bold hover:opacity-80 transition-opacity"
-                  style={{ color: "#6B3EF0" }}
-                >
-                  Open in Google Maps <ArrowRight className="h-3 w-3" />
-                </a>
-              </div>
-            </div>
-
             {/* WhatsApp CTA */}
             <a
-              href="https://wa.me/919876543210?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20tapvybe"
+              href="https://wa.me/916351717272?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20tapvybe"
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-4 p-5 bg-[#25D366] hover:bg-[#20b558] text-white rounded-2xl transition-colors group"
+              className="flex items-center gap-4 p-6 bg-[#25D366] hover:bg-[#20b558] text-white rounded-2xl transition-colors group"
             >
-              <div className="h-11 w-11 rounded-xl bg-white/20 grid place-items-center shrink-0 group-hover:bg-white/30 transition-colors">
-                <MessageSquare className="h-5 w-5" />
+              <div className="h-12 w-12 rounded-xl bg-white/20 grid place-items-center shrink-0 group-hover:bg-white/30 transition-colors">
+                <MessageSquare className="h-6 w-6" />
               </div>
               <div>
-                <p className="font-bold text-sm">Chat on WhatsApp</p>
-                <p className="text-xs text-green-100">Instant replies during office hours</p>
+                <p className="font-bold text-base">Chat on WhatsApp</p>
+                <p className="text-sm text-green-100">+91 6351717272</p>
+                <p className="text-xs text-green-100 mt-0.5">Instant replies during office hours</p>
               </div>
               <ArrowRight className="h-4 w-4 ml-auto shrink-0" />
+            </a>
+
+            {/* Direct call */}
+            <a
+              href="tel:+916351717272"
+              className="flex items-center gap-4 p-6 bg-white border border-gray-100 hover:shadow-md rounded-2xl transition-all group"
+            >
+              <div
+                className="h-12 w-12 rounded-xl grid place-items-center shrink-0 group-hover:scale-110 transition-transform"
+                style={{ backgroundColor: "#EDE8FE" }}
+              >
+                <Phone className="h-6 w-6" style={{ color: "#6B3EF0" }} />
+              </div>
+              <div>
+                <p className="font-bold text-black text-base">Call Us Directly</p>
+                <p className="text-sm font-semibold" style={{ color: "#6B3EF0" }}>+91 6351717272</p>
+                <p className="text-xs text-gray-400 mt-0.5">Mon–Sat, 9am – 7pm IST</p>
+              </div>
+              <ArrowRight className="h-4 w-4 ml-auto shrink-0 text-gray-400" />
             </a>
 
             {/* Quick info card */}

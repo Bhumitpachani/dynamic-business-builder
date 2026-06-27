@@ -1,12 +1,15 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { store, session, emptyBusiness, isExpired, daysLeft, type Business } from "@/lib/store";
+import { useEffect, useState, useMemo } from "react";
+import { store, session, emptyBusiness, isExpired, daysLeft, contactInquiries, type Business, type ContactInquiry } from "@/lib/store";
 import { auth, SUPER_ADMIN_EMAIL } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import {
   LogOut, Plus, Trash2, ExternalLink, Edit3, Copy, Check,
   TrendingUp, Users, Globe, AlertCircle, CheckCircle, Layers, X,
+  Search, ChevronLeft, ChevronRight, MessageSquare, Phone, Mail, Calendar,
 } from "lucide-react";
+
+const PAGE_SIZE = 10;
 
 export const Route = createFileRoute("/super-admin/dashboard")({
   head: () => ({ meta: [{ title: "Super Admin — Business Builder" }] }),
@@ -19,9 +22,15 @@ function SuperDash() {
   const [creating, setCreating] = useState(false);
   const [copiedId, setCopiedId] = useState("");
   const [authReady, setAuthReady] = useState(false);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const [inquiries, setInquiries] = useState<ContactInquiry[]>([]);
+  const [inqSearch, setInqSearch] = useState("");
+  const [inqPage, setInqPage] = useState(0);
 
   useEffect(() => {
     let firestoreUnsub: (() => void) | null = null;
+    let inqUnsub: (() => void) | null = null;
 
     const authUnsub = onAuthStateChanged(auth, (user) => {
       if (!user || user.email !== SUPER_ADMIN_EMAIL) {
@@ -30,15 +39,14 @@ function SuperDash() {
         return;
       }
       setAuthReady(true);
-      // Subscribe to real-time Firestore updates
-      firestoreUnsub = store.onAll((businesses) => {
-        setList(businesses);
-      });
+      firestoreUnsub = store.onAll((businesses) => setList(businesses));
+      inqUnsub = contactInquiries.onAll((list) => setInquiries(list));
     });
 
     return () => {
       authUnsub();
       firestoreUnsub?.();
+      inqUnsub?.();
     };
   }, [navigate]);
 
@@ -51,11 +59,55 @@ function SuperDash() {
   const activeCount = list.filter((b) => !isExpired(b)).length;
   const expiredCount = list.filter((b) => isExpired(b)).length;
 
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter(
+      (b) =>
+        b.name.toLowerCase().includes(q) ||
+        b.username.toLowerCase().includes(q) ||
+        b.slug.toLowerCase().includes(q) ||
+        (b.category || "").toLowerCase().includes(q),
+    );
+  }, [list, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages - 1);
+  const paged = filtered.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE);
+
+  function handleSearch(q: string) {
+    setSearch(q);
+    setPage(0);
+  }
+
+  const filteredInq = useMemo(() => {
+    const q = inqSearch.trim().toLowerCase();
+    if (!q) return inquiries;
+    return inquiries.filter(
+      (i) =>
+        i.name.toLowerCase().includes(q) ||
+        i.email.toLowerCase().includes(q) ||
+        i.phone.toLowerCase().includes(q) ||
+        (i.interest || "").toLowerCase().includes(q) ||
+        i.message.toLowerCase().includes(q),
+    );
+  }, [inquiries, inqSearch]);
+
+  const inqTotalPages = Math.max(1, Math.ceil(filteredInq.length / PAGE_SIZE));
+  const inqSafePage = Math.min(inqPage, inqTotalPages - 1);
+  const pagedInq = filteredInq.slice(inqSafePage * PAGE_SIZE, (inqSafePage + 1) * PAGE_SIZE);
+
+  function handleInqSearch(q: string) {
+    setInqSearch(q);
+    setInqPage(0);
+  }
+
   const stats = [
     { label: "Total Clients", value: list.length, icon: Users, bg: "bg-indigo-50", iconColor: "text-indigo-600", numColor: "text-indigo-700" },
     { label: "Active", value: activeCount, icon: CheckCircle, bg: "bg-emerald-50", iconColor: "text-emerald-600", numColor: "text-emerald-700" },
     { label: "Expired", value: expiredCount, icon: AlertCircle, bg: "bg-rose-50", iconColor: "text-rose-500", numColor: "text-rose-600" },
     { label: "Total Visits", value: totalVisits, icon: TrendingUp, bg: "bg-sky-50", iconColor: "text-sky-600", numColor: "text-sky-700" },
+    { label: "Inquiries", value: inquiries.length, icon: MessageSquare, bg: "bg-violet-50", iconColor: "text-violet-600", numColor: "text-violet-700" },
   ];
 
   if (!authReady) {
@@ -106,7 +158,7 @@ function SuperDash() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 sm:space-y-6">
 
         {/* ── Stat cards ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           {stats.map((s) => (
             <div key={s.label} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5">
               <div className={`inline-flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-xl ${s.bg} mb-3 sm:mb-4`}>
@@ -121,18 +173,42 @@ function SuperDash() {
         {/* ── Client list ── */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           {/* Card header */}
-          <div className="px-4 sm:px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-              <h2 className="font-bold text-slate-800 text-base">Client Businesses</h2>
-              <p className="text-xs text-slate-500 mt-0.5">{list.length} client{list.length !== 1 ? "s" : ""} registered</p>
+          <div className="px-4 sm:px-6 py-4 border-b border-slate-100 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <h2 className="font-bold text-slate-800 text-base">Client Businesses</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {search ? `${filtered.length} of ${list.length}` : list.length} client{list.length !== 1 ? "s" : ""}
+                  {search ? " found" : " registered"}
+                </p>
+              </div>
+              <button
+                onClick={() => setCreating(true)}
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors w-full sm:w-auto"
+              >
+                <Plus className="h-4 w-4" />
+                New Client
+              </button>
             </div>
-            <button
-              onClick={() => setCreating(true)}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors w-full sm:w-auto"
-            >
-              <Plus className="h-4 w-4" />
-              New Client
-            </button>
+            {/* Search bar */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search by name, username, slug or category…"
+                value={search}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="w-full pl-9 pr-9 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-400 transition-colors placeholder:text-slate-400"
+              />
+              {search && (
+                <button
+                  onClick={() => handleSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-slate-200 hover:bg-slate-300 grid place-items-center transition-colors"
+                >
+                  <X className="h-3 w-3 text-slate-600" />
+                </button>
+              )}
+            </div>
           </div>
 
           {list.length === 0 ? (
@@ -149,6 +225,15 @@ function SuperDash() {
                 <Plus className="h-4 w-4" /> Create First Client
               </button>
             </div>
+          ) : filtered.length === 0 ? (
+            <div className="px-6 py-14 text-center">
+              <div className="h-12 w-12 rounded-2xl bg-slate-100 grid place-items-center mx-auto mb-3">
+                <Search className="h-6 w-6 text-slate-400" />
+              </div>
+              <p className="text-slate-700 font-semibold">No results for "{search}"</p>
+              <p className="text-sm text-slate-400 mt-1">Try a different name, username, or slug.</p>
+              <button onClick={() => handleSearch("")} className="mt-4 text-sm text-indigo-600 hover:underline font-medium">Clear search</button>
+            </div>
           ) : (
             <>
               {/* ── Desktop table (md+) ── */}
@@ -164,7 +249,7 @@ function SuperDash() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {list.map((b) => {
+                    {paged.map((b) => {
                       const expired = isExpired(b);
                       const remaining = daysLeft(b);
                       return (
@@ -223,7 +308,7 @@ function SuperDash() {
 
               {/* ── Mobile cards (< md) ── */}
               <div className="md:hidden divide-y divide-slate-100">
-                {list.map((b) => {
+                {paged.map((b) => {
                   const expired = isExpired(b);
                   const remaining = daysLeft(b);
                   return (
@@ -295,6 +380,246 @@ function SuperDash() {
                   );
                 })}
               </div>
+
+              {/* ── Pagination ── */}
+              {totalPages > 1 && (
+                <div className="px-4 sm:px-6 py-3 border-t border-slate-100 flex items-center justify-between gap-3">
+                  <p className="text-xs text-slate-500 tabular-nums">
+                    Showing {safePage * PAGE_SIZE + 1}–{Math.min((safePage + 1) * PAGE_SIZE, filtered.length)} of {filtered.length}
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => setPage((p) => Math.max(0, p - 1))}
+                      disabled={safePage === 0}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="h-3.5 w-3.5" /> Prev
+                    </button>
+
+                    {/* Page number pills */}
+                    <div className="flex items-center gap-1 mx-1">
+                      {Array.from({ length: totalPages }, (_, i) => i).filter((i) => {
+                        // show first, last, current ±1
+                        return i === 0 || i === totalPages - 1 || Math.abs(i - safePage) <= 1;
+                      }).reduce<(number | "…")[]>((acc, i, idx, arr) => {
+                        if (idx > 0 && (i as number) - (arr[idx - 1] as number) > 1) acc.push("…");
+                        acc.push(i);
+                        return acc;
+                      }, []).map((item, idx) =>
+                        item === "…" ? (
+                          <span key={`ellipsis-${idx}`} className="px-1 text-xs text-slate-400">…</span>
+                        ) : (
+                          <button
+                            key={item}
+                            onClick={() => setPage(item as number)}
+                            className={`h-7 w-7 rounded-lg text-xs font-semibold transition-colors ${
+                              item === safePage
+                                ? "bg-indigo-600 text-white shadow-sm"
+                                : "text-slate-600 hover:bg-slate-100 border border-slate-200"
+                            }`}
+                          >
+                            {(item as number) + 1}
+                          </button>
+                        )
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                      disabled={safePage === totalPages - 1}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next <ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* ── Contact Inquiries ── */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          {/* Header */}
+          <div className="px-4 sm:px-6 py-4 border-b border-slate-100 space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl bg-violet-100 text-violet-600 grid place-items-center shrink-0">
+                  <MessageSquare className="h-4.5 w-4.5" />
+                </div>
+                <div>
+                  <h2 className="font-bold text-slate-800 text-base">Contact Inquiries</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {inqSearch ? `${filteredInq.length} of ${inquiries.length}` : inquiries.length} inquir{inquiries.length !== 1 ? "ies" : "y"}
+                    {inqSearch ? " found" : " received"}
+                  </p>
+                </div>
+              </div>
+            </div>
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search by name, email, phone or interest…"
+                value={inqSearch}
+                onChange={(e) => handleInqSearch(e.target.value)}
+                className="w-full pl-9 pr-9 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/25 focus:border-violet-400 transition-colors placeholder:text-slate-400"
+              />
+              {inqSearch && (
+                <button
+                  onClick={() => handleInqSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-slate-200 hover:bg-slate-300 grid place-items-center transition-colors"
+                >
+                  <X className="h-3 w-3 text-slate-600" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {inquiries.length === 0 ? (
+            <div className="px-6 py-14 text-center">
+              <div className="h-12 w-12 rounded-2xl bg-violet-50 grid place-items-center mx-auto mb-3">
+                <MessageSquare className="h-6 w-6 text-violet-400" />
+              </div>
+              <p className="text-slate-700 font-semibold">No inquiries yet</p>
+              <p className="text-sm text-slate-400 mt-1">Contact form submissions will appear here.</p>
+            </div>
+          ) : filteredInq.length === 0 ? (
+            <div className="px-6 py-12 text-center">
+              <div className="h-12 w-12 rounded-2xl bg-slate-100 grid place-items-center mx-auto mb-3">
+                <Search className="h-6 w-6 text-slate-400" />
+              </div>
+              <p className="text-slate-700 font-semibold">No results for "{inqSearch}"</p>
+              <button onClick={() => handleInqSearch("")} className="mt-3 text-sm text-violet-600 hover:underline font-medium">Clear search</button>
+            </div>
+          ) : (
+            <>
+              {/* Desktop table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-100">
+                      {["Person", "Contact", "Interest", "Message", "Date"].map((h) => (
+                        <th key={h} className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider text-left">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {pagedInq.map((inq) => (
+                      <tr key={inq.id} className="hover:bg-slate-50/70 transition-colors">
+                        <td className="px-5 py-3.5">
+                          <p className="font-semibold text-slate-900 leading-tight">{inq.name}</p>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <div className="space-y-1">
+                            <a href={`mailto:${inq.email}`} className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-violet-600 transition-colors">
+                              <Mail className="h-3 w-3 shrink-0" />{inq.email}
+                            </a>
+                            {inq.phone && (
+                              <a href={`tel:${inq.phone}`} className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-violet-600 transition-colors">
+                                <Phone className="h-3 w-3 shrink-0" />{inq.phone}
+                              </a>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          {inq.interest ? (
+                            <span className="inline-block px-2.5 py-1 rounded-lg bg-violet-50 text-violet-700 text-xs font-semibold border border-violet-100">
+                              {inq.interest}
+                            </span>
+                          ) : <span className="text-slate-300 text-xs">—</span>}
+                        </td>
+                        <td className="px-5 py-3.5 max-w-xs">
+                          <p className="text-xs text-slate-600 line-clamp-2">{inq.message}</p>
+                        </td>
+                        <td className="px-5 py-3.5 whitespace-nowrap">
+                          <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                            <Calendar className="h-3 w-3 shrink-0" />
+                            {new Date(inq.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile cards */}
+              <div className="md:hidden divide-y divide-slate-100">
+                {pagedInq.map((inq) => (
+                  <div key={inq.id} className="p-4 space-y-2.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-semibold text-slate-900">{inq.name}</p>
+                      <span className="text-xs text-slate-400 whitespace-nowrap">
+                        {new Date(inq.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1">
+                      <a href={`mailto:${inq.email}`} className="flex items-center gap-1 text-xs text-slate-600 hover:text-violet-600">
+                        <Mail className="h-3 w-3" />{inq.email}
+                      </a>
+                      {inq.phone && (
+                        <a href={`tel:${inq.phone}`} className="flex items-center gap-1 text-xs text-slate-600 hover:text-violet-600">
+                          <Phone className="h-3 w-3" />{inq.phone}
+                        </a>
+                      )}
+                    </div>
+                    {inq.interest && (
+                      <span className="inline-block px-2 py-0.5 rounded-lg bg-violet-50 text-violet-700 text-xs font-semibold border border-violet-100">
+                        {inq.interest}
+                      </span>
+                    )}
+                    <p className="text-xs text-slate-500 leading-relaxed">{inq.message}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {inqTotalPages > 1 && (
+                <div className="px-4 sm:px-6 py-3 border-t border-slate-100 flex items-center justify-between gap-3">
+                  <p className="text-xs text-slate-500 tabular-nums">
+                    Showing {inqSafePage * PAGE_SIZE + 1}–{Math.min((inqSafePage + 1) * PAGE_SIZE, filteredInq.length)} of {filteredInq.length}
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => setInqPage((p) => Math.max(0, p - 1))}
+                      disabled={inqSafePage === 0}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="h-3.5 w-3.5" /> Prev
+                    </button>
+                    <div className="flex items-center gap-1 mx-1">
+                      {Array.from({ length: inqTotalPages }, (_, i) => i).filter((i) =>
+                        i === 0 || i === inqTotalPages - 1 || Math.abs(i - inqSafePage) <= 1
+                      ).reduce<(number | "…")[]>((acc, i, idx, arr) => {
+                        if (idx > 0 && (i as number) - (arr[idx - 1] as number) > 1) acc.push("…");
+                        acc.push(i);
+                        return acc;
+                      }, []).map((item, idx) =>
+                        item === "…" ? (
+                          <span key={`e-${idx}`} className="px-1 text-xs text-slate-400">…</span>
+                        ) : (
+                          <button
+                            key={item}
+                            onClick={() => setInqPage(item as number)}
+                            className={`h-7 w-7 rounded-lg text-xs font-semibold transition-colors ${item === inqSafePage ? "bg-violet-600 text-white shadow-sm" : "text-slate-600 hover:bg-slate-100 border border-slate-200"}`}
+                          >
+                            {(item as number) + 1}
+                          </button>
+                        )
+                      )}
+                    </div>
+                    <button
+                      onClick={() => setInqPage((p) => Math.min(inqTotalPages - 1, p + 1))}
+                      disabled={inqSafePage === inqTotalPages - 1}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next <ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>

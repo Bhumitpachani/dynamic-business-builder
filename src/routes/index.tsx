@@ -177,7 +177,7 @@ function HowItWorksSection() {
               {/* Circular image */}
               <div
                 className="relative h-52 w-52 rounded-full overflow-hidden mb-7 ring-4"
-                style={{ ringColor: BRAND_LIGHT, boxShadow: `0 0 0 4px ${BRAND_LIGHT}` }}
+                style={{ boxShadow: `0 0 0 4px ${BRAND_LIGHT}` }}
               >
                 <img
                   src={step.img}

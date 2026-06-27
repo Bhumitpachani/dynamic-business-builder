@@ -1,9 +1,9 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { store, session, isExpired, daysLeft, newId, slugify, type Business, type Product, type GalleryItem, type Lead } from "@/lib/store";
 import { uploadImage } from "@/lib/upload";
-import { LogOut, ExternalLink, Save, Trash2, Plus, BarChart3, MessageSquare, Calendar, Users as UsersIcon, Image as ImgIcon, Package, Settings as SettingsIcon, Phone, TrendingUp, Globe, ChevronRight, ArrowLeft, Loader2 } from "lucide-react";
+import { LogOut, ExternalLink, Save, Trash2, Plus, BarChart3, MessageSquare, Calendar, Users as UsersIcon, Image as ImgIcon, Package, Settings as SettingsIcon, Phone, TrendingUp, Globe, ChevronRight, ArrowLeft, Loader2, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/client/dashboard")({
   head: () => ({ meta: [{ title: "Client Dashboard" }] }),
@@ -32,12 +32,48 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+// ── Unsaved-changes warning dialog ────────────────────────────────────────────
+function UnsavedWarning({ onDiscard, onStay }: { onDiscard: () => void; onStay: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 bg-black/40 grid place-items-center p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4">
+        <div className="flex items-start gap-3">
+          <div className="h-10 w-10 rounded-xl bg-amber-50 grid place-items-center shrink-0">
+            <AlertTriangle className="h-5 w-5 text-amber-500" />
+          </div>
+          <div>
+            <h3 className="font-bold text-slate-800">Unsaved changes</h3>
+            <p className="text-sm text-slate-500 mt-1">You have unsaved changes on this page. If you leave, your changes will be lost.</p>
+          </div>
+        </div>
+        <div className="flex gap-2 justify-end">
+          <button
+            onClick={onStay}
+            className="px-4 py-2 text-sm font-semibold border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors"
+          >
+            Stay & Save
+          </button>
+          <button
+            onClick={onDiscard}
+            className="px-4 py-2 text-sm font-semibold bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-colors"
+          >
+            Discard Changes
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main dashboard ────────────────────────────────────────────────────────────
 function ClientDash() {
   const navigate = useNavigate();
   const [biz, setBiz] = useState<Business | null>(null);
   const [tab, setTab] = useState<Tab>("overview");
   const [fromAdmin, setFromAdmin] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const [pendingTab, setPendingTab] = useState<Tab | null>(null);
 
   useEffect(() => {
     const s = session.get();
@@ -70,12 +106,39 @@ function ClientDash() {
     try {
       await store.upsert(updated);
       toast.success("Saved successfully!");
+      setIsDirty(false);
     } catch (e: any) {
       console.error(e);
       toast.error("Save failed. Please try again.");
     } finally {
       setSaving(false);
     }
+  }
+
+  /** Called by tab components when their local draft state changes */
+  const handleDirtyChange = (dirty: boolean) => setIsDirty(dirty);
+
+  /** Intercept tab clicks — warn if there are unsaved changes */
+  function requestTabChange(newTab: Tab) {
+    if (newTab === tab) return;
+    if (isDirty) {
+      setPendingTab(newTab);
+    } else {
+      setTab(newTab);
+      setIsDirty(false);
+    }
+  }
+
+  function confirmDiscard() {
+    if (pendingTab) {
+      setTab(pendingTab);
+      setPendingTab(null);
+      setIsDirty(false);
+    }
+  }
+
+  function cancelDiscard() {
+    setPendingTab(null);
   }
 
   function logout() {
@@ -115,6 +178,11 @@ function ClientDash() {
 
   return (
     <div className="min-h-screen flex bg-slate-50">
+      {/* Unsaved warning modal */}
+      {pendingTab && (
+        <UnsavedWarning onDiscard={confirmDiscard} onStay={cancelDiscard} />
+      )}
+
       {/* Sidebar */}
       <aside className="hidden lg:block w-[260px] shrink-0 bg-[#0F172A] relative">
         <div className="sticky top-0 h-screen flex flex-col overflow-y-auto">
@@ -142,7 +210,7 @@ function ClientDash() {
             {tabs.map((t) => (
               <button
                 key={t.id}
-                onClick={() => setTab(t.id)}
+                onClick={() => requestTabChange(t.id)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all text-left group ${
                   tab === t.id
                     ? "bg-indigo-600 text-white font-semibold shadow-sm"
@@ -151,7 +219,10 @@ function ClientDash() {
               >
                 <t.icon className={`h-4 w-4 shrink-0 ${tab === t.id ? "text-white" : "text-slate-500 group-hover:text-slate-300"}`} />
                 <span className="truncate flex-1">{t.label}</span>
-                {tab === t.id && <ChevronRight className="h-3.5 w-3.5 text-indigo-200 shrink-0" />}
+                {tab === t.id && isDirty && (
+                  <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" title="Unsaved changes" />
+                )}
+                {tab === t.id && !isDirty && <ChevronRight className="h-3.5 w-3.5 text-indigo-200 shrink-0" />}
               </button>
             ))}
           </nav>
@@ -186,6 +257,12 @@ function ClientDash() {
                 {biz.name[0]?.toUpperCase() || "B"}
               </div>
               <h2 className="font-bold text-slate-800 truncate">{currentTab?.label}</h2>
+              {isDirty && (
+                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold bg-amber-50 text-amber-600 border border-amber-200 rounded-full">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                  Unsaved changes
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-2 shrink-0">
               {fromAdmin && (
@@ -220,13 +297,16 @@ function ClientDash() {
               {tabs.map((t) => (
                 <button
                   key={t.id}
-                  onClick={() => setTab(t.id)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+                  onClick={() => requestTabChange(t.id)}
+                  className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
                     tab === t.id ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                   }`}
                 >
                   <t.icon className="h-3.5 w-3.5" />
                   {t.label}
+                  {tab === t.id && isDirty && (
+                    <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-amber-400 border border-white" />
+                  )}
                 </button>
               ))}
             </div>
@@ -235,14 +315,14 @@ function ClientDash() {
 
         <main className="flex-1 p-6">
           {tab === "overview" && <Overview biz={biz} />}
-          {tab === "profile" && <ProfileTab biz={biz} save={save} saving={saving} />}
-          {tab === "contact" && <ContactTab biz={biz} save={save} saving={saving} />}
-          {tab === "products" && <ProductsTab biz={biz} save={save} saving={saving} />}
-          {tab === "gallery" && <GalleryTab biz={biz} save={save} saving={saving} />}
+          {tab === "profile" && <ProfileTab biz={biz} save={save} saving={saving} onDirtyChange={handleDirtyChange} />}
+          {tab === "contact" && <ContactTab biz={biz} save={save} saving={saving} onDirtyChange={handleDirtyChange} />}
+          {tab === "products" && <ProductsTab biz={biz} save={save} saving={saving} onDirtyChange={handleDirtyChange} />}
+          {tab === "gallery" && <GalleryTab biz={biz} save={save} saving={saving} onDirtyChange={handleDirtyChange} />}
           {tab === "inquiries" && <InquiriesTab biz={biz} save={save} saving={saving} />}
           {tab === "appointments" && <AppointmentsTab biz={biz} save={save} saving={saving} />}
           {tab === "leads" && <LeadsTab biz={biz} save={save} saving={saving} />}
-          {tab === "settings" && <SettingsTab biz={biz} save={save} saving={saving} />}
+          {tab === "settings" && <SettingsTab biz={biz} save={save} saving={saving} onDirtyChange={handleDirtyChange} />}
         </main>
       </div>
     </div>
@@ -268,12 +348,12 @@ function Card({ children, title, subtitle, action }: { children: React.ReactNode
   );
 }
 
-function SaveBtn({ onClick, saving, label = "Save Changes" }: { onClick: () => void; saving?: boolean; label?: string }) {
+function SaveBtn({ onClick, saving, disabled, label = "Save Changes" }: { onClick: () => void; saving?: boolean; disabled?: boolean; label?: string }) {
   return (
     <button
       onClick={onClick}
-      disabled={saving}
-      className="inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+      disabled={disabled || saving}
+      className="inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
     >
       {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
       {saving ? "Saving…" : label}
@@ -306,10 +386,6 @@ function Field({ label, value, onChange, type = "text", textarea = false, placeh
   );
 }
 
-/**
- * ImagePicker — uploads to Firebase Storage on file select.
- * Shows a spinner while uploading.
- */
 function ImagePicker({ label, value, onChange, folder = "general" }: { label: string; value: string; onChange: (v: string) => void; folder?: string }) {
   const [uploading, setUploading] = useState(false);
 
@@ -325,7 +401,6 @@ function ImagePicker({ label, value, onChange, folder = "general" }: { label: st
       toast.error("Image upload failed. Please try again.");
     } finally {
       setUploading(false);
-      // Reset input so same file can be re-selected
       e.target.value = "";
     }
   }
@@ -428,11 +503,24 @@ function Overview({ biz }: { biz: Business }) {
   );
 }
 
-function ProfileTab({ biz, save, saving }: { biz: Business; save: (b: Business) => void; saving: boolean }) {
+// ── useDirty hook — compares local draft to saved biz via JSON ────────────────
+function useDirty<T>(draft: T, saved: T, onDirtyChange: (d: boolean) => void): boolean {
+  const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
+  // Use ref to avoid stale closure in effect without adding onDirtyChange to deps
+  const cb = useRef(onDirtyChange);
+  cb.current = onDirtyChange;
+  useEffect(() => { cb.current(dirty); }, [dirty]);
+  return dirty;
+}
+
+function ProfileTab({ biz, save, saving, onDirtyChange }: { biz: Business; save: (b: Business) => void; saving: boolean; onDirtyChange: (d: boolean) => void }) {
   const [d, setD] = useState(biz);
-  useEffect(() => setD(biz), [biz.id]);
+  // Reset draft when switching to a different business
+  useEffect(() => { setD(biz); onDirtyChange(false); }, [biz.id]);
+  const isDirty = useDirty(d, biz, onDirtyChange);
+
   return (
-    <Card title="Business Profile" subtitle="Your public-facing business information" action={<SaveBtn onClick={() => save(d)} saving={saving} />}>
+    <Card title="Business Profile" subtitle="Your public-facing business information" action={<SaveBtn onClick={() => save(d)} saving={saving} disabled={!isDirty} />}>
       <div className="grid md:grid-cols-2 gap-5">
         <Field label="Business Name" value={d.name} onChange={(v: string) => setD({ ...d, name: v })} />
         <Field label="Category" value={d.category} onChange={(v: string) => setD({ ...d, category: v })} placeholder="e.g. Restaurant, Salon, Retail…" />
@@ -449,11 +537,13 @@ function ProfileTab({ biz, save, saving }: { biz: Business; save: (b: Business) 
   );
 }
 
-function ContactTab({ biz, save, saving }: { biz: Business; save: (b: Business) => void; saving: boolean }) {
+function ContactTab({ biz, save, saving, onDirtyChange }: { biz: Business; save: (b: Business) => void; saving: boolean; onDirtyChange: (d: boolean) => void }) {
   const [d, setD] = useState(biz);
-  useEffect(() => setD(biz), [biz.id]);
+  useEffect(() => { setD(biz); onDirtyChange(false); }, [biz.id]);
+  const isDirty = useDirty(d, biz, onDirtyChange);
+
   return (
-    <Card title="Contact & Links" subtitle="How customers can reach you" action={<SaveBtn onClick={() => save(d)} saving={saving} />}>
+    <Card title="Contact & Links" subtitle="How customers can reach you" action={<SaveBtn onClick={() => save(d)} saving={saving} disabled={!isDirty} />}>
       <div className="grid md:grid-cols-2 gap-5">
         <Field label="Phone" value={d.phone} onChange={(v: string) => setD({ ...d, phone: v })} placeholder="+91XXXXXXXXXX" />
         <Field label="WhatsApp Number" value={d.whatsapp} onChange={(v: string) => setD({ ...d, whatsapp: v })} placeholder="+91XXXXXXXXXX (with country code)" />
@@ -479,9 +569,10 @@ function ContactTab({ biz, save, saving }: { biz: Business; save: (b: Business) 
   );
 }
 
-function ProductsTab({ biz, save, saving }: { biz: Business; save: (b: Business) => void; saving: boolean }) {
+function ProductsTab({ biz, save, saving, onDirtyChange }: { biz: Business; save: (b: Business) => void; saving: boolean; onDirtyChange: (d: boolean) => void }) {
   const [items, setItems] = useState<Product[]>(biz.products);
-  useEffect(() => setItems(biz.products), [biz.id]);
+  useEffect(() => { setItems(biz.products); onDirtyChange(false); }, [biz.id]);
+  const isDirty = useDirty(items, biz.products, onDirtyChange);
 
   function update(i: number, p: Product) { const next = [...items]; next[i] = p; setItems(next); }
   function add() { setItems([...items, { id: newId(), name: "", description: "", price: "", image: "" }]); }
@@ -510,7 +601,7 @@ function ProductsTab({ biz, save, saving }: { biz: Business; save: (b: Business)
           <button onClick={add} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors disabled:opacity-50">
             <Plus className="h-4 w-4" /> Add Product
           </button>
-          <SaveBtn onClick={() => save({ ...biz, products: items })} saving={saving} label="Save" />
+          <SaveBtn onClick={() => save({ ...biz, products: items })} saving={saving} disabled={!isDirty} label="Save" />
         </div>
       }
     >
@@ -563,9 +654,10 @@ function ProductsTab({ biz, save, saving }: { biz: Business; save: (b: Business)
   );
 }
 
-function GalleryTab({ biz, save, saving }: { biz: Business; save: (b: Business) => void; saving: boolean }) {
+function GalleryTab({ biz, save, saving, onDirtyChange }: { biz: Business; save: (b: Business) => void; saving: boolean; onDirtyChange: (d: boolean) => void }) {
   const [items, setItems] = useState<GalleryItem[]>(biz.gallery);
-  useEffect(() => setItems(biz.gallery), [biz.id]);
+  useEffect(() => { setItems(biz.gallery); onDirtyChange(false); }, [biz.id]);
+  const isDirty = useDirty(items, biz.gallery, onDirtyChange);
 
   function update(i: number, g: GalleryItem) { const n = [...items]; n[i] = g; setItems(n); }
   function add() { setItems([...items, { id: newId(), image: "", caption: "" }]); }
@@ -594,7 +686,7 @@ function GalleryTab({ biz, save, saving }: { biz: Business; save: (b: Business) 
           <button onClick={add} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors disabled:opacity-50">
             <Plus className="h-4 w-4" /> Add Image
           </button>
-          <SaveBtn onClick={() => save({ ...biz, gallery: items })} saving={saving} label="Save" />
+          <SaveBtn onClick={() => save({ ...biz, gallery: items })} saving={saving} disabled={!isDirty} label="Save" />
         </div>
       }
     >
@@ -902,11 +994,13 @@ function AddLeadForm({ onAdd, onCancel, saving }: { onAdd: (l: Lead) => void; on
   );
 }
 
-function SettingsTab({ biz, save, saving }: { biz: Business; save: (b: Business) => void; saving: boolean }) {
+function SettingsTab({ biz, save, saving, onDirtyChange }: { biz: Business; save: (b: Business) => void; saving: boolean; onDirtyChange: (d: boolean) => void }) {
   const [d, setD] = useState(biz);
-  useEffect(() => setD(biz), [biz.id]);
+  useEffect(() => { setD(biz); onDirtyChange(false); }, [biz.id]);
+  const isDirty = useDirty(d, biz, onDirtyChange);
+
   return (
-    <Card title="Site Settings" subtitle="Customize your public site" action={<SaveBtn onClick={() => save({ ...d, slug: slugify(d.slug) || biz.slug })} saving={saving} />}>
+    <Card title="Site Settings" subtitle="Customize your public site" action={<SaveBtn onClick={() => save({ ...d, slug: slugify(d.slug) || biz.slug })} saving={saving} disabled={!isDirty} />}>
       <div className="grid md:grid-cols-2 gap-5">
         <Field label="Site URL Slug" value={d.slug} onChange={(v: string) => setD({ ...d, slug: v })} />
         <div>

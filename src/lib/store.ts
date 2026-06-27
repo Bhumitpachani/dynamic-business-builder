@@ -102,6 +102,32 @@ export type Business = {
 };
 
 const COL = "businesses";
+const INQ_COL = "contact_inquiries";
+
+export type ContactInquiry = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  interest: string;
+  message: string;
+  createdAt: string;
+};
+
+export const contactInquiries = {
+  async add(data: Omit<ContactInquiry, "id">): Promise<void> {
+    if (typeof window === "undefined") return;
+    const id = newId();
+    await setDoc(doc(db, INQ_COL, id), { ...data, id });
+  },
+  onAll(callback: (list: ContactInquiry[]) => void): () => void {
+    if (typeof window === "undefined") return () => {};
+    return onSnapshot(collection(db, INQ_COL), (snap) => {
+      const list = snap.docs.map((d) => d.data() as ContactInquiry);
+      callback(list.sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
+    });
+  },
+};
 
 export const store = {
   /** Real-time listener for all businesses — returns an unsubscribe function */

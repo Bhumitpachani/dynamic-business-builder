@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X, Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Menu, X, Phone, Mail, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import type { ReactNode } from "react";
 
 const NAV_LINKS = [
@@ -143,17 +143,13 @@ export function PublicFooter() {
           <div>
             <h4 className="font-semibold text-white text-sm mb-4 uppercase tracking-wider">Contact</h4>
             <ul className="space-y-3.5">
-              <li className="flex items-start gap-2.5">
-                <MapPin className="h-4 w-4 text-[#6B3EF0] mt-0.5 shrink-0" />
-                <span className="text-sm text-gray-500">Mumbai, Maharashtra, India</span>
-              </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="h-4 w-4 text-[#6B3EF0] shrink-0" />
-                <a href="tel:+919876543210" className="text-sm text-gray-500 hover:text-white transition-colors">+91 98765 43210</a>
+                <a href="tel:+916351717272" className="text-sm text-gray-500 hover:text-white transition-colors">+91 6351717272</a>
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="h-4 w-4 text-[#6B3EF0] shrink-0" />
-                <a href="mailto:hello@tapvybe.in" className="text-sm text-gray-500 hover:text-white transition-colors">hello@tapvybe.in</a>
+                <a href="mailto:tapvybe@gmail.com" className="text-sm text-gray-500 hover:text-white transition-colors">tapvybe@gmail.com</a>
               </li>
             </ul>
           </div>
