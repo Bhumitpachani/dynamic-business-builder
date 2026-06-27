@@ -37,7 +37,7 @@ function HeroSection() {
       <div className="max-w-2xl mx-auto px-6 sm:px-8">
         <span
           className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
-          style={{ backgroundColor: "#E8735A" }}
+          style={{ backgroundColor: "#6B3EF0" }}
         >
           Get In Touch
         </span>
@@ -50,7 +50,7 @@ function HeroSection() {
         <div className="mt-7 flex flex-wrap justify-center gap-5 text-sm text-gray-500 font-medium">
           {["Fast delivery", "Custom designs", "Bulk team orders"].map((s) => (
             <span key={s} className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4" style={{ color: "#E8735A" }} />
+              <CheckCircle className="h-4 w-4" style={{ color: "#6B3EF0" }} />
               {s}
             </span>
           ))}
@@ -109,16 +109,16 @@ function ContactForm() {
     setTimeout(() => { setLoading(false); setSent(true); }, 1200);
   }
 
-  const inputClass = "w-full px-4 py-3 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:border-[#E8735A] transition-colors placeholder:text-gray-400";
+  const inputClass = "w-full px-4 py-3 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:border-[#6B3EF0] transition-colors placeholder:text-gray-400";
 
   if (sent) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <div
           className="h-20 w-20 rounded-3xl grid place-items-center mb-6"
-          style={{ backgroundColor: "#FEE8E3" }}
+          style={{ backgroundColor: "#EDE8FE" }}
         >
-          <CheckCircle className="h-10 w-10" style={{ color: "#E8735A" }} />
+          <CheckCircle className="h-10 w-10" style={{ color: "#6B3EF0" }} />
         </div>
         <h3 className="text-2xl font-black text-black mb-3">Message sent!</h3>
         <p className="text-gray-600 max-w-sm leading-relaxed text-sm">
@@ -127,7 +127,7 @@ function ContactForm() {
         <button
           onClick={() => { setSent(false); setForm({ name: "", email: "", phone: "", interest: "", message: "" }); }}
           className="mt-8 text-sm font-bold transition-colors hover:opacity-80"
-          style={{ color: "#E8735A" }}
+          style={{ color: "#6B3EF0" }}
         >
           Send another message →
         </button>
@@ -182,7 +182,7 @@ function ContactForm() {
         type="submit"
         disabled={loading}
         className="w-full flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-bold text-white rounded-full disabled:opacity-70 disabled:cursor-not-allowed transition-all hover:opacity-90"
-        style={{ backgroundColor: "#E8735A" }}
+        style={{ backgroundColor: "#6B3EF0" }}
       >
         {loading ? (
           <><span className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin" /> Sending...</>
@@ -211,9 +211,9 @@ function MainSection() {
             >
               <div
                 className="h-11 w-11 rounded-xl grid place-items-center mb-4 group-hover:scale-110 transition-transform"
-                style={{ backgroundColor: "#FEE8E3" }}
+                style={{ backgroundColor: "#EDE8FE" }}
               >
-                <c.icon className="h-5 w-5" style={{ color: "#E8735A" }} />
+                <c.icon className="h-5 w-5" style={{ color: "#6B3EF0" }} />
               </div>
               <h3 className="font-bold text-black text-sm mb-1.5">{c.title}</h3>
               {c.lines.map((l) => <p key={l} className="text-sm text-gray-700 font-medium leading-tight">{l}</p>)}
@@ -238,9 +238,9 @@ function MainSection() {
               <div className="text-center">
                 <div
                   className="h-16 w-16 rounded-2xl grid place-items-center mx-auto mb-3"
-                  style={{ backgroundColor: "#FEE8E3" }}
+                  style={{ backgroundColor: "#EDE8FE" }}
                 >
-                  <MapPin className="h-8 w-8" style={{ color: "#E8735A" }} />
+                  <MapPin className="h-8 w-8" style={{ color: "#6B3EF0" }} />
                 </div>
                 <p className="font-bold text-gray-800 text-sm">Bandra West</p>
                 <p className="text-xs text-gray-500">Mumbai, Maharashtra</p>
@@ -249,7 +249,7 @@ function MainSection() {
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-1 mt-3 text-xs font-bold hover:opacity-80 transition-opacity"
-                  style={{ color: "#E8735A" }}
+                  style={{ color: "#6B3EF0" }}
                 >
                   Open in Google Maps <ArrowRight className="h-3 w-3" />
                 </a>
@@ -281,7 +281,7 @@ function MainSection() {
                   <li key={i} className="flex items-start gap-3 text-sm text-gray-400">
                     <span
                       className="h-5 w-5 rounded-full grid place-items-center shrink-0 text-xs font-black text-white mt-0.5"
-                      style={{ backgroundColor: "#E8735A" }}
+                      style={{ backgroundColor: "#6B3EF0" }}
                     >
                       {i + 1}
                     </span>

@@ -42,7 +42,7 @@ function HeroSection() {
               <Link
                 to="/contact"
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-bold text-white transition-all hover:opacity-90 hover:-translate-y-0.5"
-                style={{ backgroundColor: "#E8735A" }}
+                style={{ backgroundColor: "#6B3EF0" }}
               >
                 Get Started <ArrowRight className="h-4 w-4" />
               </Link>
@@ -153,7 +153,7 @@ function MetalCardSection() {
             <Link
               to="/services"
               className="inline-flex items-center mt-8 px-7 py-3 rounded-full text-sm font-bold text-white tracking-wide uppercase transition-all hover:opacity-90"
-              style={{ backgroundColor: "#E8735A" }}
+              style={{ backgroundColor: "#6B3EF0" }}
             >
               tapvybe Metal Cards
             </Link>
@@ -188,7 +188,7 @@ function CtaSection() {
           <Link
             to="/contact"
             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-sm font-bold text-white transition-all hover:opacity-90"
-            style={{ backgroundColor: "#E8735A" }}
+            style={{ backgroundColor: "#6B3EF0" }}
           >
             Get Your tapvybe Card <ArrowRight className="h-4 w-4" />
           </Link>

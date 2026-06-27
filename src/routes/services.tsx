@@ -33,7 +33,7 @@ function HeroSection() {
       <div className="max-w-3xl mx-auto px-6 sm:px-8">
         <span
           className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
-          style={{ backgroundColor: "#E8735A" }}
+          style={{ backgroundColor: "#6B3EF0" }}
         >
           Our Products
         </span>
@@ -47,7 +47,7 @@ function HeroSection() {
           <Link
             to="/contact"
             className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-bold text-white transition-all hover:opacity-90"
-            style={{ backgroundColor: "#E8735A" }}
+            style={{ backgroundColor: "#6B3EF0" }}
           >
             Order Now <ArrowRight className="h-4 w-4" />
           </Link>
@@ -142,7 +142,7 @@ function ProductsSection() {
             >
               <span
                 className={`inline-block self-start text-xs font-bold px-3 py-1 rounded-full mb-5 ${p.highlight ? "bg-white/20 text-white" : "text-white"}`}
-                style={p.highlight ? {} : { backgroundColor: "#E8735A" }}
+                style={p.highlight ? {} : { backgroundColor: "#6B3EF0" }}
               >
                 {p.badge}
               </span>
@@ -160,9 +160,9 @@ function ProductsSection() {
                   <li key={f} className="flex items-center gap-2.5 text-sm">
                     <span
                       className="h-5 w-5 rounded-full grid place-items-center shrink-0"
-                      style={{ backgroundColor: p.highlight ? "rgba(232,115,90,0.25)" : "#FEE8E3" }}
+                      style={{ backgroundColor: p.highlight ? "rgba(107,62,240,0.20)" : "#EDE8FE" }}
                     >
-                      <Check className="h-3 w-3" style={{ color: "#E8735A" }} strokeWidth={3} />
+                      <Check className="h-3 w-3" style={{ color: "#6B3EF0" }} strokeWidth={3} />
                     </span>
                     <span className={p.highlight ? "text-gray-200" : "text-gray-700"}>{f}</span>
                   </li>
@@ -176,7 +176,7 @@ function ProductsSection() {
                     ? "text-black bg-white hover:bg-gray-100"
                     : "text-white hover:opacity-90"
                 }`}
-                style={p.highlight ? {} : { backgroundColor: "#E8735A" }}
+                style={p.highlight ? {} : { backgroundColor: "#6B3EF0" }}
               >
                 {p.price === "Custom" ? "Get a Quote" : "Order Now"} <ArrowRight className="h-4 w-4" />
               </Link>
@@ -216,9 +216,9 @@ function FeaturesSection() {
             <div key={f.title} className="group p-7 rounded-2xl border border-gray-100 bg-white hover:border-gray-200 hover:shadow-lg transition-all">
               <div
                 className="h-12 w-12 rounded-xl grid place-items-center mb-5"
-                style={{ backgroundColor: "#FEE8E3" }}
+                style={{ backgroundColor: "#EDE8FE" }}
               >
-                <f.icon className="h-6 w-6" style={{ color: "#E8735A" }} />
+                <f.icon className="h-6 w-6" style={{ color: "#6B3EF0" }} />
               </div>
               <h3 className="font-bold text-black text-base mb-2">{f.title}</h3>
               <p className="text-sm text-gray-600 leading-relaxed">{f.desc}</p>
@@ -249,7 +249,7 @@ function MetalCardFeature() {
           <div className="px-8 sm:px-12 lg:px-16 py-20 order-1 lg:order-2">
             <span
               className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
-              style={{ backgroundColor: "#E8735A" }}
+              style={{ backgroundColor: "#6B3EF0" }}
             >
               Smart NFC
             </span>
@@ -264,9 +264,9 @@ function MetalCardFeature() {
                 <li key={item} className="flex items-center gap-3 text-sm text-gray-700 font-medium">
                   <span
                     className="h-5 w-5 rounded-full grid place-items-center shrink-0"
-                    style={{ backgroundColor: "#FEE8E3" }}
+                    style={{ backgroundColor: "#EDE8FE" }}
                   >
-                    <Check className="h-3 w-3" style={{ color: "#E8735A" }} strokeWidth={3} />
+                    <Check className="h-3 w-3" style={{ color: "#6B3EF0" }} strokeWidth={3} />
                   </span>
                   {item}
                 </li>
@@ -275,7 +275,7 @@ function MetalCardFeature() {
             <Link
               to="/contact"
               className="inline-flex items-center gap-2 mt-9 px-7 py-3.5 rounded-full text-sm font-bold text-white transition-all hover:opacity-90"
-              style={{ backgroundColor: "#E8735A" }}
+              style={{ backgroundColor: "#6B3EF0" }}
             >
               Get Your Card <ArrowRight className="h-4 w-4" />
             </Link>
@@ -331,11 +331,11 @@ function FaqSection() {
             <div key={i} className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
               <button
                 onClick={() => setOpen(open === i ? null : i)}
-                className="w-full flex items-center justify-between px-6 py-5 text-left text-sm font-bold text-black hover:text-[#E8735A] transition-colors"
+                className="w-full flex items-center justify-between px-6 py-5 text-left text-sm font-bold text-black hover:text-[#6B3EF0] transition-colors"
               >
                 {f.q}
                 {open === i
-                  ? <ChevronUp className="h-4 w-4 shrink-0" style={{ color: "#E8735A" }} />
+                  ? <ChevronUp className="h-4 w-4 shrink-0" style={{ color: "#6B3EF0" }} />
                   : <ChevronDown className="h-4 w-4 shrink-0 text-gray-400" />
                 }
               </button>
@@ -367,7 +367,7 @@ function CtaSection() {
           <Link
             to="/contact"
             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-sm font-bold text-white transition-all hover:opacity-90"
-            style={{ backgroundColor: "#E8735A" }}
+            style={{ backgroundColor: "#6B3EF0" }}
           >
             Order Your Card <ArrowRight className="h-4 w-4" />
           </Link>

@@ -32,7 +32,7 @@ function HeroSection() {
       <div className="max-w-3xl mx-auto px-6 sm:px-8">
         <span
           className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
-          style={{ backgroundColor: "#E8735A" }}
+          style={{ backgroundColor: "#6B3EF0" }}
         >
           Our Story
         </span>
@@ -45,7 +45,7 @@ function HeroSection() {
         <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500 font-medium">
           {["Founded 2022", "Mumbai, India", "10,000+ cards shipped"].map((s) => (
             <span key={s} className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full inline-block" style={{ backgroundColor: "#E8735A" }} />
+              <span className="h-2 w-2 rounded-full inline-block" style={{ backgroundColor: "#6B3EF0" }} />
               {s}
             </span>
           ))}
@@ -58,9 +58,9 @@ function HeroSection() {
 /* ─── Story ─────────────────────────────────────────────────────────────── */
 function StorySection() {
   const timeline = [
-    { year: "2021", title: "The Idea", desc: "Our founders were tired of printing new business cards every time their phone number changed. There had to be a better way.", dot: "#E8735A" },
+    { year: "2021", title: "The Idea", desc: "Our founders were tired of printing new business cards every time their phone number changed. There had to be a better way.", dot: "#6B3EF0" },
     { year: "2022", title: "tapvybe v1", desc: "First NFC cards produced and shipped. 50 early users in Mumbai tested the product — feedback was overwhelmingly positive.", dot: "#000" },
-    { year: "2023", title: "Going Wide", desc: "Metal cards launched. Dashboard v2 released. Expanded to Pune, Bangalore, and Delhi. First 1,000 cards shipped.", dot: "#E8735A" },
+    { year: "2023", title: "Going Wide", desc: "Metal cards launched. Dashboard v2 released. Expanded to Pune, Bangalore, and Delhi. First 1,000 cards shipped.", dot: "#6B3EF0" },
     { year: "2024", title: "10,000+ Cards", desc: "Over 10,000 tapvybe cards now in circulation across India. Bulk/team ordering launched for companies and events.", dot: "#000" },
   ];
 
@@ -72,7 +72,7 @@ function StorySection() {
           <div>
             <span
               className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
-              style={{ backgroundColor: "#E8735A" }}
+              style={{ backgroundColor: "#6B3EF0" }}
             >
               How We Started
             </span>
@@ -135,9 +135,9 @@ function MissionSection() {
           <div className="bg-black rounded-3xl p-10 text-white">
             <div
               className="h-14 w-14 rounded-2xl grid place-items-center mb-6"
-              style={{ backgroundColor: "rgba(232,115,90,0.25)" }}
+              style={{ backgroundColor: "rgba(107,62,240,0.20)" }}
             >
-              <Target className="h-7 w-7" style={{ color: "#E8735A" }} />
+              <Target className="h-7 w-7" style={{ color: "#6B3EF0" }} />
             </div>
             <h3 className="text-2xl font-black mb-4">Our Mission</h3>
             <p className="text-gray-400 leading-relaxed text-base">
@@ -148,9 +148,9 @@ function MissionSection() {
           <div className="bg-gray-50 rounded-3xl p-10 border border-gray-200">
             <div
               className="h-14 w-14 rounded-2xl grid place-items-center mb-6"
-              style={{ backgroundColor: "#FEE8E3" }}
+              style={{ backgroundColor: "#EDE8FE" }}
             >
-              <Globe className="h-7 w-7" style={{ color: "#E8735A" }} />
+              <Globe className="h-7 w-7" style={{ color: "#6B3EF0" }} />
             </div>
             <h3 className="text-2xl font-black text-black mb-4">Our Vision</h3>
             <p className="text-gray-600 leading-relaxed text-base">
@@ -186,9 +186,9 @@ function ValuesSection() {
             <div key={v.title} className="group p-7 rounded-2xl bg-white border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all">
               <div
                 className="h-12 w-12 rounded-xl grid place-items-center mb-5 group-hover:scale-110 transition-transform"
-                style={{ backgroundColor: "#FEE8E3" }}
+                style={{ backgroundColor: "#EDE8FE" }}
               >
-                <v.icon className="h-6 w-6" style={{ color: "#E8735A" }} />
+                <v.icon className="h-6 w-6" style={{ color: "#6B3EF0" }} />
               </div>
               <h3 className="font-bold text-black mb-2">{v.title}</h3>
               <p className="text-sm text-gray-600 leading-relaxed">{v.desc}</p>
@@ -221,12 +221,12 @@ function TeamSection() {
             <div key={t.name} className="bg-gray-50 rounded-3xl p-7 border border-gray-100 text-center hover:shadow-md transition-shadow group">
               <div
                 className="h-16 w-16 rounded-2xl grid place-items-center font-black text-lg text-white mx-auto mb-5 group-hover:scale-105 transition-transform"
-                style={{ backgroundColor: i % 2 === 0 ? "#E8735A" : "#000" }}
+                style={{ backgroundColor: i % 2 === 0 ? "#6B3EF0" : "#000" }}
               >
                 {t.initials}
               </div>
               <h3 className="font-bold text-black text-base">{t.name}</h3>
-              <p className="text-xs font-semibold mt-0.5 mb-3" style={{ color: "#E8735A" }}>{t.role}</p>
+              <p className="text-xs font-semibold mt-0.5 mb-3" style={{ color: "#6B3EF0" }}>{t.role}</p>
               <p className="text-xs text-gray-500 leading-relaxed">{t.bio}</p>
             </div>
           ))}
@@ -251,7 +251,7 @@ function CtaSection() {
           <Link
             to="/contact"
             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-sm font-bold text-white transition-all hover:opacity-90"
-            style={{ backgroundColor: "#E8735A" }}
+            style={{ backgroundColor: "#6B3EF0" }}
           >
             Get in Touch <ArrowRight className="h-4 w-4" />
           </Link>

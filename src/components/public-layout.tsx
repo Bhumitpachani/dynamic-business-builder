@@ -51,7 +51,7 @@ export function PublicNav() {
             <Link
               to="/contact"
               className="inline-flex items-center px-5 py-2 text-sm font-bold text-white rounded-full transition-all hover:opacity-90"
-              style={{ backgroundColor: "#E8735A" }}
+              style={{ backgroundColor: "#6B3EF0" }}
             >
               Get Started
             </Link>
@@ -85,7 +85,7 @@ export function PublicNav() {
               to="/contact"
               onClick={() => setOpen(false)}
               className="flex-1 text-center py-2.5 text-sm font-bold text-white rounded-full transition-all hover:opacity-90"
-              style={{ backgroundColor: "#E8735A" }}
+              style={{ backgroundColor: "#6B3EF0" }}
             >
               Get Started
             </Link>
@@ -111,7 +111,7 @@ export function PublicFooter() {
             </p>
             <div className="mt-6 flex gap-2.5">
               {([Facebook, Twitter, Instagram, Linkedin] as const).map((Icon, i) => (
-                <a key={i} href="#" className="h-9 w-9 rounded-full bg-gray-800 hover:bg-[#E8735A] grid place-items-center transition-colors">
+                <a key={i} href="#" className="h-9 w-9 rounded-full bg-gray-800 hover:bg-[#6B3EF0] grid place-items-center transition-colors">
                   <Icon className="h-4 w-4 text-white" />
                 </a>
               ))}
@@ -144,15 +144,15 @@ export function PublicFooter() {
             <h4 className="font-semibold text-white text-sm mb-4 uppercase tracking-wider">Contact</h4>
             <ul className="space-y-3.5">
               <li className="flex items-start gap-2.5">
-                <MapPin className="h-4 w-4 text-[#E8735A] mt-0.5 shrink-0" />
+                <MapPin className="h-4 w-4 text-[#6B3EF0] mt-0.5 shrink-0" />
                 <span className="text-sm text-gray-500">Mumbai, Maharashtra, India</span>
               </li>
               <li className="flex items-center gap-2.5">
-                <Phone className="h-4 w-4 text-[#E8735A] shrink-0" />
+                <Phone className="h-4 w-4 text-[#6B3EF0] shrink-0" />
                 <a href="tel:+919876543210" className="text-sm text-gray-500 hover:text-white transition-colors">+91 98765 43210</a>
               </li>
               <li className="flex items-center gap-2.5">
-                <Mail className="h-4 w-4 text-[#E8735A] shrink-0" />
+                <Mail className="h-4 w-4 text-[#6B3EF0] shrink-0" />
                 <a href="mailto:hello@tapvybe.in" className="text-sm text-gray-500 hover:text-white transition-colors">hello@tapvybe.in</a>
               </li>
             </ul>
