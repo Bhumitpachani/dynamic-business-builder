@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Phone, Mail, MapPin, Clock, CheckCircle, ArrowRight, MessageSquare, Users, Zap } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, CheckCircle, ArrowRight, MessageSquare } from "lucide-react";
 import { PublicLayout } from "@/components/public-layout";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "Contact Us — tapvybe" },
-      { name: "description", content: "Get in touch with tapvybe. We'll help you get your first client website live in under an hour." },
+      { name: "description", content: "Get in touch with tapvybe. Order your NFC business card, ask a question, or get a custom quote for your team." },
     ],
   }),
   component: Contact,
@@ -17,8 +17,7 @@ type FormState = {
   name: string;
   email: string;
   phone: string;
-  service: string;
-  agency: string;
+  interest: string;
   message: string;
 };
 
@@ -27,36 +26,75 @@ function Contact() {
     <PublicLayout>
       <HeroSection />
       <MainSection />
-      <WhyContactSection />
     </PublicLayout>
   );
 }
 
+/* ─── Hero ─────────────────────────────────────────────────────────────── */
 function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 py-20 md:py-32 text-center">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-800/20 via-transparent to-transparent" />
-      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <span className="inline-block px-3 py-1 rounded-full bg-indigo-900/60 text-indigo-300 text-xs font-semibold border border-indigo-700/50 mb-6">Get In Touch</span>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.1]">
-          Let's grow your{" "}
-          <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">agency together</span>
+    <section className="bg-white py-20 md:py-28 text-center">
+      <div className="max-w-2xl mx-auto px-6 sm:px-8">
+        <span
+          className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
+          style={{ backgroundColor: "#E8735A" }}
+        >
+          Get In Touch
+        </span>
+        <h1 className="text-4xl sm:text-5xl font-black text-black tracking-tight leading-[1.1]">
+          Let's get your<br />tapvybe card sorted.
         </h1>
-        <p className="mt-6 text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          Whether you have questions, want a demo, or are ready to sign up — we'd love to hear from you. Our team responds within 2 hours.
+        <p className="mt-5 text-base text-gray-600 leading-relaxed">
+          Questions about an order, need a custom design, or want to order for your whole team? We're here. Our team responds within 2 hours.
         </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-400">
-          <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-emerald-400" /> Free 14-day trial</span>
-          <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-emerald-400" /> No credit card needed</span>
-          <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-emerald-400" /> Setup in under an hour</span>
+        <div className="mt-7 flex flex-wrap justify-center gap-5 text-sm text-gray-500 font-medium">
+          {["Fast delivery", "Custom designs", "Bulk team orders"].map((s) => (
+            <span key={s} className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4" style={{ color: "#E8735A" }} />
+              {s}
+            </span>
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
+/* ─── Contact Info ───────────────────────────────────────────────────────── */
+const CONTACT_INFO = [
+  {
+    icon: Phone,
+    title: "Call Us",
+    lines: ["+91 98765 43210", "+91 91234 56789"],
+    sub: "Mon–Sat, 9am – 7pm IST",
+    href: "tel:+919876543210",
+  },
+  {
+    icon: Mail,
+    title: "Email Us",
+    lines: ["hello@tapvybe.in", "support@tapvybe.in"],
+    sub: "Response within 2 hours",
+    href: "mailto:hello@tapvybe.in",
+  },
+  {
+    icon: MapPin,
+    title: "Find Us",
+    lines: ["tapvybe HQ", "Bandra West, Mumbai 400050"],
+    sub: "Maharashtra, India",
+    href: "#",
+  },
+  {
+    icon: Clock,
+    title: "Office Hours",
+    lines: ["Mon – Fri: 9am – 7pm", "Saturday: 10am – 5pm"],
+    sub: "Closed Sundays & public holidays",
+    href: "#",
+  },
+];
+
+/* ─── Form ───────────────────────────────────────────────────────────────── */
 function ContactForm() {
-  const [form, setForm] = useState<FormState>({ name: "", email: "", phone: "", service: "", agency: "", message: "" });
+  const [form, setForm] = useState<FormState>({ name: "", email: "", phone: "", interest: "", message: "" });
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -68,23 +106,29 @@ function ContactForm() {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) return;
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setSent(true);
-    }, 1200);
+    setTimeout(() => { setLoading(false); setSent(true); }, 1200);
   }
+
+  const inputClass = "w-full px-4 py-3 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:border-[#E8735A] transition-colors placeholder:text-gray-400";
 
   if (sent) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="h-20 w-20 rounded-3xl bg-emerald-100 grid place-items-center mb-6">
-          <CheckCircle className="h-10 w-10 text-emerald-600" />
+        <div
+          className="h-20 w-20 rounded-3xl grid place-items-center mb-6"
+          style={{ backgroundColor: "#FEE8E3" }}
+        >
+          <CheckCircle className="h-10 w-10" style={{ color: "#E8735A" }} />
         </div>
-        <h3 className="text-2xl font-black text-slate-900 mb-3">Message sent!</h3>
-        <p className="text-slate-600 max-w-sm leading-relaxed">
+        <h3 className="text-2xl font-black text-black mb-3">Message sent!</h3>
+        <p className="text-gray-600 max-w-sm leading-relaxed text-sm">
           Thanks, <strong>{form.name}</strong>! We'll get back to you at <strong>{form.email}</strong> within 2 business hours.
         </p>
-        <button onClick={() => { setSent(false); setForm({ name: "", email: "", phone: "", service: "", agency: "", message: "" }); }} className="mt-8 text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">
+        <button
+          onClick={() => { setSent(false); setForm({ name: "", email: "", phone: "", interest: "", message: "" }); }}
+          className="mt-8 text-sm font-bold transition-colors hover:opacity-80"
+          style={{ color: "#E8735A" }}
+        >
           Send another message →
         </button>
       </div>
@@ -95,85 +139,50 @@ function ContactForm() {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="grid sm:grid-cols-2 gap-5">
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Full Name *</label>
-          <input
-            type="text"
-            required
-            value={form.name}
-            onChange={(e) => set("name", e.target.value)}
-            placeholder="Rahul Mehta"
-            className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500 transition-colors placeholder:text-slate-400"
-          />
+          <label className="block text-xs font-bold text-black uppercase tracking-wider mb-1.5">Full Name *</label>
+          <input type="text" required value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Your name" className={inputClass} />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Email Address *</label>
-          <input
-            type="email"
-            required
-            value={form.email}
-            onChange={(e) => set("email", e.target.value)}
-            placeholder="rahul@youragency.com"
-            className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500 transition-colors placeholder:text-slate-400"
-          />
+          <label className="block text-xs font-bold text-black uppercase tracking-wider mb-1.5">Email Address *</label>
+          <input type="email" required value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="you@example.com" className={inputClass} />
         </div>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-5">
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Phone Number</label>
-          <input
-            type="tel"
-            value={form.phone}
-            onChange={(e) => set("phone", e.target.value)}
-            placeholder="+91 98765 43210"
-            className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500 transition-colors placeholder:text-slate-400"
-          />
+          <label className="block text-xs font-bold text-black uppercase tracking-wider mb-1.5">Phone Number</label>
+          <input type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+91 98765 43210" className={inputClass} />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Agency / Company Name</label>
-          <input
-            type="text"
-            value={form.agency}
-            onChange={(e) => set("agency", e.target.value)}
-            placeholder="Your Agency Name"
-            className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500 transition-colors placeholder:text-slate-400"
-          />
+          <label className="block text-xs font-bold text-black uppercase tracking-wider mb-1.5">I'm interested in</label>
+          <select value={form.interest} onChange={(e) => set("interest", e.target.value)} className={inputClass}>
+            <option value="">Select an option</option>
+            <option>Standard NFC Card</option>
+            <option>Metal NFC Card</option>
+            <option>Bulk / Team Order (10+)</option>
+            <option>Custom Design</option>
+            <option>General Question</option>
+          </select>
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">I'm interested in</label>
-        <select
-          value={form.service}
-          onChange={(e) => set("service", e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500 transition-colors text-slate-700"
-        >
-          <option value="">Select a service</option>
-          <option>Starter Plan — 1 Business Site</option>
-          <option>Professional Plan — Up to 10 Sites</option>
-          <option>Enterprise Plan — Unlimited Sites</option>
-          <option>Demo / Product Walkthrough</option>
-          <option>Partnership / Reseller Program</option>
-          <option>Other</option>
-        </select>
-      </div>
-
-      <div>
-        <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Your Message *</label>
+        <label className="block text-xs font-bold text-black uppercase tracking-wider mb-1.5">Message *</label>
         <textarea
           required
           rows={5}
           value={form.message}
           onChange={(e) => set("message", e.target.value)}
-          placeholder="Tell us about your agency, how many clients you manage, and what you're looking to achieve with tapvybe..."
-          className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500 transition-colors resize-none placeholder:text-slate-400"
+          placeholder="Tell us what you need — quantity, design preferences, or any questions..."
+          className={`${inputClass} resize-none`}
         />
       </div>
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-bold bg-indigo-600 text-white rounded-2xl hover:bg-indigo-700 disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-lg shadow-indigo-200"
+        className="w-full flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-bold text-white rounded-full disabled:opacity-70 disabled:cursor-not-allowed transition-all hover:opacity-90"
+        style={{ backgroundColor: "#E8735A" }}
       >
         {loading ? (
           <><span className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin" /> Sending...</>
@@ -181,85 +190,67 @@ function ContactForm() {
           <>Send Message <ArrowRight className="h-4 w-4" /></>
         )}
       </button>
-
-      <p className="text-xs text-slate-500 text-center">We respond within 2 business hours. Your information is never shared.</p>
+      <p className="text-xs text-gray-400 text-center">We respond within 2 business hours. Your info is never shared.</p>
     </form>
   );
 }
 
-const CONTACT_INFO = [
-  {
-    icon: Phone,
-    color: "bg-indigo-100 text-indigo-600",
-    title: "Call Us",
-    lines: ["+91 98765 43210", "+91 91234 56789"],
-    sub: "Mon–Sat, 9am – 7pm IST",
-    href: "tel:+919876543210",
-  },
-  {
-    icon: Mail,
-    color: "bg-emerald-100 text-emerald-600",
-    title: "Email Us",
-    lines: ["hello@tapvybe.in", "support@tapvybe.in"],
-    sub: "Response within 2 hours",
-    href: "mailto:hello@tapvybe.in",
-  },
-  {
-    icon: MapPin,
-    color: "bg-amber-100 text-amber-600",
-    title: "Find Us",
-    lines: ["tapvybe HQ", "Bandra West, Mumbai 400050"],
-    sub: "Maharashtra, India",
-    href: "#",
-  },
-  {
-    icon: Clock,
-    color: "bg-rose-100 text-rose-600",
-    title: "Office Hours",
-    lines: ["Mon – Fri: 9am – 7pm", "Saturday: 10am – 5pm"],
-    sub: "Closed Sundays & public holidays",
-    href: "#",
-  },
-];
-
+/* ─── Main ───────────────────────────────────────────────────────────────── */
 function MainSection() {
   return (
-    <section className="py-20 md:py-28 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="bg-gray-50 py-16 md:py-20">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+
         {/* Contact info cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-14">
           {CONTACT_INFO.map((c) => (
-            <a key={c.title} href={c.href} className="group bg-slate-50 hover:bg-white hover:border-indigo-200 hover:shadow-lg border border-slate-100 rounded-2xl p-6 transition-all">
-              <div className={`h-12 w-12 rounded-xl ${c.color} grid place-items-center mb-4 group-hover:scale-110 transition-transform`}>
-                <c.icon className="h-5 w-5" />
+            <a
+              key={c.title}
+              href={c.href}
+              className="group bg-white border border-gray-100 hover:border-gray-200 hover:shadow-md rounded-2xl p-6 transition-all"
+            >
+              <div
+                className="h-11 w-11 rounded-xl grid place-items-center mb-4 group-hover:scale-110 transition-transform"
+                style={{ backgroundColor: "#FEE8E3" }}
+              >
+                <c.icon className="h-5 w-5" style={{ color: "#E8735A" }} />
               </div>
-              <h3 className="font-bold text-slate-900 text-sm mb-2">{c.title}</h3>
-              {c.lines.map((l) => <p key={l} className="text-sm text-slate-700 font-medium">{l}</p>)}
-              <p className="text-xs text-slate-500 mt-1">{c.sub}</p>
+              <h3 className="font-bold text-black text-sm mb-1.5">{c.title}</h3>
+              {c.lines.map((l) => <p key={l} className="text-sm text-gray-700 font-medium leading-tight">{l}</p>)}
+              <p className="text-xs text-gray-400 mt-1">{c.sub}</p>
             </a>
           ))}
         </div>
 
-        {/* Form + Map side by side */}
-        <div className="grid lg:grid-cols-5 gap-10 items-start">
+        {/* Form + Sidebar */}
+        <div className="grid lg:grid-cols-5 gap-8 items-start">
           {/* Form */}
-          <div className="lg:col-span-3 bg-white rounded-3xl border border-slate-200 shadow-sm p-8 md:p-10">
-            <h2 className="text-2xl font-black text-slate-900 mb-2">Send us a message</h2>
-            <p className="text-sm text-slate-600 mb-8">Fill in the form and our team will get back to you within 2 hours.</p>
+          <div className="lg:col-span-3 bg-white rounded-3xl border border-gray-100 shadow-sm p-8 md:p-10">
+            <h2 className="text-2xl font-black text-black mb-1">Send us a message</h2>
+            <p className="text-sm text-gray-500 mb-8">Fill in the form and we'll get back to you within 2 hours.</p>
             <ContactForm />
           </div>
 
           {/* Sidebar */}
           <div className="lg:col-span-2 space-y-5">
             {/* Map placeholder */}
-            <div className="bg-slate-100 rounded-3xl overflow-hidden aspect-square relative flex items-center justify-center border border-slate-200">
+            <div className="bg-gray-100 rounded-3xl overflow-hidden aspect-square flex items-center justify-center border border-gray-200">
               <div className="text-center">
-                <div className="h-16 w-16 rounded-2xl bg-indigo-100 grid place-items-center mx-auto mb-3">
-                  <MapPin className="h-8 w-8 text-indigo-600" />
+                <div
+                  className="h-16 w-16 rounded-2xl grid place-items-center mx-auto mb-3"
+                  style={{ backgroundColor: "#FEE8E3" }}
+                >
+                  <MapPin className="h-8 w-8" style={{ color: "#E8735A" }} />
                 </div>
-                <p className="font-bold text-slate-700 text-sm">Bandra West</p>
-                <p className="text-xs text-slate-500">Mumbai, Maharashtra</p>
-                <a href="https://maps.google.com" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 mt-3 text-xs font-semibold text-indigo-600 hover:text-indigo-700">
+                <p className="font-bold text-gray-800 text-sm">Bandra West</p>
+                <p className="text-xs text-gray-500">Mumbai, Maharashtra</p>
+                <a
+                  href="https://maps.google.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 mt-3 text-xs font-bold hover:opacity-80 transition-opacity"
+                  style={{ color: "#E8735A" }}
+                >
                   Open in Google Maps <ArrowRight className="h-3 w-3" />
                 </a>
               </div>
@@ -270,48 +261,36 @@ function MainSection() {
               href="https://wa.me/919876543210?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20tapvybe"
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-4 p-5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl transition-colors group"
+              className="flex items-center gap-4 p-5 bg-[#25D366] hover:bg-[#20b558] text-white rounded-2xl transition-colors group"
             >
               <div className="h-11 w-11 rounded-xl bg-white/20 grid place-items-center shrink-0 group-hover:bg-white/30 transition-colors">
                 <MessageSquare className="h-5 w-5" />
               </div>
               <div>
                 <p className="font-bold text-sm">Chat on WhatsApp</p>
-                <p className="text-xs text-emerald-100">Instant replies during office hours</p>
+                <p className="text-xs text-green-100">Instant replies during office hours</p>
               </div>
               <ArrowRight className="h-4 w-4 ml-auto shrink-0" />
             </a>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
-const WHY_ITEMS = [
-  { icon: Zap, title: "Fast Onboarding", desc: "We'll help you set up your first client site on our welcome call — usually done in under 30 minutes.", color: "bg-indigo-100 text-indigo-600" },
-  { icon: Users, title: "Dedicated Support", desc: "Every agency gets a dedicated account manager. Real people, real help — not just a ticket system.", color: "bg-emerald-100 text-emerald-600" },
-  { icon: MessageSquare, title: "Active Community", desc: "Join our private WhatsApp group of 100+ agency owners sharing tips, leads, and success stories.", color: "bg-amber-100 text-amber-600" },
-];
-
-function WhyContactSection() {
-  return (
-    <section className="py-20 md:py-28 bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Why agencies choose us</h2>
-          <p className="mt-4 text-lg text-slate-600 max-w-xl mx-auto">We're not just a software company — we're a growth partner for your agency.</p>
-        </div>
-        <div className="grid md:grid-cols-3 gap-6">
-          {WHY_ITEMS.map((w) => (
-            <div key={w.title} className="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm hover:shadow-md transition-shadow text-center">
-              <div className={`h-14 w-14 rounded-2xl ${w.color} grid place-items-center mx-auto mb-5`}>
-                <w.icon className="h-7 w-7" />
-              </div>
-              <h3 className="font-bold text-slate-900 text-base mb-3">{w.title}</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">{w.desc}</p>
+            {/* Quick info card */}
+            <div className="bg-black rounded-2xl p-6 text-white">
+              <h4 className="font-black text-base mb-3">Order in 3 easy steps</h4>
+              <ol className="space-y-2.5">
+                {["Send us your details & design preferences", "We send you a preview for approval", "Card printed & shipped within 5 days"].map((s, i) => (
+                  <li key={i} className="flex items-start gap-3 text-sm text-gray-400">
+                    <span
+                      className="h-5 w-5 rounded-full grid place-items-center shrink-0 text-xs font-black text-white mt-0.5"
+                      style={{ backgroundColor: "#E8735A" }}
+                    >
+                      {i + 1}
+                    </span>
+                    {s}
+                  </li>
+                ))}
+              </ol>
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>

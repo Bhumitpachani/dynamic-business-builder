@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Heart, Target, Zap, Shield, Users, Award, Globe, TrendingUp, CheckCircle } from "lucide-react";
+import { ArrowRight, Heart, Target, Zap, Shield, Users, Award, Globe, TrendingUp } from "lucide-react";
 import { PublicLayout } from "@/components/public-layout";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "About Us — tapvybe" },
-      { name: "description", content: "Learn about tapvybe — who we are, our mission, and why we built the leading multi-tenant business website platform for digital agencies." },
+      { name: "description", content: "Learn about tapvybe — who we are, our mission, and why we built the smartest NFC business card platform in India." },
     ],
   }),
   component: About,
@@ -25,73 +25,93 @@ function About() {
   );
 }
 
+/* ─── Hero ─────────────────────────────────────────────────────────────── */
 function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 py-20 md:py-32 text-center">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-800/20 via-transparent to-transparent" />
-      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <span className="inline-block px-3 py-1 rounded-full bg-indigo-900/60 text-indigo-300 text-xs font-semibold border border-indigo-700/50 mb-6">Our Story</span>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.1]">
-          Built by agencies,{" "}
-          <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">for agencies</span>
+    <section className="bg-white py-20 md:py-28 text-center">
+      <div className="max-w-3xl mx-auto px-6 sm:px-8">
+        <span
+          className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
+          style={{ backgroundColor: "#E8735A" }}
+        >
+          Our Story
+        </span>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-black tracking-tight leading-[1.1]">
+          Built to change<br />how you connect.
         </h1>
-        <p className="mt-6 text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          We started tapvybe because we were frustrated with the same problem every agency faces: clients need professional websites, but building them from scratch is slow, expensive, and hard to scale.
+        <p className="mt-6 text-base text-gray-600 leading-relaxed max-w-xl mx-auto">
+          We started tapvybe because paper business cards felt like a relic. We set out to build something smarter — a card that works as hard as you do.
         </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-4 text-sm text-slate-400">
-          <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-emerald-400" /> Founded 2022</span>
-          <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-emerald-400" /> Mumbai, India</span>
-          <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-emerald-400" /> 500+ clients served</span>
+        <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500 font-medium">
+          {["Founded 2022", "Mumbai, India", "10,000+ cards shipped"].map((s) => (
+            <span key={s} className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full inline-block" style={{ backgroundColor: "#E8735A" }} />
+              {s}
+            </span>
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
+/* ─── Story ─────────────────────────────────────────────────────────────── */
 function StorySection() {
+  const timeline = [
+    { year: "2021", title: "The Idea", desc: "Our founders were tired of printing new business cards every time their phone number changed. There had to be a better way.", dot: "#E8735A" },
+    { year: "2022", title: "tapvybe v1", desc: "First NFC cards produced and shipped. 50 early users in Mumbai tested the product — feedback was overwhelmingly positive.", dot: "#000" },
+    { year: "2023", title: "Going Wide", desc: "Metal cards launched. Dashboard v2 released. Expanded to Pune, Bangalore, and Delhi. First 1,000 cards shipped.", dot: "#E8735A" },
+    { year: "2024", title: "10,000+ Cards", desc: "Over 10,000 tapvybe cards now in circulation across India. Bulk/team ordering launched for companies and events.", dot: "#000" },
+  ];
+
   return (
-    <section className="py-20 md:py-28 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="bg-gray-50 py-20 md:py-28">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="grid lg:grid-cols-2 gap-14 items-center">
-          {/* Story text */}
+          {/* Text */}
           <div>
-            <span className="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-semibold border border-indigo-100 mb-5">How We Started</span>
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-tight">From a broken process to a platform</h2>
-            <div className="mt-6 space-y-4 text-slate-600 leading-relaxed">
+            <span
+              className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
+              style={{ backgroundColor: "#E8735A" }}
+            >
+              How We Started
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight leading-tight">
+              From a frustration<br />to a movement.
+            </h2>
+            <div className="mt-6 space-y-4 text-gray-600 leading-relaxed text-sm">
               <p>
-                In 2021, our founding team was running a small digital agency in Mumbai. We had 40+ small business clients — boutiques, restaurants, salons, clinics — each needing a professional website. We were spending 2–3 weeks per client just to get a basic site live.
+                In 2021, our founding team was constantly running out of business cards at networking events. And the ones they had were always out of date — wrong number, old job title, missing Instagram handle.
               </p>
               <p>
-                The problem wasn't our team's ability. It was the tools. Everything was built for developers, not for businesses. Nothing was built for the kind of scale an agency needs.
+                We knew NFC technology existed, but nothing on the market was designed for the Indian professional — affordable, good-looking, and actually easy to use.
               </p>
               <p>
-                So we built tapvybe — a platform where setting up a client's complete digital presence takes under an hour, and once it's live, the client can manage it themselves without calling us for every small change.
+                So we built tapvybe. A card that never goes out of date. A profile that updates live. One tap and your entire professional world is at their fingertips.
               </p>
-              <p className="font-semibold text-slate-800">
-                Today, we serve agencies across India helping them manage hundreds of business websites from a single dashboard.
+              <p className="font-bold text-black">
+                Today, tapvybe cards are in the pockets of professionals, founders, and sales teams across India.
               </p>
             </div>
           </div>
 
           {/* Timeline */}
           <div className="space-y-0">
-            {[
-              { year: "2021", title: "The Problem", desc: "Founding team struggles with scaling a digital agency. Each client website takes 2–3 weeks to build.", color: "bg-rose-500" },
-              { year: "2022", title: "tapvybe v1", desc: "First version launched internally. Agency cuts delivery time from weeks to hours. First 10 paying agencies onboard.", color: "bg-amber-500" },
-              { year: "2023", title: "Public Launch", desc: "Platform opens to all agencies. Product catalogue, gallery, CRM, and appointment systems added.", color: "bg-indigo-500" },
-              { year: "2024", title: "500+ Businesses", desc: "Platform reaches 500+ live business websites. WhatsApp integration and analytics dashboard launch.", color: "bg-emerald-500" },
-            ].map((t, i, arr) => (
+            {timeline.map((t, i, arr) => (
               <div key={t.year} className="flex gap-5">
                 <div className="flex flex-col items-center">
-                  <div className={`h-10 w-10 rounded-full ${t.color} grid place-items-center shrink-0 shadow-md`}>
+                  <div
+                    className="h-10 w-10 rounded-full grid place-items-center shrink-0 shadow-sm"
+                    style={{ backgroundColor: t.dot }}
+                  >
                     <span className="text-white text-xs font-bold">{t.year.slice(2)}</span>
                   </div>
-                  {i < arr.length - 1 && <div className="w-0.5 h-full bg-slate-200 my-1" />}
+                  {i < arr.length - 1 && <div className="w-0.5 flex-1 bg-gray-200 my-1" />}
                 </div>
-                <div className={`pb-8 ${i === arr.length - 1 ? "" : ""}`}>
-                  <p className="text-xs font-semibold text-slate-400 mb-0.5">{t.year}</p>
-                  <h4 className="font-bold text-slate-900 text-sm">{t.title}</h4>
-                  <p className="mt-1 text-sm text-slate-600 leading-relaxed">{t.desc}</p>
+                <div className="pb-8">
+                  <p className="text-xs font-semibold text-gray-400 mb-0.5">{t.year}</p>
+                  <h4 className="font-bold text-black text-sm">{t.title}</h4>
+                  <p className="mt-1 text-sm text-gray-600 leading-relaxed">{t.desc}</p>
                 </div>
               </div>
             ))}
@@ -102,31 +122,39 @@ function StorySection() {
   );
 }
 
+/* ─── Mission ────────────────────────────────────────────────────────────── */
 function MissionSection() {
   return (
-    <section className="py-20 md:py-28 bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-14">
-          <span className="inline-block px-3 py-1 rounded-full bg-purple-50 text-purple-600 text-xs font-semibold border border-purple-100 mb-4">Mission & Vision</span>
-          <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">What drives us every day</h2>
+    <section className="bg-white py-20 md:py-28">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">What drives us every day</h2>
         </div>
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-3xl p-10 text-white">
-            <div className="h-14 w-14 rounded-2xl bg-white/20 grid place-items-center mb-6">
-              <Target className="h-7 w-7 text-white" />
+          {/* Mission — dark */}
+          <div className="bg-black rounded-3xl p-10 text-white">
+            <div
+              className="h-14 w-14 rounded-2xl grid place-items-center mb-6"
+              style={{ backgroundColor: "rgba(232,115,90,0.25)" }}
+            >
+              <Target className="h-7 w-7" style={{ color: "#E8735A" }} />
             </div>
             <h3 className="text-2xl font-black mb-4">Our Mission</h3>
-            <p className="text-indigo-100 leading-relaxed text-base">
-              To make professional digital presence accessible to every business in India — regardless of size, budget, or technical ability. We believe every local business deserves a world-class online presence.
+            <p className="text-gray-400 leading-relaxed text-base">
+              To make professional networking effortless for every Indian professional — regardless of industry, budget, or tech-savviness. One tap should be all it takes to make a great first impression.
             </p>
           </div>
-          <div className="bg-white rounded-3xl p-10 border border-slate-200 shadow-sm">
-            <div className="h-14 w-14 rounded-2xl bg-emerald-100 grid place-items-center mb-6">
-              <Globe className="h-7 w-7 text-emerald-600" />
+          {/* Vision — light */}
+          <div className="bg-gray-50 rounded-3xl p-10 border border-gray-200">
+            <div
+              className="h-14 w-14 rounded-2xl grid place-items-center mb-6"
+              style={{ backgroundColor: "#FEE8E3" }}
+            >
+              <Globe className="h-7 w-7" style={{ color: "#E8735A" }} />
             </div>
-            <h3 className="text-2xl font-black text-slate-900 mb-4">Our Vision</h3>
-            <p className="text-slate-600 leading-relaxed text-base">
-              A future where every Indian small business is discoverable online — where a local tailor in Jaipur has the same digital tools as a Fortune 500 company, and uses them just as easily.
+            <h3 className="text-2xl font-black text-black mb-4">Our Vision</h3>
+            <p className="text-gray-600 leading-relaxed text-base">
+              A world where paper business cards are a thing of the past — where every professional's contact information is always up to date, always shareable, and always on-brand.
             </p>
           </div>
         </div>
@@ -135,32 +163,35 @@ function MissionSection() {
   );
 }
 
+/* ─── Values ─────────────────────────────────────────────────────────────── */
 const VALUES = [
-  { icon: Zap, title: "Speed First", desc: "Every feature we build prioritizes speed — speed to launch, speed to update, speed to grow.", color: "bg-amber-100 text-amber-600" },
-  { icon: Heart, title: "Client Obsession", desc: "We build for agencies and their clients, not for ourselves. Every decision starts with the user.", color: "bg-rose-100 text-rose-600" },
-  { icon: Shield, title: "Reliability", desc: "99.9% uptime. Your clients' websites never go down. We take that responsibility seriously.", color: "bg-blue-100 text-blue-600" },
-  { icon: TrendingUp, title: "Continuous Growth", desc: "We ship new features every month, driven by feedback from our agency community.", color: "bg-emerald-100 text-emerald-600" },
-  { icon: Users, title: "Community", desc: "We've built a community of 100+ agency owners who share tips, strategies, and referrals.", color: "bg-violet-100 text-violet-600" },
-  { icon: Award, title: "Excellence", desc: "We don't ship anything we wouldn't be proud to show our own clients. Quality is non-negotiable.", color: "bg-indigo-100 text-indigo-600" },
+  { icon: Zap, title: "Speed First", desc: "From order to delivery in days, not weeks. Your card should arrive before your next networking event." },
+  { icon: Heart, title: "Design Obsessed", desc: "Every card we produce is reviewed by our design team. We won't ship something we wouldn't be proud to carry." },
+  { icon: Shield, title: "Built to Last", desc: "NFC chips don't expire. Your tapvybe card works today, in 5 years, and beyond — guaranteed." },
+  { icon: TrendingUp, title: "Always Improving", desc: "We ship new profile features and dashboard updates every month, based on real feedback from our users." },
+  { icon: Users, title: "Community Driven", desc: "Our users shape our roadmap. Every feature request is read and considered by the founding team." },
+  { icon: Award, title: "Quality Guaranteed", desc: "Defective card? We replace it, free of charge, no questions asked, within 12 months of purchase." },
 ];
 
 function ValuesSection() {
   return (
-    <section className="py-20 md:py-28 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="bg-gray-50 py-20 md:py-28">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="text-center mb-14">
-          <span className="inline-block px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-xs font-semibold border border-rose-100 mb-4">Our Values</span>
-          <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">The principles we build by</h2>
-          <p className="mt-4 text-lg text-slate-600 max-w-xl mx-auto">These values aren't slogans — they're how we make every product decision, every day.</p>
+          <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">The principles we build by</h2>
+          <p className="mt-3 text-base text-gray-600 max-w-xl mx-auto">These aren't slogans — they're how we make every decision, every day.</p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {VALUES.map((v) => (
-            <div key={v.title} className="p-6 rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-50 transition-all group">
-              <div className={`h-12 w-12 rounded-xl ${v.color} grid place-items-center mb-4 group-hover:scale-110 transition-transform`}>
-                <v.icon className="h-6 w-6" />
+            <div key={v.title} className="group p-7 rounded-2xl bg-white border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all">
+              <div
+                className="h-12 w-12 rounded-xl grid place-items-center mb-5 group-hover:scale-110 transition-transform"
+                style={{ backgroundColor: "#FEE8E3" }}
+              >
+                <v.icon className="h-6 w-6" style={{ color: "#E8735A" }} />
               </div>
-              <h3 className="font-bold text-slate-900 mb-2">{v.title}</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">{v.desc}</p>
+              <h3 className="font-bold text-black mb-2">{v.title}</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">{v.desc}</p>
             </div>
           ))}
         </div>
@@ -169,29 +200,34 @@ function ValuesSection() {
   );
 }
 
+/* ─── Team ───────────────────────────────────────────────────────────────── */
 const TEAM = [
-  { name: "Arjun Bhatia", role: "Co-Founder & CEO", bio: "10+ years building digital products. Previously led product at two Y Combinator startups.", avatar: "A", color: "bg-indigo-100 text-indigo-700" },
-  { name: "Sneha Kulkarni", role: "Co-Founder & CTO", bio: "Full-stack engineer. Built the platform from the ground up. Loves clean architecture and fast UIs.", avatar: "S", color: "bg-emerald-100 text-emerald-700" },
-  { name: "Rohan Desai", role: "Head of Growth", bio: "Agency veteran with 8 years helping businesses go digital across Mumbai, Pune, and Bangalore.", avatar: "R", color: "bg-amber-100 text-amber-700" },
-  { name: "Meera Nair", role: "Head of Design", bio: "UX designer who obsesses over simplicity. Every screen she designs can be understood in 3 seconds.", avatar: "M", color: "bg-rose-100 text-rose-700" },
+  { name: "Arjun Bhatia", role: "Co-Founder & CEO", bio: "Serial entrepreneur. Obsessed with product design and the way people connect in real life.", initials: "AB" },
+  { name: "Sneha Kulkarni", role: "Co-Founder & CTO", bio: "Full-stack engineer. Built the tapvybe platform end to end. Loves clean code and fast load times.", initials: "SK" },
+  { name: "Rohan Desai", role: "Head of Growth", bio: "Networking veteran. Has personally handed out 500+ business cards — now he hands out tapvybe cards.", initials: "RD" },
+  { name: "Meera Nair", role: "Head of Design", bio: "Every card design, every profile layout — Meera ensures it looks stunning before it ships.", initials: "MN" },
 ];
 
 function TeamSection() {
   return (
-    <section className="py-20 md:py-28 bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="bg-white py-20 md:py-28">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="text-center mb-14">
-          <span className="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-semibold border border-emerald-100 mb-4">Our Team</span>
-          <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">The people behind the platform</h2>
-          <p className="mt-4 text-lg text-slate-600 max-w-xl mx-auto">A small team with a big mission. We're hiring — come build the future of business websites with us.</p>
+          <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">The people behind tapvybe</h2>
+          <p className="mt-3 text-base text-gray-600 max-w-xl mx-auto">A small, passionate team building the future of professional networking.</p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {TEAM.map((t) => (
-            <div key={t.name} className="bg-white rounded-3xl p-7 border border-slate-100 shadow-sm text-center hover:shadow-md transition-shadow">
-              <div className={`h-16 w-16 rounded-2xl ${t.color} grid place-items-center font-black text-2xl mx-auto mb-5`}>{t.avatar}</div>
-              <h3 className="font-bold text-slate-900 text-base">{t.name}</h3>
-              <p className="text-xs text-indigo-600 font-semibold mt-0.5 mb-3">{t.role}</p>
-              <p className="text-xs text-slate-500 leading-relaxed">{t.bio}</p>
+          {TEAM.map((t, i) => (
+            <div key={t.name} className="bg-gray-50 rounded-3xl p-7 border border-gray-100 text-center hover:shadow-md transition-shadow group">
+              <div
+                className="h-16 w-16 rounded-2xl grid place-items-center font-black text-lg text-white mx-auto mb-5 group-hover:scale-105 transition-transform"
+                style={{ backgroundColor: i % 2 === 0 ? "#E8735A" : "#000" }}
+              >
+                {t.initials}
+              </div>
+              <h3 className="font-bold text-black text-base">{t.name}</h3>
+              <p className="text-xs font-semibold mt-0.5 mb-3" style={{ color: "#E8735A" }}>{t.role}</p>
+              <p className="text-xs text-gray-500 leading-relaxed">{t.bio}</p>
             </div>
           ))}
         </div>
@@ -200,18 +236,30 @@ function TeamSection() {
   );
 }
 
+/* ─── CTA ────────────────────────────────────────────────────────────────── */
 function CtaSection() {
   return (
-    <section className="py-20 md:py-28 bg-white">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Want to join our journey?</h2>
-        <p className="mt-5 text-lg text-slate-600">Whether you're an agency, a business owner, or a talented engineer — we'd love to hear from you.</p>
+    <section className="bg-black py-20 md:py-24 text-center">
+      <div className="max-w-2xl mx-auto px-6">
+        <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">
+          Want to join our journey?
+        </h2>
+        <p className="mt-4 text-base text-gray-400 leading-relaxed">
+          Whether you're a professional, a business, or a team — tapvybe has a card for you.
+        </p>
         <div className="mt-8 flex flex-wrap gap-4 justify-center">
-          <Link to="/contact" className="inline-flex items-center gap-2 px-6 py-3.5 text-sm font-bold bg-indigo-600 text-white rounded-2xl hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200">
+          <Link
+            to="/contact"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-sm font-bold text-white transition-all hover:opacity-90"
+            style={{ backgroundColor: "#E8735A" }}
+          >
             Get in Touch <ArrowRight className="h-4 w-4" />
           </Link>
-          <Link to="/services" className="inline-flex items-center gap-2 px-6 py-3.5 text-sm font-bold border-2 border-slate-300 text-slate-700 rounded-2xl hover:border-indigo-400 hover:text-indigo-600 transition-all">
-            View Our Services
+          <Link
+            to="/services"
+            className="inline-flex items-center px-8 py-3.5 rounded-full text-sm font-bold text-black bg-white hover:bg-gray-100 transition-all"
+          >
+            View Our Cards
           </Link>
         </div>
       </div>
