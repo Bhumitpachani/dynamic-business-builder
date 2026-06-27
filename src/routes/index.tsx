@@ -364,8 +364,8 @@ function CardsShowcaseSection() {
 
           <div className="relative rounded-3xl overflow-hidden aspect-video lg:aspect-square shadow-2xl">
             <img
-              src="/tapvybe-cards-stack.png"
-              alt="tapvybe NFC cards collection"
+              src="/tapvybe-hero-card-alt.png"
+              alt="tapvybe premium NFC card design"
               className="w-full h-full object-cover"
             />
           </div>
