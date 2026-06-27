@@ -35,6 +35,7 @@ function ClientDash() {
   const [biz, setBiz] = useState<Business | null>(null);
   const [tab, setTab] = useState<Tab>("overview");
   const [fromAdmin, setFromAdmin] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const s = session.get();
@@ -66,10 +67,16 @@ function ClientDash() {
     return () => unsubscribe();
   }, [navigate]);
 
-  function save(updated: Business) {
-    // Optimistic UI update + async Firestore write (fire-and-forget)
+  async function save(updated: Business) {
+    setSaving(true);
     setBiz(updated);
-    store.upsert(updated).catch(console.error);
+    try {
+      await store.upsert(updated);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
   }
 
   function logout() {
@@ -235,14 +242,14 @@ function ClientDash() {
         {/* Content */}
         <main className="flex-1 p-6">
           {tab === "overview" && <Overview biz={biz} />}
-          {tab === "profile" && <ProfileTab biz={biz} save={save} />}
-          {tab === "contact" && <ContactTab biz={biz} save={save} />}
-          {tab === "products" && <ProductsTab biz={biz} save={save} />}
-          {tab === "gallery" && <GalleryTab biz={biz} save={save} />}
-          {tab === "inquiries" && <InquiriesTab biz={biz} save={save} />}
-          {tab === "appointments" && <AppointmentsTab biz={biz} save={save} />}
-          {tab === "leads" && <LeadsTab biz={biz} save={save} />}
-          {tab === "settings" && <SettingsTab biz={biz} save={save} />}
+          {tab === "profile" && <ProfileTab biz={biz} save={save} saving={saving} />}
+          {tab === "contact" && <ContactTab biz={biz} save={save} saving={saving} />}
+          {tab === "products" && <ProductsTab biz={biz} save={save} saving={saving} />}
+          {tab === "gallery" && <GalleryTab biz={biz} save={save} saving={saving} />}
+          {tab === "inquiries" && <InquiriesTab biz={biz} save={save} saving={saving} />}
+          {tab === "appointments" && <AppointmentsTab biz={biz} save={save} saving={saving} />}
+          {tab === "leads" && <LeadsTab biz={biz} save={save} saving={saving} />}
+          {tab === "settings" && <SettingsTab biz={biz} save={save} saving={saving} />}
         </main>
       </div>
     </div>
@@ -266,14 +273,22 @@ function Card({ children, title, subtitle, action }: { children: React.ReactNode
   );
 }
 
-function SaveBtn({ onClick }: { onClick: () => void }) {
+function SaveBtn({ onClick, saving }: { onClick: () => void; saving?: boolean }) {
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors"
+      disabled={saving}
+      className="inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
     >
-      <Save className="h-4 w-4" />
-      Save Changes
+      {saving ? (
+        <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        </svg>
+      ) : (
+        <Save className="h-4 w-4" />
+      )}
+      {saving ? "Saving…" : "Save Changes"}
     </button>
   );
 }
@@ -407,11 +422,11 @@ function Overview({ biz }: { biz: Business }) {
   );
 }
 
-function ProfileTab({ biz, save }: { biz: Business; save: (b: Business) => void }) {
+function ProfileTab({ biz, save, saving }: { biz: Business; save: (b: Business) => void; saving: boolean }) {
   const [d, setD] = useState(biz);
   useEffect(() => setD(biz), [biz.id]);
   return (
-    <Card title="Business Profile" subtitle="Your public-facing business information" action={<SaveBtn onClick={() => save(d)} />}>
+    <Card title="Business Profile" subtitle="Your public-facing business information" action={<SaveBtn onClick={() => save(d)} saving={saving} />}>
       <div className="grid md:grid-cols-2 gap-5">
         <Field label="Business Name" value={d.name} onChange={(v: string) => setD({ ...d, name: v })} />
         <Field label="Category" value={d.category} onChange={(v: string) => setD({ ...d, category: v })} placeholder="e.g. Restaurant, Salon, Retail…" />
@@ -428,11 +443,11 @@ function ProfileTab({ biz, save }: { biz: Business; save: (b: Business) => void 
   );
 }
 
-function ContactTab({ biz, save }: { biz: Business; save: (b: Business) => void }) {
+function ContactTab({ biz, save, saving }: { biz: Business; save: (b: Business) => void; saving: boolean }) {
   const [d, setD] = useState(biz);
   useEffect(() => setD(biz), [biz.id]);
   return (
-    <Card title="Contact & Links" subtitle="How customers can reach you" action={<SaveBtn onClick={() => save(d)} />}>
+    <Card title="Contact & Links" subtitle="How customers can reach you" action={<SaveBtn onClick={() => save(d)} saving={saving} />}>
       <div className="grid md:grid-cols-2 gap-5">
         <Field label="Phone" value={d.phone} onChange={(v: string) => setD({ ...d, phone: v })} placeholder="+91XXXXXXXXXX" />
         <Field label="WhatsApp Number" value={d.whatsapp} onChange={(v: string) => setD({ ...d, whatsapp: v })} placeholder="+91XXXXXXXXXX (with country code)" />
@@ -458,7 +473,7 @@ function ContactTab({ biz, save }: { biz: Business; save: (b: Business) => void 
   );
 }
 
-function ProductsTab({ biz, save }: { biz: Business; save: (b: Business) => void }) {
+function ProductsTab({ biz, save, saving }: { biz: Business; save: (b: Business) => void; saving: boolean }) {
   const [items, setItems] = useState<Product[]>(biz.products);
   useEffect(() => setItems(biz.products), [biz.id]);
 
@@ -483,8 +498,9 @@ function ProductsTab({ biz, save }: { biz: Business; save: (b: Business) => void
           <button onClick={add} className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors">
             <Plus className="h-4 w-4" /> Add Product
           </button>
-          <button onClick={() => save({ ...biz, products: items })} className="inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors">
-            <Save className="h-4 w-4" /> Save
+          <button onClick={() => save({ ...biz, products: items })} disabled={saving} className="inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+            {saving ? <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> : <Save className="h-4 w-4" />}
+            {saving ? "Saving…" : "Save"}
           </button>
         </div>
       }
@@ -542,7 +558,7 @@ function ProductsTab({ biz, save }: { biz: Business; save: (b: Business) => void
   );
 }
 
-function GalleryTab({ biz, save }: { biz: Business; save: (b: Business) => void }) {
+function GalleryTab({ biz, save, saving }: { biz: Business; save: (b: Business) => void; saving: boolean }) {
   const [items, setItems] = useState<GalleryItem[]>(biz.gallery);
   useEffect(() => setItems(biz.gallery), [biz.id]);
 
@@ -567,8 +583,9 @@ function GalleryTab({ biz, save }: { biz: Business; save: (b: Business) => void 
           <button onClick={add} className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors">
             <Plus className="h-4 w-4" /> Add Image
           </button>
-          <button onClick={() => save({ ...biz, gallery: items })} className="inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors">
-            <Save className="h-4 w-4" /> Save
+          <button onClick={() => save({ ...biz, gallery: items })} disabled={saving} className="inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+            {saving ? <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> : <Save className="h-4 w-4" />}
+            {saving ? "Saving…" : "Save"}
           </button>
         </div>
       }
@@ -616,7 +633,7 @@ function GalleryTab({ biz, save }: { biz: Business; save: (b: Business) => void 
   );
 }
 
-function InquiriesTab({ biz, save }: { biz: Business; save: (b: Business) => void }) {
+function InquiriesTab({ biz, save, saving }: { biz: Business; save: (b: Business) => void; saving: boolean }) {
   return (
     <Card title="Inquiries" subtitle={`${biz.inquiries.length} total inquiries`}>
       {biz.inquiries.length === 0 ? (
@@ -639,18 +656,19 @@ function InquiriesTab({ biz, save }: { biz: Business; save: (b: Business) => voi
                 </div>
                 <div className="flex gap-1.5 shrink-0">
                   <button
+                    disabled={saving}
                     onClick={() => {
                       const lead: Lead = { id: newId(), name: i.name, phone: i.phone, email: i.email, source: "Inquiry", status: "new", notes: i.message, followUpDate: "", createdAt: new Date().toISOString() };
                       save({ ...biz, leads: [...biz.leads, lead] });
-                      alert("Added to leads");
                     }}
-                    className="text-xs px-2.5 py-1.5 border border-indigo-300 text-indigo-700 bg-indigo-50 rounded-lg hover:bg-indigo-100 font-medium transition-colors"
+                    className="text-xs px-2.5 py-1.5 border border-indigo-300 text-indigo-700 bg-indigo-50 rounded-lg hover:bg-indigo-100 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    → Lead
+                    {saving ? "…" : "→ Lead"}
                   </button>
                   <button
+                    disabled={saving}
                     onClick={() => save({ ...biz, inquiries: biz.inquiries.filter((x) => x.id !== i.id) })}
-                    className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                    className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -664,7 +682,7 @@ function InquiriesTab({ biz, save }: { biz: Business; save: (b: Business) => voi
   );
 }
 
-function AppointmentsTab({ biz, save }: { biz: Business; save: (b: Business) => void }) {
+function AppointmentsTab({ biz, save, saving }: { biz: Business; save: (b: Business) => void; saving: boolean }) {
   return (
     <Card title="Appointments" subtitle={`${biz.appointments.length} total appointments`}>
       {biz.appointments.length === 0 ? (
@@ -685,8 +703,9 @@ function AppointmentsTab({ biz, save }: { biz: Business; save: (b: Business) => 
                       <p className="text-sm text-slate-700 mt-0.5">{a.date} at {a.time}</p>
                     </div>
                     <button
+                      disabled={saving}
                       onClick={() => save({ ...biz, appointments: biz.appointments.filter((x) => x.id !== a.id) })}
-                      className="p-1.5 text-rose-400 hover:bg-rose-50 rounded-lg transition-colors shrink-0"
+                      className="p-1.5 text-rose-400 hover:bg-rose-50 rounded-lg transition-colors shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
@@ -694,9 +713,10 @@ function AppointmentsTab({ biz, save }: { biz: Business; save: (b: Business) => 
                   <div className="flex flex-wrap items-center gap-2 mt-2">
                     <StatusBadge status={a.status} />
                     <select
+                      disabled={saving}
                       value={a.status}
                       onChange={(e) => save({ ...biz, appointments: biz.appointments.map((x) => x.id === a.id ? { ...x, status: e.target.value as any } : x) })}
-                      className="text-xs border border-slate-300 rounded-xl px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25"
+                      className="text-xs border border-slate-300 rounded-xl px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <option value="pending">Pending</option>
                       <option value="confirmed">Confirmed</option>
@@ -714,7 +734,7 @@ function AppointmentsTab({ biz, save }: { biz: Business; save: (b: Business) => 
   );
 }
 
-function LeadsTab({ biz, save }: { biz: Business; save: (b: Business) => void }) {
+function LeadsTab({ biz, save, saving }: { biz: Business; save: (b: Business) => void; saving: boolean }) {
   const [adding, setAdding] = useState(false);
   return (
     <Card
@@ -728,7 +748,7 @@ function LeadsTab({ biz, save }: { biz: Business; save: (b: Business) => void })
     >
       {adding && (
         <div className="mb-5">
-          <AddLeadForm onCancel={() => setAdding(false)} onAdd={(l) => { save({ ...biz, leads: [...biz.leads, l] }); setAdding(false); }} />
+          <AddLeadForm saving={saving} onCancel={() => setAdding(false)} onAdd={(l) => { save({ ...biz, leads: [...biz.leads, l] }); setAdding(false); }} />
         </div>
       )}
       {biz.leads.length === 0 && !adding ? (
@@ -749,16 +769,17 @@ function LeadsTab({ biz, save }: { biz: Business; save: (b: Business) => void })
                       <p className="text-xs text-slate-500">{l.phone}{l.email ? ` · ${l.email}` : ""}</p>
                     </div>
                   </div>
-                  <button onClick={() => save({ ...biz, leads: biz.leads.filter((x) => x.id !== l.id) })} className="p-1.5 text-rose-400 hover:bg-rose-50 rounded-lg transition-colors shrink-0">
+                  <button disabled={saving} onClick={() => save({ ...biz, leads: biz.leads.filter((x) => x.id !== l.id) })} className="p-1.5 text-rose-400 hover:bg-rose-50 rounded-lg transition-colors shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <StatusBadge status={l.status} />
                   <select
+                    disabled={saving}
                     value={l.status}
                     onChange={(e) => save({ ...biz, leads: biz.leads.map((x) => x.id === l.id ? { ...x, status: e.target.value as any } : x) })}
-                    className="text-xs border border-slate-300 rounded-lg px-2 py-1 bg-white focus:outline-none"
+                    className="text-xs border border-slate-300 rounded-lg px-2 py-1 bg-white focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {["new", "contacted", "qualified", "converted", "lost"].map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
@@ -768,9 +789,10 @@ function LeadsTab({ biz, save }: { biz: Business; save: (b: Business) => void })
                     <span className="text-slate-400 font-medium uppercase tracking-wide text-[10px]">Follow-up</span>
                     <input
                       type="date"
+                      disabled={saving}
                       value={l.followUpDate}
                       onChange={(e) => save({ ...biz, leads: biz.leads.map((x) => x.id === l.id ? { ...x, followUpDate: e.target.value } : x) })}
-                      className="block mt-0.5 w-full border border-slate-300 rounded-lg px-2 py-1.5 bg-white focus:outline-none text-xs"
+                      className="block mt-0.5 w-full border border-slate-300 rounded-lg px-2 py-1.5 bg-white focus:outline-none text-xs disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                   </div>
                   <div>
@@ -814,9 +836,10 @@ function LeadsTab({ biz, save }: { biz: Business; save: (b: Business) => void })
                       <div className="space-y-1.5">
                         <StatusBadge status={l.status} />
                         <select
+                          disabled={saving}
                           value={l.status}
                           onChange={(e) => save({ ...biz, leads: biz.leads.map((x) => x.id === l.id ? { ...x, status: e.target.value as any } : x) })}
-                          className="block text-xs border border-slate-300 rounded-lg px-2 py-1 bg-white focus:outline-none"
+                          className="block text-xs border border-slate-300 rounded-lg px-2 py-1 bg-white focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {["new", "contacted", "qualified", "converted", "lost"].map((s) => <option key={s} value={s}>{s}</option>)}
                         </select>
@@ -825,14 +848,15 @@ function LeadsTab({ biz, save }: { biz: Business; save: (b: Business) => void })
                     <td className="px-6 py-4">
                       <input
                         type="date"
+                        disabled={saving}
                         value={l.followUpDate}
                         onChange={(e) => save({ ...biz, leads: biz.leads.map((x) => x.id === l.id ? { ...x, followUpDate: e.target.value } : x) })}
-                        className="text-xs border border-slate-300 rounded-xl px-3 py-1.5 bg-white focus:outline-none"
+                        className="text-xs border border-slate-300 rounded-xl px-3 py-1.5 bg-white focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                     </td>
                     <td className="px-6 py-4 text-xs text-slate-500 max-w-[160px] truncate">{l.notes}</td>
                     <td className="px-6 py-4">
-                      <button onClick={() => save({ ...biz, leads: biz.leads.filter((x) => x.id !== l.id) })} className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors">
+                      <button disabled={saving} onClick={() => save({ ...biz, leads: biz.leads.filter((x) => x.id !== l.id) })} className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </td>
@@ -847,7 +871,7 @@ function LeadsTab({ biz, save }: { biz: Business; save: (b: Business) => void })
   );
 }
 
-function AddLeadForm({ onAdd, onCancel }: { onAdd: (l: Lead) => void; onCancel: () => void }) {
+function AddLeadForm({ onAdd, onCancel, saving }: { onAdd: (l: Lead) => void; onCancel: () => void; saving: boolean }) {
   const [l, setL] = useState<Lead>({ id: newId(), name: "", phone: "", email: "", source: "Manual", status: "new", notes: "", followUpDate: "", createdAt: new Date().toISOString() });
   return (
     <div className="border border-indigo-200 bg-indigo-50/30 rounded-2xl p-5 grid sm:grid-cols-2 gap-4">
@@ -860,22 +884,23 @@ function AddLeadForm({ onAdd, onCancel }: { onAdd: (l: Lead) => void; onCancel: 
         <Field label="Notes" value={l.notes} onChange={(v: string) => setL({ ...l, notes: v })} textarea />
       </div>
       <div className="sm:col-span-2 flex gap-2 justify-end">
-        <button onClick={onCancel} className="px-4 py-2 text-sm border border-slate-300 rounded-xl text-slate-600 hover:bg-slate-50 font-medium transition-colors">
+        <button disabled={saving} onClick={onCancel} className="px-4 py-2 text-sm border border-slate-300 rounded-xl text-slate-600 hover:bg-slate-50 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
           Cancel
         </button>
-        <button onClick={() => l.name && onAdd(l)} className="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors">
-          Add Lead
+        <button disabled={saving || !l.name} onClick={() => l.name && onAdd(l)} className="inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+          {saving ? <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> : null}
+          {saving ? "Saving…" : "Add Lead"}
         </button>
       </div>
     </div>
   );
 }
 
-function SettingsTab({ biz, save }: { biz: Business; save: (b: Business) => void }) {
+function SettingsTab({ biz, save, saving }: { biz: Business; save: (b: Business) => void; saving: boolean }) {
   const [d, setD] = useState(biz);
   useEffect(() => setD(biz), [biz.id]);
   return (
-    <Card title="Site Settings" subtitle="Customize your public site" action={<SaveBtn onClick={() => save({ ...d, slug: slugify(d.slug) || biz.slug })} />}>
+    <Card title="Site Settings" subtitle="Customize your public site" action={<SaveBtn onClick={() => save({ ...d, slug: slugify(d.slug) || biz.slug })} saving={saving} />}>
       <div className="grid md:grid-cols-2 gap-5">
         <Field label="Site URL Slug" value={d.slug} onChange={(v: string) => setD({ ...d, slug: v })} />
         <div>
