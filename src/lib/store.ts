@@ -10,6 +10,7 @@ import {
   onSnapshot,
   updateDoc,
   increment,
+  arrayUnion,
 } from "firebase/firestore";
 import {
   signInWithEmailAndPassword,
@@ -185,6 +186,23 @@ export const store = {
     if (!snap.empty) {
       await updateDoc(snap.docs[0].ref, { visits: increment(1) });
     }
+  },
+
+  /**
+   * Atomically append one inquiry to a business's inquiries array.
+   * Uses arrayUnion so it never overwrites other fields or causes race conditions.
+   */
+  async addInquiry(businessId: string, inquiry: Inquiry): Promise<void> {
+    if (typeof window === "undefined") return;
+    await updateDoc(doc(db, COL, businessId), { inquiries: arrayUnion(inquiry) });
+  },
+
+  /**
+   * Atomically append one appointment to a business's appointments array.
+   */
+  async addAppointment(businessId: string, appointment: Appointment): Promise<void> {
+    if (typeof window === "undefined") return;
+    await updateDoc(doc(db, COL, businessId), { appointments: arrayUnion(appointment) });
   },
 };
 

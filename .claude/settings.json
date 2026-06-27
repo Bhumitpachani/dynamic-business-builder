@@ -5,7 +5,8 @@
       "Read(//c/Users/bhumi/AppData/Local/Temp/claude/e--dynamic-business-builder/tasks/**)",
       "Bash(npm install firebase --save)",
       "Bash(npx tsc --noEmit)",
-      "Read(//c/Users/bhumi/Downloads/**)"
+      "Read(//c/Users/bhumi/Downloads/**)",
+      "Read(//e/dynamic-business-builder/src/routes/**)"
     ],
     "additionalDirectories": [
       "C:\\Users\\bhumi\\Downloads"

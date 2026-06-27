@@ -1,6 +1,7 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { store, isExpired, newId, type Business, type Inquiry, type Appointment } from "@/lib/store";
+
 import { Phone, MessageCircle, MapPin, Globe, Star, Facebook, Instagram, Twitter, Linkedin, Youtube, UserPlus, QrCode, X } from "lucide-react";
 
 export const Route = createFileRoute("/site/$slug")({
@@ -327,7 +328,7 @@ function InquiryModal({ biz, onClose }: { biz: Business; onClose: () => void }) 
     e.preventDefault();
     setLoading(true);
     const inquiry: Inquiry = { id: newId(), ...f, createdAt: new Date().toISOString() };
-    await store.upsert({ ...biz, inquiries: [...biz.inquiries, inquiry] });
+    await store.addInquiry(biz.id, inquiry);
     setSent(true);
     setLoading(false);
     setTimeout(onClose, 1800);
@@ -357,7 +358,7 @@ function AppointmentModal({ biz, onClose }: { biz: Business; onClose: () => void
     e.preventDefault();
     setLoading(true);
     const appt: Appointment = { id: newId(), ...f, status: "pending", createdAt: new Date().toISOString() };
-    await store.upsert({ ...biz, appointments: [...biz.appointments, appt] });
+    await store.addAppointment(biz.id, appt);
     setSent(true);
     setLoading(false);
     setTimeout(onClose, 1800);
