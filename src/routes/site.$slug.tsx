@@ -23,9 +23,10 @@ function PublicSite() {
   const [showQR, setShowQR] = useState(false);
 
   useEffect(() => {
-    const b = store.getBySlug(slug);
-    setBiz(b || null);
-    if (b) store.incrementVisit(slug);
+    store.getBySlug(slug).then((b) => {
+      setBiz(b ?? null);
+      if (b) store.incrementVisit(slug).catch(() => {});
+    });
   }, [slug]);
 
   if (biz === undefined) return <div className="min-h-screen grid place-items-center text-slate-500">Loading…</div>;
@@ -214,10 +215,10 @@ function Modal({ children, onClose, title }: any) {
 function InquiryModal({ biz, onClose }: { biz: Business; onClose: () => void }) {
   const [f, setF] = useState({ name: "", phone: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     const inquiry: Inquiry = { id: newId(), ...f, createdAt: new Date().toISOString() };
-    store.upsert({ ...biz, inquiries: [...biz.inquiries, inquiry] });
+    await store.upsert({ ...biz, inquiries: [...biz.inquiries, inquiry] });
     setSent(true);
     setTimeout(onClose, 1500);
   }
@@ -239,10 +240,10 @@ function InquiryModal({ biz, onClose }: { biz: Business; onClose: () => void }) 
 function AppointmentModal({ biz, onClose }: { biz: Business; onClose: () => void }) {
   const [f, setF] = useState({ name: "", phone: "", date: "", time: "", service: "" });
   const [sent, setSent] = useState(false);
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     const appt: Appointment = { id: newId(), ...f, status: "pending", createdAt: new Date().toISOString() };
-    store.upsert({ ...biz, appointments: [...biz.appointments, appt] });
+    await store.upsert({ ...biz, appointments: [...biz.appointments, appt] });
     setSent(true);
     setTimeout(onClose, 1500);
   }

@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { store, session, emptyBusiness, isExpired, daysLeft, type Business } from "@/lib/store";
+import { auth, SUPER_ADMIN_EMAIL } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import {
   LogOut, Plus, Trash2, ExternalLink, Edit3, Copy, Check,
   TrendingUp, Users, Globe, AlertCircle, CheckCircle, Layers, X,
@@ -16,32 +18,32 @@ function SuperDash() {
   const [list, setList] = useState<Business[]>([]);
   const [creating, setCreating] = useState(false);
   const [copiedId, setCopiedId] = useState("");
+  const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
-    const s = session.get();
-    if (!s || s.kind !== "super") {
-      navigate({ to: "/super-admin/login" });
-      return;
-    }
-    refresh();
-    const h = () => refresh();
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === "bizplatform_data_v1") refresh();
-    };
-    window.addEventListener("biz:update", h);
-    window.addEventListener("storage", onStorage);
+    let firestoreUnsub: (() => void) | null = null;
+
+    const authUnsub = onAuthStateChanged(auth, (user) => {
+      if (!user || user.email !== SUPER_ADMIN_EMAIL) {
+        setAuthReady(false);
+        navigate({ to: "/super-admin/login" });
+        return;
+      }
+      setAuthReady(true);
+      // Subscribe to real-time Firestore updates
+      firestoreUnsub = store.onAll((businesses) => {
+        setList(businesses);
+      });
+    });
+
     return () => {
-      window.removeEventListener("biz:update", h);
-      window.removeEventListener("storage", onStorage);
+      authUnsub();
+      firestoreUnsub?.();
     };
   }, [navigate]);
 
-  function refresh() {
-    setList([...store.all()].sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
-  }
-
-  function logout() {
-    session.clear();
+  async function logout() {
+    session.clear(); // signs out Firebase Auth + clears localStorage
     navigate({ to: "/" });
   }
 
@@ -55,6 +57,14 @@ function SuperDash() {
     { label: "Expired", value: expiredCount, icon: AlertCircle, bg: "bg-rose-50", iconColor: "text-rose-500", numColor: "text-rose-600" },
     { label: "Total Visits", value: totalVisits, icon: TrendingUp, bg: "bg-sky-50", iconColor: "text-sky-600", numColor: "text-sky-700" },
   ];
+
+  if (!authReady) {
+    return (
+      <div className="min-h-screen grid place-items-center bg-slate-50">
+        <p className="text-slate-400 text-sm">Loading…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -190,11 +200,19 @@ function SuperDash() {
                           </td>
                           {/* Site URL */}
                           <td className="px-5 py-3.5">
-                            <CopySlugBtn slug={b.slug} copied={copiedId === b.id} onCopy={() => { navigator.clipboard.writeText(window.location.origin + `/site/${b.slug}`); setCopiedId(b.id); setTimeout(() => setCopiedId(""), 1500); }} />
+                            <CopySlugBtn
+                              slug={b.slug}
+                              copied={copiedId === b.id}
+                              onCopy={() => {
+                                navigator.clipboard.writeText(window.location.origin + `/site/${b.slug}`);
+                                setCopiedId(b.id);
+                                setTimeout(() => setCopiedId(""), 1500);
+                              }}
+                            />
                           </td>
                           {/* Actions */}
                           <td className="px-5 py-3.5">
-                            <RowActions b={b} navigate={navigate} refresh={refresh} />
+                            <RowActions b={b} navigate={navigate} />
                           </td>
                         </tr>
                       );
@@ -254,13 +272,20 @@ function SuperDash() {
                           <ExternalLink className="h-3.5 w-3.5" /> View
                         </Link>
                         <button
-                          onClick={() => { session.set({ kind: "client", businessId: b.id }); navigate({ to: "/client/dashboard" }); }}
+                          onClick={() => {
+                            session.set({ kind: "client", businessId: b.id, fromAdmin: true });
+                            navigate({ to: "/client/dashboard" });
+                          }}
                           className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 text-xs border border-indigo-200 bg-indigo-50 rounded-xl hover:bg-indigo-100 text-indigo-700 font-semibold transition-colors"
                         >
                           <Edit3 className="h-3.5 w-3.5" /> Edit
                         </button>
                         <button
-                          onClick={() => { if (confirm("Delete this business and all its data?")) { store.remove(b.id); refresh(); } }}
+                          onClick={async () => {
+                            if (confirm("Delete this business and all its data?")) {
+                              await store.remove(b.id);
+                            }
+                          }}
                           className="inline-flex items-center justify-center p-2 text-xs bg-rose-50 border border-rose-200 rounded-xl hover:bg-rose-100 text-rose-600 transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -275,7 +300,7 @@ function SuperDash() {
         </div>
       </main>
 
-      {creating && <CreateModal onClose={() => { setCreating(false); refresh(); }} />}
+      {creating && <CreateModal onClose={() => setCreating(false)} />}
     </div>
   );
 }
@@ -328,7 +353,7 @@ function CopySlugBtn({ slug, copied, onCopy }: { slug: string; copied: boolean; 
   );
 }
 
-function RowActions({ b, navigate, refresh }: { b: Business; navigate: any; refresh: () => void }) {
+function RowActions({ b, navigate }: { b: Business; navigate: any }) {
   return (
     <div className="flex items-center gap-1.5 justify-end">
       <Link
@@ -339,13 +364,20 @@ function RowActions({ b, navigate, refresh }: { b: Business; navigate: any; refr
         <ExternalLink className="h-3 w-3" /> View
       </Link>
       <button
-        onClick={() => { session.set({ kind: "client", businessId: b.id }); navigate({ to: "/client/dashboard" }); }}
+        onClick={() => {
+          session.set({ kind: "client", businessId: b.id, fromAdmin: true });
+          navigate({ to: "/client/dashboard" });
+        }}
         className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs border border-indigo-200 bg-indigo-50 rounded-xl hover:bg-indigo-100 text-indigo-700 transition-colors font-semibold"
       >
         <Edit3 className="h-3 w-3" /> Edit
       </button>
       <button
-        onClick={() => { if (confirm("Delete this business and all its data?")) { store.remove(b.id); refresh(); } }}
+        onClick={async () => {
+          if (confirm("Delete this business and all its data?")) {
+            await store.remove(b.id);
+          }
+        }}
         className="inline-flex items-center p-1.5 bg-rose-50 border border-rose-200 rounded-xl hover:bg-rose-100 text-rose-600 transition-colors"
       >
         <Trash2 className="h-3.5 w-3.5" />
@@ -361,11 +393,14 @@ function CreateModal({ onClose }: { onClose: () => void }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [days, setDays] = useState(30);
+  const [saving, setSaving] = useState(false);
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name || !username || !password) return;
-    store.upsert(emptyBusiness(name, username, password, days));
+    setSaving(true);
+    await store.upsert(emptyBusiness(name, username, password, days));
+    setSaving(false);
     onClose();
   }
 
@@ -452,9 +487,10 @@ function CreateModal({ onClose }: { onClose: () => void }) {
             </button>
             <button
               type="submit"
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl py-2.5 text-sm font-bold transition-colors shadow-sm"
+              disabled={saving}
+              className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl py-2.5 text-sm font-bold transition-colors shadow-sm disabled:opacity-60"
             >
-              Create Client
+              {saving ? "Creating…" : "Create Client"}
             </button>
           </div>
         </form>

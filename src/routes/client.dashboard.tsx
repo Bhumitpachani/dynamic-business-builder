@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { store, session, isExpired, daysLeft, newId, slugify, type Business, type Product, type GalleryItem, type Lead } from "@/lib/store";
-import { LogOut, ExternalLink, Save, Trash2, Plus, BarChart3, MessageSquare, Calendar, Users as UsersIcon, Image as ImgIcon, Package, Settings as SettingsIcon, Phone, TrendingUp, Globe, ChevronRight } from "lucide-react";
+import { LogOut, ExternalLink, Save, Trash2, Plus, BarChart3, MessageSquare, Calendar, Users as UsersIcon, Image as ImgIcon, Package, Settings as SettingsIcon, Phone, TrendingUp, Globe, ChevronRight, ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/client/dashboard")({
   head: () => ({ meta: [{ title: "Client Dashboard" }] }),
@@ -34,50 +34,53 @@ function ClientDash() {
   const navigate = useNavigate();
   const [biz, setBiz] = useState<Business | null>(null);
   const [tab, setTab] = useState<Tab>("overview");
+  const [fromAdmin, setFromAdmin] = useState(false);
 
   useEffect(() => {
     const s = session.get();
-    if (!s || (s.kind !== "client" && s.kind !== "super")) {
+
+    // Only client sessions allowed here (including admin-editing-client sessions)
+    if (!s || s.kind !== "client") {
       navigate({ to: "/client/login" });
       return;
     }
-    if (s.kind === "client") {
-      const b = store.get(s.businessId);
-      if (!b) { session.clear(); navigate({ to: "/client/login" }); return; }
-      if (isExpired(b)) { session.clear(); navigate({ to: "/client/login" }); return; }
-      setBiz(b);
-    } else {
-      const all = store.all();
-      if (all.length === 0) { navigate({ to: "/super-admin/dashboard" }); return; }
-      setBiz(all[all.length - 1]);
-    }
-    const h = () => {
-      const cur = session.get();
-      if (cur?.kind === "client") {
-        const b = store.get(cur.businessId);
-        if (b) setBiz(b);
+
+    const isFromAdmin = !!(s as any).fromAdmin;
+    setFromAdmin(isFromAdmin);
+
+    // Real-time Firestore listener for this business
+    const unsubscribe = store.onGet(s.businessId, (b) => {
+      if (!b) {
+        session.clearClient();
+        navigate({ to: "/client/login" });
+        return;
       }
-    };
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === "bizplatform_data_v1") h();
-    };
-    window.addEventListener("biz:update", h);
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener("biz:update", h);
-      window.removeEventListener("storage", onStorage);
-    };
+      if (isExpired(b) && !isFromAdmin) {
+        session.clearClient();
+        navigate({ to: "/client/login" });
+        return;
+      }
+      setBiz(b);
+    });
+
+    return () => unsubscribe();
   }, [navigate]);
 
   function save(updated: Business) {
-    store.upsert(updated);
+    // Optimistic UI update + async Firestore write (fire-and-forget)
     setBiz(updated);
+    store.upsert(updated).catch(console.error);
   }
 
   function logout() {
-    const s = session.get();
-    session.clear();
-    navigate({ to: s?.kind === "super" ? "/super-admin/dashboard" : "/" });
+    if (fromAdmin) {
+      // Super admin was editing a client — go back without signing out Firebase Auth
+      session.clearClient();
+      navigate({ to: "/super-admin/dashboard" });
+    } else {
+      session.clear();
+      navigate({ to: "/" });
+    }
   }
 
   if (!biz) return (
@@ -184,6 +187,15 @@ function ClientDash() {
               <h2 className="font-bold text-slate-800 truncate">{currentTab?.label}</h2>
             </div>
             <div className="flex items-center gap-2 shrink-0">
+              {fromAdmin && (
+                <button
+                  onClick={logout}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-xl hover:bg-indigo-100 transition-colors font-semibold"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline">Back to Admin</span>
+                </button>
+              )}
               <Link
                 to="/site/$slug"
                 params={{ slug: biz.slug }}

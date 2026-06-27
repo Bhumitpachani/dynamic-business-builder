@@ -1,4 +1,23 @@
-// localStorage-backed multi-tenant store
+// Firebase-backed multi-tenant store
+import {
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  query,
+  where,
+  onSnapshot,
+  updateDoc,
+  increment,
+} from "firebase/firestore";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
+import { db, auth, SUPER_ADMIN_EMAIL } from "./firebase";
+
 export type SocialLinks = {
   facebook?: string;
   instagram?: string;
@@ -82,60 +101,63 @@ export type Business = {
   createdAt: string;
 };
 
-const KEY = "bizplatform_data_v1";
-
-type DB = { businesses: Business[] };
-
-function read(): DB {
-  if (typeof window === "undefined") return { businesses: [] };
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return { businesses: [] };
-    return JSON.parse(raw);
-  } catch {
-    return { businesses: [] };
-  }
-}
-
-function write(db: DB) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(KEY, JSON.stringify(db));
-  window.dispatchEvent(new Event("biz:update"));
-}
+const COL = "businesses";
 
 export const store = {
-  all(): Business[] {
-    return read().businesses;
+  /** Real-time listener for all businesses — returns an unsubscribe function */
+  onAll(callback: (businesses: Business[]) => void): () => void {
+    if (typeof window === "undefined") return () => {};
+    return onSnapshot(collection(db, COL), (snap) => {
+      const list = snap.docs.map((d) => d.data() as Business);
+      callback(list.sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
+    });
   },
-  get(id: string): Business | undefined {
-    return read().businesses.find((b) => b.id === id);
+
+  /** Real-time listener for a single business by ID */
+  onGet(id: string, callback: (b: Business | null) => void): () => void {
+    if (typeof window === "undefined") return () => {};
+    return onSnapshot(doc(db, COL, id), (snap) => {
+      callback(snap.exists() ? (snap.data() as Business) : null);
+    });
   },
-  getBySlug(slug: string): Business | undefined {
-    return read().businesses.find((b) => b.slug === slug);
+
+  /** One-time fetch by slug */
+  async getBySlug(slug: string): Promise<Business | undefined> {
+    if (typeof window === "undefined") return undefined;
+    const q = query(collection(db, COL), where("slug", "==", slug));
+    const snap = await getDocs(q);
+    return snap.empty ? undefined : (snap.docs[0].data() as Business);
   },
-  getByLogin(username: string, password: string): Business | undefined {
-    return read().businesses.find(
-      (b) => b.username === username && b.password === password,
-    );
+
+  /** Login lookup — queries by username then checks password */
+  async getByLogin(username: string, password: string): Promise<Business | undefined> {
+    if (typeof window === "undefined") return undefined;
+    const q = query(collection(db, COL), where("username", "==", username));
+    const snap = await getDocs(q);
+    if (snap.empty) return undefined;
+    const biz = snap.docs[0].data() as Business;
+    return biz.password === password ? biz : undefined;
   },
-  upsert(biz: Business) {
-    const db = read();
-    const i = db.businesses.findIndex((b) => b.id === biz.id);
-    if (i >= 0) db.businesses[i] = biz;
-    else db.businesses.push(biz);
-    write(db);
+
+  /** Create or update a business document */
+  async upsert(biz: Business): Promise<void> {
+    if (typeof window === "undefined") return;
+    await setDoc(doc(db, COL, biz.id), biz);
   },
-  remove(id: string) {
-    const db = read();
-    db.businesses = db.businesses.filter((b) => b.id !== id);
-    write(db);
+
+  /** Delete a business */
+  async remove(id: string): Promise<void> {
+    if (typeof window === "undefined") return;
+    await deleteDoc(doc(db, COL, id));
   },
-  incrementVisit(slug: string) {
-    const db = read();
-    const b = db.businesses.find((x) => x.slug === slug);
-    if (b) {
-      b.visits = (b.visits || 0) + 1;
-      write(db);
+
+  /** Increment visit counter for a business by slug */
+  async incrementVisit(slug: string): Promise<void> {
+    if (typeof window === "undefined") return;
+    const q = query(collection(db, COL), where("slug", "==", slug));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      await updateDoc(snap.docs[0].ref, { visits: increment(1) });
     }
   },
 };
@@ -164,7 +186,12 @@ export function slugify(s: string): string {
     .replace(/^-|-$/g, "");
 }
 
-export function emptyBusiness(name: string, username: string, password: string, planDays: number): Business {
+export function emptyBusiness(
+  name: string,
+  username: string,
+  password: string,
+  planDays: number,
+): Business {
   return {
     id: newId(),
     slug: slugify(name) + "-" + Math.random().toString(36).slice(2, 6),
@@ -199,32 +226,103 @@ export function emptyBusiness(name: string, username: string, password: string, 
   };
 }
 
-// Session
+// ── Session ──────────────────────────────────────────────────────────────────
+// Super admin session is managed by Firebase Auth.
+// Client session is stored in localStorage.
+// When super admin edits a client, a localStorage "client" session is set;
+// clearClient() removes it without signing out of Firebase Auth.
+
 const SESSION_KEY = "bizplatform_session_v1";
+
 export type Session =
   | { kind: "super" }
-  | { kind: "client"; businessId: string }
+  | { kind: "client"; businessId: string; fromAdmin?: boolean }
   | null;
 
 export const session = {
+  /** Get current session — localStorage (client) takes priority over Firebase Auth (super) */
   get(): Session {
     if (typeof window === "undefined") return null;
     try {
       const raw = localStorage.getItem(SESSION_KEY);
-      return raw ? JSON.parse(raw) : null;
+      if (raw) {
+        const parsed = JSON.parse(raw) as Session;
+        if (parsed?.kind === "client") return parsed;
+      }
     } catch {
-      return null;
+      /* ignore */
     }
+    if (auth.currentUser?.email === SUPER_ADMIN_EMAIL) {
+      return { kind: "super" };
+    }
+    return null;
   },
+
+  /** Set client session in localStorage (used by both clients and super admin editing a client) */
   set(s: Session) {
     if (typeof window === "undefined") return;
-    if (s) localStorage.setItem(SESSION_KEY, JSON.stringify(s));
-    else localStorage.removeItem(SESSION_KEY);
+    if (s === null) {
+      localStorage.removeItem(SESSION_KEY);
+    } else {
+      localStorage.setItem(SESSION_KEY, JSON.stringify(s));
+    }
     window.dispatchEvent(new Event("biz:session"));
   },
+
+  /** Full logout — clears localStorage AND Firebase Auth */
   clear() {
-    this.set(null);
+    if (typeof window === "undefined") return;
+    localStorage.removeItem(SESSION_KEY);
+    if (auth.currentUser) signOut(auth).catch(() => {});
+    window.dispatchEvent(new Event("biz:session"));
+  },
+
+  /** Only clear client localStorage session; keeps Firebase Auth intact (for super admin "back" navigation) */
+  clearClient() {
+    if (typeof window === "undefined") return;
+    localStorage.removeItem(SESSION_KEY);
+    window.dispatchEvent(new Event("biz:session"));
   },
 };
 
-export const SUPER_ADMIN = { username: "admin", password: "123" };
+// ── Super admin Firebase Auth helpers ─────────────────────────────────────────
+
+/**
+ * Log in as super admin using Firebase Auth.
+ * On first use (account not yet created), the account is created automatically.
+ * Returns null on success, or an error message string.
+ */
+export async function superAdminLogin(password: string): Promise<string | null> {
+  try {
+    await signInWithEmailAndPassword(auth, SUPER_ADMIN_EMAIL, password);
+    return null;
+  } catch (err: any) {
+    const code: string = err?.code ?? "";
+    // First-time setup: account does not exist yet
+    if (
+      code === "auth/user-not-found" ||
+      code === "auth/invalid-credential" ||
+      code === "auth/invalid-email"
+    ) {
+      try {
+        await createUserWithEmailAndPassword(auth, SUPER_ADMIN_EMAIL, password);
+        return null;
+      } catch (createErr: any) {
+        const createCode: string = createErr?.code ?? "";
+        if (createCode === "auth/email-already-in-use") {
+          return "Invalid password. Please try again.";
+        }
+        return createErr?.message ?? "Failed to create super admin account.";
+      }
+    }
+    if (code === "auth/wrong-password") return "Incorrect password.";
+    return "Invalid credentials. Please try again.";
+  }
+}
+
+export async function superAdminLogout(): Promise<void> {
+  if (auth.currentUser) await signOut(auth);
+}
+
+// Legacy export for backward compat (super admin hardcoded creds removed)
+export const SUPER_ADMIN = { username: "superadmin@tapvybe.com", password: "" };
