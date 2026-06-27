@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { store, session, isExpired, daysLeft, newId, slugify, type Business, type Product, type GalleryItem, type Lead } from "@/lib/store";
-import { LogOut, ExternalLink, Save, Trash2, Plus, BarChart3, MessageSquare, Calendar, Users as UsersIcon, Image as ImgIcon, Package, Settings as SettingsIcon, Phone, TrendingUp, Globe, ChevronRight, ArrowLeft } from "lucide-react";
+import { uploadImage } from "@/lib/upload";
+import { LogOut, ExternalLink, Save, Trash2, Plus, BarChart3, MessageSquare, Calendar, Users as UsersIcon, Image as ImgIcon, Package, Settings as SettingsIcon, Phone, TrendingUp, Globe, ChevronRight, ArrowLeft, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/client/dashboard")({
   head: () => ({ meta: [{ title: "Client Dashboard" }] }),
@@ -39,17 +41,13 @@ function ClientDash() {
 
   useEffect(() => {
     const s = session.get();
-
-    // Only client sessions allowed here (including admin-editing-client sessions)
     if (!s || s.kind !== "client") {
       navigate({ to: "/client/login" });
       return;
     }
-
     const isFromAdmin = !!(s as any).fromAdmin;
     setFromAdmin(isFromAdmin);
 
-    // Real-time Firestore listener for this business
     const unsubscribe = store.onGet(s.businessId, (b) => {
       if (!b) {
         session.clearClient();
@@ -63,7 +61,6 @@ function ClientDash() {
       }
       setBiz(b);
     });
-
     return () => unsubscribe();
   }, [navigate]);
 
@@ -72,8 +69,10 @@ function ClientDash() {
     setBiz(updated);
     try {
       await store.upsert(updated);
-    } catch (e) {
+      toast.success("Saved successfully!");
+    } catch (e: any) {
       console.error(e);
+      toast.error("Save failed. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -81,7 +80,6 @@ function ClientDash() {
 
   function logout() {
     if (fromAdmin) {
-      // Super admin was editing a client — go back without signing out Firebase Auth
       session.clearClient();
       navigate({ to: "/super-admin/dashboard" });
     } else {
@@ -120,7 +118,6 @@ function ClientDash() {
       {/* Sidebar */}
       <aside className="hidden lg:block w-[260px] shrink-0 bg-[#0F172A] relative">
         <div className="sticky top-0 h-screen flex flex-col overflow-y-auto">
-          {/* Sidebar header */}
           <div className="px-5 py-6 border-b border-white/5">
             <div className="flex items-center gap-3">
               {biz.logo ? (
@@ -141,7 +138,6 @@ function ClientDash() {
             </div>
           </div>
 
-          {/* Navigation */}
           <nav className="flex-1 px-3 py-4 space-y-0.5">
             {tabs.map((t) => (
               <button
@@ -160,7 +156,6 @@ function ClientDash() {
             ))}
           </nav>
 
-          {/* Sidebar footer */}
           <div className="px-3 py-4 border-t border-white/5 space-y-0.5">
             <Link
               to="/site/$slug"
@@ -184,7 +179,6 @@ function ClientDash() {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
         <header className="sticky top-0 z-30 bg-white border-b border-slate-200">
           <div className="px-6 py-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
@@ -239,7 +233,6 @@ function ClientDash() {
           </div>
         </header>
 
-        {/* Content */}
         <main className="flex-1 p-6">
           {tab === "overview" && <Overview biz={biz} />}
           {tab === "profile" && <ProfileTab biz={biz} save={save} saving={saving} />}
@@ -255,6 +248,8 @@ function ClientDash() {
     </div>
   );
 }
+
+// ── Shared UI ──────────────────────────────────────────────────────────────────
 
 function Card({ children, title, subtitle, action }: { children: React.ReactNode; title?: string; subtitle?: string; action?: React.ReactNode }) {
   return (
@@ -273,22 +268,15 @@ function Card({ children, title, subtitle, action }: { children: React.ReactNode
   );
 }
 
-function SaveBtn({ onClick, saving }: { onClick: () => void; saving?: boolean }) {
+function SaveBtn({ onClick, saving, label = "Save Changes" }: { onClick: () => void; saving?: boolean; label?: string }) {
   return (
     <button
       onClick={onClick}
       disabled={saving}
       className="inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
     >
-      {saving ? (
-        <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-        </svg>
-      ) : (
-        <Save className="h-4 w-4" />
-      )}
-      {saving ? "Saving…" : "Save Changes"}
+      {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+      {saving ? "Saving…" : label}
     </button>
   );
 }
@@ -318,14 +306,30 @@ function Field({ label, value, onChange, type = "text", textarea = false, placeh
   );
 }
 
-function ImagePicker({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-  function pick(e: React.ChangeEvent<HTMLInputElement>) {
+/**
+ * ImagePicker — uploads to Firebase Storage on file select.
+ * Shows a spinner while uploading.
+ */
+function ImagePicker({ label, value, onChange, folder = "general" }: { label: string; value: string; onChange: (v: string) => void; folder?: string }) {
+  const [uploading, setUploading] = useState(false);
+
+  async function pick(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => onChange(reader.result as string);
-    reader.readAsDataURL(file);
+    setUploading(true);
+    try {
+      const url = await uploadImage(file, folder);
+      onChange(url);
+      toast.success("Image uploaded!");
+    } catch {
+      toast.error("Image upload failed. Please try again.");
+    } finally {
+      setUploading(false);
+      // Reset input so same file can be re-selected
+      e.target.value = "";
+    }
   }
+
   return (
     <div>
       {label && <span className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">{label}</span>}
@@ -334,15 +338,15 @@ function ImagePicker({ label, value, onChange }: { label: string; value: string;
           <img src={value} alt="" className="h-16 w-16 rounded-xl object-cover border border-slate-200 shadow-sm" />
         ) : (
           <div className="h-16 w-16 rounded-xl bg-slate-100 border-2 border-dashed border-slate-300 grid place-items-center">
-            <ImgIcon className="h-5 w-5 text-slate-400" />
+            {uploading ? <Loader2 className="h-5 w-5 text-indigo-500 animate-spin" /> : <ImgIcon className="h-5 w-5 text-slate-400" />}
           </div>
         )}
         <div className="space-y-1.5">
-          <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors">
-            Upload Photo
-            <input type="file" accept="image/*" onChange={pick} className="hidden" />
+          <label className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
+            {uploading ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Uploading…</> : "Upload Photo"}
+            <input type="file" accept="image/*" onChange={pick} className="hidden" disabled={uploading} />
           </label>
-          {value && (
+          {value && !uploading && (
             <button onClick={() => onChange("")} className="block text-xs text-rose-500 hover:text-rose-600 font-medium transition-colors">
               Remove
             </button>
@@ -364,6 +368,8 @@ function EmptyState({ icon: Icon, title, subtitle }: { icon: any; title: string;
     </div>
   );
 }
+
+// ── Tabs ───────────────────────────────────────────────────────────────────────
 
 function Overview({ biz }: { biz: Business }) {
   const stats = [
@@ -436,8 +442,8 @@ function ProfileTab({ biz, save, saving }: { biz: Business; save: (b: Business) 
         <div className="md:col-span-2">
           <Field label="About" value={d.about} onChange={(v: string) => setD({ ...d, about: v })} textarea />
         </div>
-        <ImagePicker label="Logo" value={d.logo} onChange={(v) => setD({ ...d, logo: v })} />
-        <ImagePicker label="Cover Image" value={d.coverImage} onChange={(v) => setD({ ...d, coverImage: v })} />
+        <ImagePicker label="Logo" value={d.logo} onChange={(v) => setD({ ...d, logo: v })} folder="logos" />
+        <ImagePicker label="Cover Image" value={d.coverImage} onChange={(v) => setD({ ...d, coverImage: v })} folder="covers" />
       </div>
     </Card>
   );
@@ -457,7 +463,7 @@ function ContactTab({ biz, save, saving }: { biz: Business; save: (b: Business) 
         <Field label="Website Link" value={d.websiteLink} onChange={(v: string) => setD({ ...d, websiteLink: v })} />
         <Field label="Google Review Link" value={d.googleReviewLink} onChange={(v: string) => setD({ ...d, googleReviewLink: v })} />
         <Field label="UPI ID (for QR)" value={d.upiId} onChange={(v: string) => setD({ ...d, upiId: v })} placeholder="yourname@upi" />
-        <ImagePicker label="Payment QR Image" value={d.paymentQr} onChange={(v) => setD({ ...d, paymentQr: v })} />
+        <ImagePicker label="Payment QR Image" value={d.paymentQr} onChange={(v) => setD({ ...d, paymentQr: v })} folder="qr" />
         <div className="md:col-span-2 pt-5 border-t border-slate-100">
           <h3 className="font-semibold text-slate-700 mb-4">Social Media Links</h3>
           <div className="grid md:grid-cols-2 gap-5">
@@ -481,12 +487,18 @@ function ProductsTab({ biz, save, saving }: { biz: Business; save: (b: Business)
   function add() { setItems([...items, { id: newId(), name: "", description: "", price: "", image: "" }]); }
   function del(i: number) { setItems(items.filter((_, j) => j !== i)); }
 
-  function pickImage(i: number, e: React.ChangeEvent<HTMLInputElement>) {
+  async function pickImage(i: number, e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => update(i, { ...items[i], image: reader.result as string });
-    reader.readAsDataURL(file);
+    const toastId = toast.loading("Uploading image…");
+    try {
+      const url = await uploadImage(file, "products");
+      update(i, { ...items[i], image: url });
+      toast.success("Image uploaded!", { id: toastId });
+    } catch {
+      toast.error("Image upload failed.", { id: toastId });
+    }
+    e.target.value = "";
   }
 
   return (
@@ -495,13 +507,10 @@ function ProductsTab({ biz, save, saving }: { biz: Business; save: (b: Business)
       subtitle={`${items.length} product${items.length !== 1 ? "s" : ""}`}
       action={
         <div className="flex flex-wrap gap-2">
-          <button onClick={add} className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors">
+          <button onClick={add} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors disabled:opacity-50">
             <Plus className="h-4 w-4" /> Add Product
           </button>
-          <button onClick={() => save({ ...biz, products: items })} disabled={saving} className="inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
-            {saving ? <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> : <Save className="h-4 w-4" />}
-            {saving ? "Saving…" : "Save"}
-          </button>
+          <SaveBtn onClick={() => save({ ...biz, products: items })} saving={saving} label="Save" />
         </div>
       }
     >
@@ -511,7 +520,6 @@ function ProductsTab({ biz, save, saving }: { biz: Business; save: (b: Business)
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {items.map((p, i) => (
             <div key={p.id} className="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm flex flex-col">
-              {/* Image area — full width, no column constraint */}
               <div className="relative h-44 bg-slate-100 flex items-center justify-center shrink-0">
                 {p.image ? (
                   <img src={p.image} alt="" className="w-full h-full object-cover" />
@@ -521,7 +529,6 @@ function ProductsTab({ biz, save, saving }: { biz: Business; save: (b: Business)
                     <span className="text-xs font-medium">No image</span>
                   </div>
                 )}
-                {/* Overlay controls */}
                 <div className="absolute top-2.5 right-2.5 flex gap-1.5">
                   <label className="cursor-pointer inline-flex items-center gap-1 px-2.5 py-1.5 bg-white/90 backdrop-blur-sm rounded-lg text-xs font-semibold border border-slate-200 shadow-sm hover:bg-white text-slate-700 transition-colors">
                     {p.image ? "Change" : "Upload"}
@@ -533,12 +540,10 @@ function ProductsTab({ biz, save, saving }: { biz: Business; save: (b: Business)
                     </button>
                   )}
                 </div>
-                {/* Delete card */}
-                <button onClick={() => del(i)} className="absolute top-2.5 left-2.5 p-1.5 bg-white/90 backdrop-blur-sm rounded-lg border border-rose-200 shadow-sm hover:bg-rose-50 text-rose-500 transition-colors">
+                <button onClick={() => del(i)} disabled={saving} className="absolute top-2.5 left-2.5 p-1.5 bg-white/90 backdrop-blur-sm rounded-lg border border-rose-200 shadow-sm hover:bg-rose-50 text-rose-500 transition-colors disabled:opacity-50">
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>
-              {/* Fields */}
               <div className="p-4 grid grid-cols-2 gap-3 flex-1">
                 <div className="col-span-2 sm:col-span-1">
                   <Field label="Name" value={p.name} onChange={(v: string) => update(i, { ...p, name: v })} />
@@ -566,12 +571,18 @@ function GalleryTab({ biz, save, saving }: { biz: Business; save: (b: Business) 
   function add() { setItems([...items, { id: newId(), image: "", caption: "" }]); }
   function del(i: number) { setItems(items.filter((_, j) => j !== i)); }
 
-  function pickImage(i: number, e: React.ChangeEvent<HTMLInputElement>) {
+  async function pickImage(i: number, e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => update(i, { ...items[i], image: reader.result as string });
-    reader.readAsDataURL(file);
+    const toastId = toast.loading("Uploading image…");
+    try {
+      const url = await uploadImage(file, "gallery");
+      update(i, { ...items[i], image: url });
+      toast.success("Image uploaded!", { id: toastId });
+    } catch {
+      toast.error("Image upload failed.", { id: toastId });
+    }
+    e.target.value = "";
   }
 
   return (
@@ -580,13 +591,10 @@ function GalleryTab({ biz, save, saving }: { biz: Business; save: (b: Business) 
       subtitle={`${items.length} image${items.length !== 1 ? "s" : ""}`}
       action={
         <div className="flex flex-wrap gap-2">
-          <button onClick={add} className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors">
+          <button onClick={add} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors disabled:opacity-50">
             <Plus className="h-4 w-4" /> Add Image
           </button>
-          <button onClick={() => save({ ...biz, gallery: items })} disabled={saving} className="inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
-            {saving ? <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> : <Save className="h-4 w-4" />}
-            {saving ? "Saving…" : "Save"}
-          </button>
+          <SaveBtn onClick={() => save({ ...biz, gallery: items })} saving={saving} label="Save" />
         </div>
       }
     >
@@ -596,7 +604,6 @@ function GalleryTab({ biz, save, saving }: { biz: Business; save: (b: Business) 
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
           {items.map((g, i) => (
             <div key={g.id} className="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm flex flex-col">
-              {/* Full-width image area */}
               <div className="relative h-40 bg-slate-100 flex items-center justify-center shrink-0">
                 {g.image ? (
                   <img src={g.image} alt="" className="w-full h-full object-cover" />
@@ -617,11 +624,10 @@ function GalleryTab({ biz, save, saving }: { biz: Business; save: (b: Business) 
                     </button>
                   )}
                 </div>
-                <button onClick={() => del(i)} className="absolute top-2.5 left-2.5 p-1.5 bg-white/90 backdrop-blur-sm rounded-lg border border-rose-200 shadow-sm hover:bg-rose-50 text-rose-500 transition-colors">
+                <button onClick={() => del(i)} disabled={saving} className="absolute top-2.5 left-2.5 p-1.5 bg-white/90 backdrop-blur-sm rounded-lg border border-rose-200 shadow-sm hover:bg-rose-50 text-rose-500 transition-colors disabled:opacity-50">
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>
-              {/* Caption field */}
               <div className="p-3">
                 <Field label="Caption" value={g.caption} onChange={(v: string) => update(i, { ...g, caption: v })} />
               </div>
@@ -663,7 +669,7 @@ function InquiriesTab({ biz, save, saving }: { biz: Business; save: (b: Business
                     }}
                     className="text-xs px-2.5 py-1.5 border border-indigo-300 text-indigo-700 bg-indigo-50 rounded-lg hover:bg-indigo-100 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {saving ? "…" : "→ Lead"}
+                    {saving ? <Loader2 className="h-3 w-3 animate-spin inline" /> : "→ Lead"}
                   </button>
                   <button
                     disabled={saving}
@@ -741,7 +747,7 @@ function LeadsTab({ biz, save, saving }: { biz: Business; save: (b: Business) =>
       title="Leads / CRM"
       subtitle={`${biz.leads.length} total leads`}
       action={
-        <button onClick={() => setAdding(true)} className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors">
+        <button onClick={() => setAdding(true)} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors disabled:opacity-50">
           <Plus className="h-4 w-4" /> Add Lead
         </button>
       }
@@ -888,7 +894,7 @@ function AddLeadForm({ onAdd, onCancel, saving }: { onAdd: (l: Lead) => void; on
           Cancel
         </button>
         <button disabled={saving || !l.name} onClick={() => l.name && onAdd(l)} className="inline-flex items-center gap-1.5 px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
-          {saving ? <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> : null}
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           {saving ? "Saving…" : "Add Lead"}
         </button>
       </div>
