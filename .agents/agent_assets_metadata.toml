@@ -1,0 +1,38 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "Zi5rZQ2ObsAl_HsG51wkA"
+uri = "file://public/tapvybe-hero-card.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "OkWjJwWMyjoyRou8mCoJa"
+uri = "file://public/tapvybe-metal-card.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ed8clg7-XXiOUFm2yRWaH"
+uri = "file://public/tapvybe-tap-share.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "k4Qds-stVULOE1m6CByP0"
+uri = "file://public/tapvybe-design-step.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "24Z7yIqZBw3FmiaG1bzj9"
+uri = "file://public/tapvybe-profile-phone.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "K1ySN5PK0hrPGhRslOXyZ"
+uri = "file://public/tapvybe-cards-stack.png"
+type = "image"
+title = "generated_image"

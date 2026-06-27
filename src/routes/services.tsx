@@ -239,7 +239,7 @@ function MetalCardFeature() {
           {/* Right image first on large screens */}
           <div className="relative h-72 lg:h-[520px] order-2 lg:order-1">
             <img
-              src="/how-it-works.jpeg"
+              src="/tapvybe-tap-share.png"
               alt="tapvybe NFC card in use"
               className="absolute inset-0 w-full h-full object-cover"
             />
