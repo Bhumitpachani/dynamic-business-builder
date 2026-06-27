@@ -90,26 +90,14 @@ function HeroSection() {
 
           {/* Right — Card image */}
           <div className="flex justify-center lg:justify-end">
-            <div
-              className="relative w-full max-w-md lg:max-w-lg"
-              style={{ transform: "perspective(1200px) rotateY(-8deg) rotateX(4deg)" }}
-            >
+            <div className="relative w-full max-w-sm lg:max-w-md">
               <img
-                src="/tapvybe-hero-card.png"
+                src="/hero-card.png"
                 alt="tapvybe NFC business card"
-                className="w-full rounded-3xl shadow-2xl"
-                style={{ boxShadow: "0 40px 80px rgba(107,62,240,0.2), 0 10px 30px rgba(0,0,0,0.1)" }}
+                className="w-full drop-shadow-2xl"
+                fetchPriority="high"
+                loading="eager"
               />
-              {/* Floating badge */}
-              <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3 border border-gray-100">
-                <div className="h-10 w-10 rounded-xl grid place-items-center shrink-0" style={{ backgroundColor: BRAND_LIGHT }}>
-                  <Wifi className="h-5 w-5" style={{ color: BRAND }} />
-                </div>
-                <div>
-                  <p className="text-xs font-black text-black">NFC + QR</p>
-                  <p className="text-xs text-gray-500">One tap to share</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>

@@ -15,6 +15,50 @@ export const Route = createFileRoute("/site/$slug")({
   ),
 });
 
+// ── Skeleton ────────────────────────────────────────────────────────────────
+
+function Skeleton({ className = "" }: { className?: string }) {
+  return <div className={`animate-pulse rounded-lg bg-slate-200 ${className}`} />;
+}
+
+function SiteSkeleton() {
+  return (
+    <div className="min-h-screen bg-slate-50 pb-24">
+      {/* Cover skeleton */}
+      <div className="h-56 md:h-72 bg-slate-300 animate-pulse" />
+
+      <div className="max-w-3xl mx-auto px-4 -mt-20 relative">
+        {/* Hero card skeleton */}
+        <div className="bg-white rounded-2xl shadow-lg p-5 md:p-6">
+          <div className="flex items-start gap-4">
+            <Skeleton className="h-20 w-20 rounded-xl shrink-0 -mt-12" />
+            <div className="flex-1 min-w-0 pt-1 space-y-2">
+              <Skeleton className="h-6 w-2/3" />
+              <Skeleton className="h-4 w-1/3" />
+              <Skeleton className="h-3 w-full" />
+            </div>
+          </div>
+          <div className="grid grid-cols-4 gap-2 mt-5">
+            {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-16 rounded-xl" />)}
+          </div>
+        </div>
+
+        {/* Content skeletons */}
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="mt-4 bg-white rounded-2xl border p-5 space-y-3">
+            <Skeleton className="h-5 w-1/4" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-4/6" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Main ────────────────────────────────────────────────────────────────────
+
 function PublicSite() {
   const { slug } = useParams({ from: "/site/$slug" });
   const [biz, setBiz] = useState<Business | null | undefined>(undefined);
@@ -29,7 +73,9 @@ function PublicSite() {
     });
   }, [slug]);
 
-  if (biz === undefined) return <div className="min-h-screen grid place-items-center text-slate-500">Loading…</div>;
+  // Show skeleton while loading (instead of bare "Loading…")
+  if (biz === undefined) return <SiteSkeleton />;
+
   if (biz === null) {
     return (
       <div className="min-h-screen grid place-items-center bg-slate-50 p-4 text-center">
@@ -40,6 +86,7 @@ function PublicSite() {
       </div>
     );
   }
+
   if (isExpired(biz)) {
     return (
       <div className="min-h-screen grid place-items-center bg-slate-50 p-4 text-center">
@@ -65,18 +112,42 @@ function PublicSite() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24" style={{ ["--brand" as any]: primary }}>
-      {/* Cover */}
-      <div className="relative h-56 md:h-72 bg-gradient-to-br from-slate-700 to-slate-900" style={biz.coverImage ? { backgroundImage: `url(${biz.coverImage})`, backgroundSize: "cover", backgroundPosition: "center" } : {}}>
+      {/* Cover — eager load, it's above the fold */}
+      <div
+        className="relative h-56 md:h-72 bg-gradient-to-br from-slate-700 to-slate-900"
+        style={biz.coverImage ? { backgroundImage: `url(${biz.coverImage})`, backgroundSize: "cover", backgroundPosition: "center" } : {}}
+      >
         <div className="absolute inset-0 bg-black/40" />
+        {/* Preload cover via hidden img for fast paint */}
+        {biz.coverImage && (
+          <img
+            src={biz.coverImage}
+            alt=""
+            aria-hidden
+            fetchPriority="high"
+            decoding="async"
+            className="hidden"
+          />
+        )}
       </div>
 
       <div className="max-w-3xl mx-auto px-4 -mt-20 relative">
         <div className="bg-white rounded-2xl shadow-lg p-5 md:p-6">
           <div className="flex items-start gap-4">
             {biz.logo ? (
-              <img src={biz.logo} className="h-20 w-20 rounded-xl object-cover border-4 border-white shadow -mt-12 shrink-0" alt={biz.name} />
+              // Logo is above the fold — load eagerly
+              <img
+                src={biz.logo}
+                className="h-20 w-20 rounded-xl object-cover border-4 border-white shadow -mt-12 shrink-0"
+                alt={biz.name}
+                fetchPriority="high"
+                decoding="async"
+                loading="eager"
+              />
             ) : (
-              <div className="h-20 w-20 rounded-xl grid place-items-center text-white text-3xl font-bold border-4 border-white shadow -mt-12 shrink-0" style={{ background: primary }}>{biz.name[0]?.toUpperCase()}</div>
+              <div className="h-20 w-20 rounded-xl grid place-items-center text-white text-3xl font-bold border-4 border-white shadow -mt-12 shrink-0" style={{ background: primary }}>
+                {biz.name[0]?.toUpperCase()}
+              </div>
             )}
             <div className="min-w-0 flex-1">
               <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 truncate">{biz.name}</h1>
@@ -87,10 +158,10 @@ function PublicSite() {
 
           {/* Quick actions */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-5">
-            {biz.phone && <a href={`tel:${biz.phone}`} className="flex flex-col items-center gap-1 p-3 rounded-xl border hover:shadow text-xs font-medium"><Phone className="h-5 w-5" style={{ color: primary }} /> Call</a>}
-            {waLink && <a href={waLink} target="_blank" className="flex flex-col items-center gap-1 p-3 rounded-xl border hover:shadow text-xs font-medium"><MessageCircle className="h-5 w-5 text-green-600" /> WhatsApp</a>}
-            {biz.mapsLink && <a href={biz.mapsLink} target="_blank" className="flex flex-col items-center gap-1 p-3 rounded-xl border hover:shadow text-xs font-medium"><MapPin className="h-5 w-5 text-red-600" /> Directions</a>}
-            <button onClick={saveContact} className="flex flex-col items-center gap-1 p-3 rounded-xl border hover:shadow text-xs font-medium"><UserPlus className="h-5 w-5" style={{ color: primary }} /> Save Contact</button>
+            {biz.phone && <a href={`tel:${biz.phone}`} className="flex flex-col items-center gap-1 p-3 rounded-xl border hover:shadow text-xs font-medium transition-shadow"><Phone className="h-5 w-5" style={{ color: primary }} /> Call</a>}
+            {waLink && <a href={waLink} target="_blank" className="flex flex-col items-center gap-1 p-3 rounded-xl border hover:shadow text-xs font-medium transition-shadow"><MessageCircle className="h-5 w-5 text-green-600" /> WhatsApp</a>}
+            {biz.mapsLink && <a href={biz.mapsLink} target="_blank" className="flex flex-col items-center gap-1 p-3 rounded-xl border hover:shadow text-xs font-medium transition-shadow"><MapPin className="h-5 w-5 text-red-600" /> Directions</a>}
+            <button onClick={saveContact} className="flex flex-col items-center gap-1 p-3 rounded-xl border hover:shadow text-xs font-medium transition-shadow"><UserPlus className="h-5 w-5" style={{ color: primary }} /> Save Contact</button>
           </div>
         </div>
 
@@ -105,13 +176,21 @@ function PublicSite() {
         {biz.products.length > 0 && (
           <Section title="Products & Services">
             <div className="grid sm:grid-cols-2 gap-3">
-              {biz.products.map((p) => (
+              {biz.products.map((p, idx) => (
                 <div key={p.id} className="border rounded-xl overflow-hidden bg-white">
-                  {p.image && <img src={p.image} className="w-full h-40 object-cover" alt={p.name} />}
+                  {p.image && (
+                    <LazyImage
+                      src={p.image}
+                      alt={p.name}
+                      className="w-full h-40 object-cover"
+                      // First two product images load eagerly, rest lazily
+                      eager={idx < 2}
+                    />
+                  )}
                   <div className="p-3">
                     <div className="flex items-start justify-between gap-2">
                       <h3 className="font-semibold text-sm">{p.name}</h3>
-                      {p.price && <span className="text-sm font-bold" style={{ color: primary }}>{p.price}</span>}
+                      {p.price && <span className="text-sm font-bold shrink-0" style={{ color: primary }}>{p.price}</span>}
                     </div>
                     {p.description && <p className="text-xs text-slate-600 mt-1">{p.description}</p>}
                   </div>
@@ -127,22 +206,28 @@ function PublicSite() {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {biz.gallery.map((g) => (
                 <div key={g.id} className="aspect-square rounded-lg overflow-hidden bg-slate-100">
-                  {g.image && <img src={g.image} className="w-full h-full object-cover" alt={g.caption} />}
+                  {g.image && (
+                    <LazyImage
+                      src={g.image}
+                      alt={g.caption}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </div>
               ))}
             </div>
           </Section>
         )}
 
-        {/* CTA buttons */}
+        {/* CTA */}
         <Section title="Get in Touch">
           <div className="grid sm:grid-cols-2 gap-2">
-            <button onClick={() => setShowInquiry(true)} className="py-3 rounded-xl font-semibold text-white" style={{ background: primary }}>Send Inquiry</button>
-            <button onClick={() => setShowAppt(true)} className="py-3 rounded-xl font-semibold border-2" style={{ borderColor: primary, color: primary }}>Book Appointment</button>
+            <button onClick={() => setShowInquiry(true)} className="py-3 rounded-xl font-semibold text-white transition-opacity hover:opacity-90" style={{ background: primary }}>Send Inquiry</button>
+            <button onClick={() => setShowAppt(true)} className="py-3 rounded-xl font-semibold border-2 transition-colors hover:opacity-90" style={{ borderColor: primary, color: primary }}>Book Appointment</button>
           </div>
         </Section>
 
-        {/* Address + Map */}
+        {/* Location */}
         {(biz.address || biz.mapsLink) && (
           <Section title="Location">
             {biz.address && <p className="text-sm text-slate-700">{biz.address}</p>}
@@ -150,7 +235,7 @@ function PublicSite() {
           </Section>
         )}
 
-        {/* Links row */}
+        {/* Links */}
         <Section title="Links">
           <div className="flex flex-wrap gap-2">
             {biz.websiteLink && <LinkChip icon={Globe} label="Website" href={biz.websiteLink} />}
@@ -181,6 +266,28 @@ function PublicSite() {
   );
 }
 
+// ── LazyImage — shows a shimmer placeholder until the image loads ─────────────
+
+function LazyImage({ src, alt, className, eager = false }: { src: string; alt: string; className?: string; eager?: boolean }) {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="relative w-full h-full">
+      {!loaded && <div className="absolute inset-0 animate-pulse bg-slate-200" />}
+      <img
+        src={src}
+        alt={alt}
+        className={`${className} transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
+        loading={eager ? "eager" : "lazy"}
+        decoding="async"
+        fetchPriority={eager ? "high" : "low"}
+        onLoad={() => setLoaded(true)}
+      />
+    </div>
+  );
+}
+
+// ── Shared components ─────────────────────────────────────────────────────────
+
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mt-4 bg-white rounded-2xl border p-5">
@@ -192,7 +299,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function LinkChip({ icon: Icon, label, href, color }: any) {
   return (
-    <a href={href} target="_blank" className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border text-sm font-medium hover:bg-slate-50">
+    <a href={href} target="_blank" className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border text-sm font-medium hover:bg-slate-50 transition-colors">
       <Icon className="h-4 w-4" style={color ? { color } : undefined} /> {label}
     </a>
   );
@@ -215,22 +322,27 @@ function Modal({ children, onClose, title }: any) {
 function InquiryModal({ biz, onClose }: { biz: Business; onClose: () => void }) {
   const [f, setF] = useState({ name: "", phone: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    setLoading(true);
     const inquiry: Inquiry = { id: newId(), ...f, createdAt: new Date().toISOString() };
     await store.upsert({ ...biz, inquiries: [...biz.inquiries, inquiry] });
     setSent(true);
-    setTimeout(onClose, 1500);
+    setLoading(false);
+    setTimeout(onClose, 1800);
   }
   return (
     <Modal title="Send Inquiry" onClose={onClose}>
-      {sent ? <p className="text-green-700 text-center py-6">✓ Thank you! We'll get back to you soon.</p> : (
+      {sent ? <p className="text-green-700 text-center py-6 font-semibold">✓ Thank you! We'll get back to you soon.</p> : (
         <form onSubmit={submit} className="space-y-3">
-          <input required placeholder="Your name" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} className="w-full border rounded-md px-3 py-2.5" />
-          <input required placeholder="Phone" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} className="w-full border rounded-md px-3 py-2.5" />
-          <input placeholder="Email" type="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} className="w-full border rounded-md px-3 py-2.5" />
-          <textarea required placeholder="Your message" rows={4} value={f.message} onChange={(e) => setF({ ...f, message: e.target.value })} className="w-full border rounded-md px-3 py-2.5" />
-          <button className="w-full py-2.5 rounded-md text-white font-semibold" style={{ background: biz.theme.primary }}>Send</button>
+          <input required placeholder="Your name" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} className="w-full border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
+          <input required placeholder="Phone" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} className="w-full border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
+          <input placeholder="Email (optional)" type="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} className="w-full border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
+          <textarea required placeholder="Your message" rows={4} value={f.message} onChange={(e) => setF({ ...f, message: e.target.value })} className="w-full border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 resize-none" />
+          <button disabled={loading} className="w-full py-2.5 rounded-xl text-white font-semibold disabled:opacity-60 transition-opacity" style={{ background: biz.theme.primary }}>
+            {loading ? "Sending…" : "Send"}
+          </button>
         </form>
       )}
     </Modal>
@@ -240,25 +352,30 @@ function InquiryModal({ biz, onClose }: { biz: Business; onClose: () => void }) 
 function AppointmentModal({ biz, onClose }: { biz: Business; onClose: () => void }) {
   const [f, setF] = useState({ name: "", phone: "", date: "", time: "", service: "" });
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    setLoading(true);
     const appt: Appointment = { id: newId(), ...f, status: "pending", createdAt: new Date().toISOString() };
     await store.upsert({ ...biz, appointments: [...biz.appointments, appt] });
     setSent(true);
-    setTimeout(onClose, 1500);
+    setLoading(false);
+    setTimeout(onClose, 1800);
   }
   return (
     <Modal title="Book Appointment" onClose={onClose}>
-      {sent ? <p className="text-green-700 text-center py-6">✓ Appointment requested! We'll confirm shortly.</p> : (
+      {sent ? <p className="text-green-700 text-center py-6 font-semibold">✓ Appointment requested! We'll confirm shortly.</p> : (
         <form onSubmit={submit} className="space-y-3">
-          <input required placeholder="Your name" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} className="w-full border rounded-md px-3 py-2.5" />
-          <input required placeholder="Phone" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} className="w-full border rounded-md px-3 py-2.5" />
-          <input placeholder="Service / reason" value={f.service} onChange={(e) => setF({ ...f, service: e.target.value })} className="w-full border rounded-md px-3 py-2.5" />
+          <input required placeholder="Your name" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} className="w-full border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
+          <input required placeholder="Phone" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} className="w-full border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
+          <input placeholder="Service / reason" value={f.service} onChange={(e) => setF({ ...f, service: e.target.value })} className="w-full border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
           <div className="grid grid-cols-2 gap-2">
-            <input required type="date" value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} className="border rounded-md px-3 py-2.5" />
-            <input required type="time" value={f.time} onChange={(e) => setF({ ...f, time: e.target.value })} className="border rounded-md px-3 py-2.5" />
+            <input required type="date" value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} className="border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
+            <input required type="time" value={f.time} onChange={(e) => setF({ ...f, time: e.target.value })} className="border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
           </div>
-          <button className="w-full py-2.5 rounded-md text-white font-semibold" style={{ background: biz.theme.primary }}>Book</button>
+          <button disabled={loading} className="w-full py-2.5 rounded-xl text-white font-semibold disabled:opacity-60 transition-opacity" style={{ background: biz.theme.primary }}>
+            {loading ? "Booking…" : "Book"}
+          </button>
         </form>
       )}
     </Modal>
@@ -270,7 +387,7 @@ function QRModal({ biz, onClose }: { biz: Business; onClose: () => void }) {
     <Modal title="Payment" onClose={onClose}>
       <div className="text-center">
         {biz.paymentQr ? (
-          <img src={biz.paymentQr} alt="Payment QR" className="mx-auto rounded-lg max-h-72" />
+          <img src={biz.paymentQr} alt="Payment QR" className="mx-auto rounded-lg max-h-72" loading="lazy" decoding="async" />
         ) : (
           <div className="p-8 bg-slate-100 rounded-lg text-slate-500">No QR uploaded</div>
         )}
