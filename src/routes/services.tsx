@@ -9,8 +9,8 @@ import { PublicLayout } from "@/components/public-layout";
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Services — BizPlatform" },
-      { name: "description", content: "Explore BizPlatform's full suite of services — website creation, CRM, lead management, product catalogues, and more for Indian businesses." },
+      { title: "Services — tapvybe" },
+      { name: "description", content: "Explore tapvybe's full suite of services — website creation, CRM, lead management, product catalogues, and more for Indian businesses." },
     ],
   }),
   component: Services,
@@ -40,7 +40,7 @@ function HeroSection() {
           <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">for every business</span>
         </h1>
         <p className="mt-6 text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          From a single-page business card site to a full multi-location CRM platform — BizPlatform has the tools to make your clients look and perform their best online.
+          From a single-page business card site to a full multi-location CRM platform — tapvybe has the tools to make your clients look and perform their best online.
         </p>
       </div>
     </section>
@@ -198,7 +198,7 @@ function TechSection() {
             <span className="inline-block px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold mb-5">Built on Modern Tech</span>
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-tight">Enterprise technology, startup speed</h2>
             <p className="mt-4 text-slate-600 leading-relaxed text-lg">
-              BizPlatform is built on the latest web technologies — the same stack used by the world's fastest-growing startups. That means faster sites, fewer bugs, and a platform that scales without limit.
+              tapvybe is built on the latest web technologies — the same stack used by the world's fastest-growing startups. That means faster sites, fewer bugs, and a platform that scales without limit.
             </p>
             <div className="mt-8 space-y-4">
               {[
@@ -243,8 +243,8 @@ const FAQS = [
     a: "Yes. Each client gets their own login to update their profile, products, gallery, and contact info. They don't need any technical skills — it's designed to be as simple as filling a form.",
   },
   {
-    q: "Do I need to be a developer to use BizPlatform?",
-    a: "Absolutely not. BizPlatform is built for agency owners, marketing professionals, and business consultants — not developers. If you can use WhatsApp, you can use BizPlatform.",
+    q: "Do I need to be a developer to use tapvybe?",
+    a: "Absolutely not. tapvybe is built for agency owners, marketing professionals, and business consultants — not developers. If you can use WhatsApp, you can use tapvybe.",
   },
   {
     q: "Can I manage multiple clients from one account?",

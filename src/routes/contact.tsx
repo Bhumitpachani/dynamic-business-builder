@@ -6,8 +6,8 @@ import { PublicLayout } from "@/components/public-layout";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact Us — BizPlatform" },
-      { name: "description", content: "Get in touch with BizPlatform. We'll help you get your first client website live in under an hour." },
+      { title: "Contact Us — tapvybe" },
+      { name: "description", content: "Get in touch with tapvybe. We'll help you get your first client website live in under an hour." },
     ],
   }),
   component: Contact,
@@ -165,7 +165,7 @@ function ContactForm() {
           rows={5}
           value={form.message}
           onChange={(e) => set("message", e.target.value)}
-          placeholder="Tell us about your agency, how many clients you manage, and what you're looking to achieve with BizPlatform..."
+          placeholder="Tell us about your agency, how many clients you manage, and what you're looking to achieve with tapvybe..."
           className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500 transition-colors resize-none placeholder:text-slate-400"
         />
       </div>
@@ -200,15 +200,15 @@ const CONTACT_INFO = [
     icon: Mail,
     color: "bg-emerald-100 text-emerald-600",
     title: "Email Us",
-    lines: ["hello@bizplatform.in", "support@bizplatform.in"],
+    lines: ["hello@tapvybe.in", "support@tapvybe.in"],
     sub: "Response within 2 hours",
-    href: "mailto:hello@bizplatform.in",
+    href: "mailto:hello@tapvybe.in",
   },
   {
     icon: MapPin,
     color: "bg-amber-100 text-amber-600",
     title: "Find Us",
-    lines: ["BizPlatform HQ", "Bandra West, Mumbai 400050"],
+    lines: ["tapvybe HQ", "Bandra West, Mumbai 400050"],
     sub: "Maharashtra, India",
     href: "#",
   },
@@ -267,7 +267,7 @@ function MainSection() {
 
             {/* WhatsApp CTA */}
             <a
-              href="https://wa.me/919876543210?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20BizPlatform"
+              href="https://wa.me/919876543210?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20tapvybe"
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-4 p-5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl transition-colors group"

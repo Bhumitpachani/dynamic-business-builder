@@ -163,7 +163,7 @@ function PublicSite() {
           </div>
         </Section>
 
-        <p className="text-center text-xs text-slate-400 py-6">Powered by BizPlatform</p>
+        <p className="text-center text-xs text-slate-400 py-6">Powered by tapvybe</p>
       </div>
 
       {/* Sticky bottom bar mobile */}

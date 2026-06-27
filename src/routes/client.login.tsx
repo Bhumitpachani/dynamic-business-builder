@@ -4,7 +4,7 @@ import { store, session, isExpired } from "@/lib/store";
 import { Users } from "lucide-react";
 
 export const Route = createFileRoute("/client/login")({
-  head: () => ({ meta: [{ title: "Client Login — BizPlatform" }] }),
+  head: () => ({ meta: [{ title: "Client Login — tapvybe" }] }),
   component: ClientLogin,
 });
 

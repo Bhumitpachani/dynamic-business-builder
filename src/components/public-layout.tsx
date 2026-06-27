@@ -26,9 +26,8 @@ export function PublicNav() {
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2.5 shrink-0">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 grid place-items-center text-white font-black text-lg shadow-md">B</div>
-            <span className="font-extrabold text-xl text-slate-900 tracking-tight">BizPlatform</span>
+          <Link to="/" className="flex items-center shrink-0">
+            <img src="/tapvybe-logo-horizontal.png" alt="tapvybe" className="h-9 w-auto" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-0.5">
@@ -95,9 +94,8 @@ export function PublicFooter() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-10">
           <div className="col-span-2 lg:col-span-2">
-            <Link to="/" className="inline-flex items-center gap-2.5">
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 grid place-items-center text-white font-black text-lg">B</div>
-              <span className="font-extrabold text-xl text-white tracking-tight">BizPlatform</span>
+            <Link to="/" className="inline-flex items-center">
+              <img src="/tapvybe-logo-horizontal.png" alt="tapvybe" className="h-8 w-auto brightness-0 invert" />
             </Link>
             <p className="mt-4 text-sm text-slate-400 leading-relaxed max-w-xs">
               The complete platform for digital agencies to create, manage, and grow client business websites at scale.
@@ -146,7 +144,7 @@ export function PublicFooter() {
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="h-4 w-4 text-indigo-400 shrink-0" />
-                <a href="mailto:hello@bizplatform.in" className="text-sm text-slate-400 hover:text-white transition-colors">hello@bizplatform.in</a>
+                <a href="mailto:hello@tapvybe.in" className="text-sm text-slate-400 hover:text-white transition-colors">hello@tapvybe.in</a>
               </li>
             </ul>
           </div>
@@ -155,7 +153,7 @@ export function PublicFooter() {
 
       <div className="border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© {year} BizPlatform. All rights reserved.</p>
+          <p>© {year} tapvybe. All rights reserved.</p>
           <div className="flex gap-5">
             <a href="#" className="hover:text-slate-300 transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-slate-300 transition-colors">Terms of Service</a>

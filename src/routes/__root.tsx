@@ -77,10 +77,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "BizPlatform — Dynamic Business Websites" },
+      { title: "tapvybe — tap in. feel the vibes." },
       { name: "description", content: "Multi-tenant business website platform for digital agencies. Create, manage, and publish client sites in minutes." },
-      { name: "author", content: "BizPlatform" },
-      { property: "og:title", content: "BizPlatform" },
+      { name: "author", content: "tapvybe" },
+      { property: "og:title", content: "tapvybe" },
       { property: "og:description", content: "Multi-tenant business website platform for digital agencies." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

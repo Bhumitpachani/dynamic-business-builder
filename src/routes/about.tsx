@@ -5,8 +5,8 @@ import { PublicLayout } from "@/components/public-layout";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About Us — BizPlatform" },
-      { name: "description", content: "Learn about BizPlatform — who we are, our mission, and why we built the leading multi-tenant business website platform for digital agencies." },
+      { title: "About Us — tapvybe" },
+      { name: "description", content: "Learn about tapvybe — who we are, our mission, and why we built the leading multi-tenant business website platform for digital agencies." },
     ],
   }),
   component: About,
@@ -36,7 +36,7 @@ function HeroSection() {
           <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">for agencies</span>
         </h1>
         <p className="mt-6 text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          We started BizPlatform because we were frustrated with the same problem every agency faces: clients need professional websites, but building them from scratch is slow, expensive, and hard to scale.
+          We started tapvybe because we were frustrated with the same problem every agency faces: clients need professional websites, but building them from scratch is slow, expensive, and hard to scale.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-4 text-sm text-slate-400">
           <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-emerald-400" /> Founded 2022</span>
@@ -65,7 +65,7 @@ function StorySection() {
                 The problem wasn't our team's ability. It was the tools. Everything was built for developers, not for businesses. Nothing was built for the kind of scale an agency needs.
               </p>
               <p>
-                So we built BizPlatform — a platform where setting up a client's complete digital presence takes under an hour, and once it's live, the client can manage it themselves without calling us for every small change.
+                So we built tapvybe — a platform where setting up a client's complete digital presence takes under an hour, and once it's live, the client can manage it themselves without calling us for every small change.
               </p>
               <p className="font-semibold text-slate-800">
                 Today, we serve agencies across India helping them manage hundreds of business websites from a single dashboard.
@@ -77,7 +77,7 @@ function StorySection() {
           <div className="space-y-0">
             {[
               { year: "2021", title: "The Problem", desc: "Founding team struggles with scaling a digital agency. Each client website takes 2–3 weeks to build.", color: "bg-rose-500" },
-              { year: "2022", title: "BizPlatform v1", desc: "First version launched internally. Agency cuts delivery time from weeks to hours. First 10 paying agencies onboard.", color: "bg-amber-500" },
+              { year: "2022", title: "tapvybe v1", desc: "First version launched internally. Agency cuts delivery time from weeks to hours. First 10 paying agencies onboard.", color: "bg-amber-500" },
               { year: "2023", title: "Public Launch", desc: "Platform opens to all agencies. Product catalogue, gallery, CRM, and appointment systems added.", color: "bg-indigo-500" },
               { year: "2024", title: "500+ Businesses", desc: "Platform reaches 500+ live business websites. WhatsApp integration and analytics dashboard launch.", color: "bg-emerald-500" },
             ].map((t, i, arr) => (

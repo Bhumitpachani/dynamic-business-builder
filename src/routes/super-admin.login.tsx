@@ -4,7 +4,7 @@ import { SUPER_ADMIN, session } from "@/lib/store";
 import { Shield } from "lucide-react";
 
 export const Route = createFileRoute("/super-admin/login")({
-  head: () => ({ meta: [{ title: "Super Admin Login — BizPlatform" }] }),
+  head: () => ({ meta: [{ title: "Super Admin Login — tapvybe" }] }),
   component: SuperLogin,
 });
 

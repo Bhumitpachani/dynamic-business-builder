@@ -9,7 +9,7 @@ import { PublicLayout } from "@/components/public-layout";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "BizPlatform — Dynamic Business Websites" },
+      { title: "tapvybe — tap in. feel the vibes." },
       { name: "description", content: "Create professional, mobile-responsive business websites in minutes. Multi-tenant SaaS for digital agencies." },
     ],
   }),
@@ -97,7 +97,7 @@ function DashboardMockup() {
         {/* Top bar */}
         <div className="bg-slate-900 px-5 py-3.5 flex items-center gap-2">
           <div className="flex gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-rose-400" /><span className="h-2.5 w-2.5 rounded-full bg-amber-400" /><span className="h-2.5 w-2.5 rounded-full bg-emerald-400" /></div>
-          <div className="flex-1 mx-3 bg-slate-800 rounded-md px-3 py-1 text-xs text-slate-400">bizplatform.in/site/sharma-boutique</div>
+          <div className="flex-1 mx-3 bg-slate-800 rounded-md px-3 py-1 text-xs text-slate-400">tapvybe.in/site/sharma-boutique</div>
         </div>
         {/* Content */}
         <div className="p-5 space-y-4">
@@ -253,10 +253,10 @@ function HowItWorksSection() {
 
 /* ─── Why us ─────────────────────────────────────────────────────────────── */
 const WHY_POINTS = [
-  { icon: Clock, title: "Launch in minutes, not months", desc: "Traditional web development takes weeks. With BizPlatform, your client is live in under an hour." },
+  { icon: Clock, title: "Launch in minutes, not months", desc: "Traditional web development takes weeks. With tapvybe, your client is live in under an hour." },
   { icon: Target, title: "Built for Indian businesses", desc: "WhatsApp integration, UPI/QR ready, vernacular business types, INR pricing — designed for India first." },
   { icon: Award, title: "White-label for agencies", desc: "Brand the platform as your own. Your clients see your brand, not ours. Scale without limits." },
-  { icon: TrendingUp, title: "Real ROI, real results", desc: "Our clients report 3× more inquiries within the first month of going digital with BizPlatform." },
+  { icon: TrendingUp, title: "Real ROI, real results", desc: "Our clients report 3× more inquiries within the first month of going digital with tapvybe." },
 ];
 
 function WhyUsSection() {
@@ -265,9 +265,9 @@ function WhyUsSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-14 items-center">
           <div>
-            <span className="inline-block px-3 py-1 rounded-full bg-purple-50 text-purple-600 text-xs font-semibold border border-purple-100 mb-5">Why BizPlatform</span>
+            <span className="inline-block px-3 py-1 rounded-full bg-purple-50 text-purple-600 text-xs font-semibold border border-purple-100 mb-5">Why tapvybe</span>
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-tight">The platform built for agency growth</h2>
-            <p className="mt-4 text-slate-600 text-lg leading-relaxed">We built BizPlatform after spending years helping businesses go digital. We know the pain — slow development, high costs, poor mobile experience. We fixed all of it.</p>
+            <p className="mt-4 text-slate-600 text-lg leading-relaxed">We built tapvybe after spending years helping businesses go digital. We know the pain — slow development, high costs, poor mobile experience. We fixed all of it.</p>
             <div className="mt-10 space-y-6">
               {WHY_POINTS.map((p) => (
                 <div key={p.title} className="flex gap-4">
@@ -315,7 +315,7 @@ const TESTIMONIALS = [
     avatar: "R",
     color: "bg-indigo-100 text-indigo-700",
     stars: 5,
-    quote: "BizPlatform transformed how I serve clients. I used to spend 2 weeks building a basic website. Now I do it in 2 hours and charge the same. My margins have tripled.",
+    quote: "tapvybe transformed how I serve clients. I used to spend 2 weeks building a basic website. Now I do it in 2 hours and charge the same. My margins have tripled.",
   },
   {
     name: "Priya Sharma",
@@ -323,7 +323,7 @@ const TESTIMONIALS = [
     avatar: "P",
     color: "bg-emerald-100 text-emerald-700",
     stars: 5,
-    quote: "My WhatsApp inquiries went from 5 a week to 30 a week after launching my BizPlatform site. It looks so professional and I update it myself without calling anyone.",
+    quote: "My WhatsApp inquiries went from 5 a week to 30 a week after launching my tapvybe site. It looks so professional and I update it myself without calling anyone.",
   },
   {
     name: "Vikram Patel",
@@ -342,7 +342,7 @@ function TestimonialsSection() {
         <div className="text-center mb-14">
           <span className="inline-block px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-xs font-semibold border border-amber-100 mb-4">Testimonials</span>
           <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Loved by agencies & businesses</h2>
-          <p className="mt-4 text-lg text-slate-600 max-w-xl mx-auto">Don't take our word for it — hear from the people who use BizPlatform every day.</p>
+          <p className="mt-4 text-lg text-slate-600 max-w-xl mx-auto">Don't take our word for it — hear from the people who use tapvybe every day.</p>
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {TESTIMONIALS.map((t) => (
@@ -450,7 +450,7 @@ function CtaSection() {
           Ready to transform your<br className="hidden sm:block" /> clients' digital presence?
         </h2>
         <p className="mt-5 text-lg text-indigo-200 max-w-xl mx-auto">
-          Join 100+ agencies already growing with BizPlatform. No credit card required. Set up your first site free.
+          Join 100+ agencies already growing with tapvybe. No credit card required. Set up your first site free.
         </p>
         <div className="mt-10 flex flex-wrap gap-4 justify-center">
           <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 text-sm font-bold bg-white text-indigo-700 rounded-2xl hover:bg-indigo-50 shadow-xl transition-all hover:-translate-y-0.5">
