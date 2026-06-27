@@ -6,6 +6,9 @@
       "Bash(npm install firebase --save)",
       "Bash(npx tsc --noEmit)",
       "Read(//c/Users/bhumi/Downloads/**)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\bhumi\\Downloads"
     ]
   }
 }
