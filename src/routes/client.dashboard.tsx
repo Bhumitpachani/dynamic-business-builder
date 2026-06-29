@@ -386,8 +386,9 @@ function Field({ label, value, onChange, type = "text", textarea = false, placeh
   );
 }
 
-function ImagePicker({ label, value, onChange, folder = "general" }: { label: string; value: string; onChange: (v: string) => void; folder?: string }) {
+function ImagePicker({ label, value, onChange, folder = "general", hint }: { label: string; value: string; onChange: (v: string) => void; folder?: string; hint?: string }) {
   const [uploading, setUploading] = useState(false);
+  const isBanner = folder === "covers";
 
   async function pick(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -406,28 +407,72 @@ function ImagePicker({ label, value, onChange, folder = "general" }: { label: st
   }
 
   return (
-    <div>
+    <div className={isBanner ? "md:col-span-2" : ""}>
       {label && <span className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">{label}</span>}
-      <div className="flex items-center gap-3">
-        {value ? (
-          <img src={value} alt="" className="h-16 w-16 rounded-xl object-cover border border-slate-200 shadow-sm" />
-        ) : (
-          <div className="h-16 w-16 rounded-xl bg-slate-100 border-2 border-dashed border-slate-300 grid place-items-center">
-            {uploading ? <Loader2 className="h-5 w-5 text-indigo-500 animate-spin" /> : <ImgIcon className="h-5 w-5 text-slate-400" />}
+
+      {isBanner ? (
+        /* Wide banner preview */
+        <div className="space-y-2">
+          <div className="relative w-full h-32 rounded-2xl overflow-hidden border-2 border-dashed border-slate-300 bg-slate-50 flex items-center justify-center group">
+            {value ? (
+              <>
+                <img src={value} alt="" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                  <label className="cursor-pointer px-3 py-1.5 bg-white rounded-lg text-xs font-semibold text-slate-700 shadow hover:bg-slate-50 transition-colors">
+                    Change
+                    <input type="file" accept="image/*" onChange={pick} className="hidden" disabled={uploading} />
+                  </label>
+                  <button onClick={() => onChange("")} className="px-3 py-1.5 bg-rose-500 rounded-lg text-xs font-semibold text-white shadow hover:bg-rose-600 transition-colors">
+                    Remove
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col items-center gap-1.5 text-slate-400">
+                {uploading ? <Loader2 className="h-6 w-6 text-indigo-500 animate-spin" /> : <ImgIcon className="h-6 w-6" />}
+                {!uploading && <span className="text-xs font-medium">No banner uploaded</span>}
+              </div>
+            )}
           </div>
-        )}
-        <div className="space-y-1.5">
-          <label className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
-            {uploading ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Uploading…</> : "Upload Photo"}
-            <input type="file" accept="image/*" onChange={pick} className="hidden" disabled={uploading} />
-          </label>
-          {value && !uploading && (
-            <button onClick={() => onChange("")} className="block text-xs text-rose-500 hover:text-rose-600 font-medium transition-colors">
-              Remove
-            </button>
+          {!value && (
+            <label className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
+              {uploading ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Uploading…</> : <><ImgIcon className="h-3.5 w-3.5" /> Upload Banner</>}
+              <input type="file" accept="image/*" onChange={pick} className="hidden" disabled={uploading} />
+            </label>
           )}
         </div>
-      </div>
+      ) : (
+        /* Square logo / QR preview */
+        <div className="flex items-center gap-4">
+          <div className="shrink-0">
+            {value ? (
+              <img src={value} alt="" className="h-20 w-20 rounded-2xl object-cover border-2 border-slate-200 shadow-sm" />
+            ) : (
+              <div className="h-20 w-20 rounded-2xl bg-slate-100 border-2 border-dashed border-slate-300 grid place-items-center">
+                {uploading ? <Loader2 className="h-5 w-5 text-indigo-500 animate-spin" /> : <ImgIcon className="h-5 w-5 text-slate-400" />}
+              </div>
+            )}
+          </div>
+          <div className="space-y-1.5">
+            <label className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
+              {uploading ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Uploading…</> : value ? "Change Photo" : "Upload Photo"}
+              <input type="file" accept="image/*" onChange={pick} className="hidden" disabled={uploading} />
+            </label>
+            {value && !uploading && (
+              <button onClick={() => onChange("")} className="block text-xs text-rose-500 hover:text-rose-600 font-medium transition-colors">
+                Remove
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Size hint */}
+      {hint && (
+        <p className="mt-2 text-xs text-slate-400 flex items-center gap-1">
+          <span className="font-bold text-slate-500">Size:</span> {hint}
+        </p>
+      )}
     </div>
   );
 }
@@ -530,8 +575,20 @@ function ProfileTab({ biz, save, saving, onDirtyChange }: { biz: Business; save:
         <div className="md:col-span-2">
           <Field label="About" value={d.about} onChange={(v: string) => setD({ ...d, about: v })} textarea />
         </div>
-        <ImagePicker label="Logo" value={d.logo} onChange={(v) => setD({ ...d, logo: v })} folder="logos" />
-        <ImagePicker label="Cover Image" value={d.coverImage} onChange={(v) => setD({ ...d, coverImage: v })} folder="covers" />
+        <ImagePicker
+          label="Business Logo"
+          value={d.logo}
+          onChange={(v) => setD({ ...d, logo: v })}
+          folder="logos"
+          hint="400 × 400 px recommended · Square (1:1) · PNG or JPG"
+        />
+        <ImagePicker
+          label="Cover / Banner Image"
+          value={d.coverImage}
+          onChange={(v) => setD({ ...d, coverImage: v })}
+          folder="covers"
+          hint="1200 × 400 px recommended · Wide landscape (3:1) · JPG or PNG"
+        />
       </div>
     </Card>
   );

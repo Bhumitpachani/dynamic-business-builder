@@ -32,7 +32,7 @@ function SiteSkeleton() {
         {/* Hero card skeleton */}
         <div className="bg-white rounded-2xl shadow-lg p-5 md:p-6">
           <div className="flex items-start gap-4">
-            <Skeleton className="h-20 w-20 rounded-xl shrink-0 -mt-12" />
+            <Skeleton className="h-28 w-28 rounded-2xl shrink-0 -mt-16" />
             <div className="flex-1 min-w-0 pt-1 space-y-2">
               <Skeleton className="h-6 w-2/3" />
               <Skeleton className="h-4 w-1/3" />
@@ -139,21 +139,21 @@ function PublicSite() {
               // Logo is above the fold — load eagerly
               <img
                 src={biz.logo}
-                className="h-20 w-20 rounded-xl object-cover border-4 border-white shadow -mt-12 shrink-0"
+                className="h-28 w-28 rounded-2xl object-cover border-4 border-white shadow-xl -mt-16 shrink-0 p-1 bg-white"
                 alt={biz.name}
                 fetchPriority="high"
                 decoding="async"
                 loading="eager"
               />
             ) : (
-              <div className="h-20 w-20 rounded-xl grid place-items-center text-white text-3xl font-bold border-4 border-white shadow -mt-12 shrink-0" style={{ background: primary }}>
+              <div className="h-28 w-28 rounded-2xl grid place-items-center text-white text-4xl font-black border-4 border-white shadow-xl -mt-16 shrink-0" style={{ background: primary }}>
                 {biz.name[0]?.toUpperCase()}
               </div>
             )}
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 pt-1">
               <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 truncate">{biz.name}</h1>
-              {biz.category && <span className="inline-block text-xs px-2 py-0.5 rounded-full mt-1" style={{ background: primary + "20", color: primary }}>{biz.category}</span>}
-              {biz.tagline && <p className="text-sm text-slate-600 mt-2">{biz.tagline}</p>}
+              {biz.category && <span className="inline-block text-xs px-2.5 py-0.5 rounded-full mt-1.5 font-semibold" style={{ background: primary + "20", color: primary }}>{biz.category}</span>}
+              {biz.tagline && <p className="text-sm text-slate-600 mt-2 leading-relaxed">{biz.tagline}</p>}
             </div>
           </div>
 
