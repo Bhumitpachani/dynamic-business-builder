@@ -63,7 +63,7 @@ function ClientLogin() {
             {loading ? "Signing in…" : "Login"}
           </button>
         </form>
-        <p className="mt-4 text-xs text-slate-500 text-center">Credentials are issued by your Super Admin</p>
+        <p className="mt-4 text-xs text-slate-500 text-center">Credentials are issued by tapvybe</p>
         <Link to="/" className="block mt-4 text-center text-sm text-blue-600 hover:underline">← Back to home</Link>
       </div>
     </div>
