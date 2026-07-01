@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { store, session, isExpired, daysLeft, newId, slugify, type Business, type Product, type GalleryItem, type Lead } from "@/lib/store";
 import { uploadImage } from "@/lib/upload";
-import { LogOut, ExternalLink, Save, Trash2, Plus, BarChart3, MessageSquare, Calendar, Users as UsersIcon, Image as ImgIcon, Package, Settings as SettingsIcon, Phone, TrendingUp, Globe, ChevronRight, ArrowLeft, Loader2, AlertTriangle } from "lucide-react";
+import { LogOut, ExternalLink, Save, Trash2, Plus, BarChart3, MessageSquare, Calendar, Users as UsersIcon, Image as ImgIcon, Package, Settings as SettingsIcon, Phone, TrendingUp, Globe, ChevronRight, ArrowLeft, Loader2, AlertTriangle, Download } from "lucide-react";
 
 export const Route = createFileRoute("/client/dashboard")({
   head: () => ({ meta: [{ title: "Client Dashboard" }] }),
@@ -891,14 +891,46 @@ function AppointmentsTab({ biz, save, saving }: { biz: Business; save: (b: Busin
 
 function LeadsTab({ biz, save, saving }: { biz: Business; save: (b: Business) => void; saving: boolean }) {
   const [adding, setAdding] = useState(false);
+
+  function downloadLeadsExcel() {
+    const headers = ["Name", "Phone", "Email", "Source", "Status", "Follow-up Date", "Notes", "Created At"];
+    const rows = [...biz.leads].reverse().map((l) => [
+      l.name,
+      l.phone,
+      l.email,
+      l.source,
+      l.status,
+      l.followUpDate,
+      l.notes,
+      l.createdAt ? new Date(l.createdAt).toLocaleDateString() : "",
+    ]);
+    const csvContent = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${biz.slug || "leads"}_leads.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <Card
       title="Leads / CRM"
       subtitle={`${biz.leads.length} total leads`}
       action={
-        <button onClick={() => setAdding(true)} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors disabled:opacity-50">
-          <Plus className="h-4 w-4" /> Add Lead
-        </button>
+        <div className="flex items-center gap-2">
+          {biz.leads.length > 0 && (
+            <button onClick={downloadLeadsExcel} className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-emerald-300 rounded-xl hover:bg-emerald-50 font-medium text-emerald-700 transition-colors">
+              <Download className="h-4 w-4" /> Download Excel
+            </button>
+          )}
+          <button onClick={() => setAdding(true)} disabled={saving} className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-slate-300 rounded-xl hover:bg-slate-50 font-medium text-slate-600 transition-colors disabled:opacity-50">
+            <Plus className="h-4 w-4" /> Add Lead
+          </button>
+        </div>
       }
     >
       {adding && (
