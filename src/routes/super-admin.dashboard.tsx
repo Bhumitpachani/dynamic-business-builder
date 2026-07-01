@@ -7,7 +7,7 @@ import {
   LogOut, Plus, Trash2, ExternalLink, Edit3, Copy, Check,
   TrendingUp, Users, Globe, AlertCircle, CheckCircle, Layers, X,
   Search, ChevronLeft, ChevronRight, MessageSquare, Phone, Mail, Calendar,
-  BarChart3,
+  BarChart3, Download,
 } from "lucide-react";
 
 const PAGE_SIZE = 10;
@@ -280,6 +280,30 @@ function SuperDash() {
               setCopiedId={setCopiedId}
               onNewClient={() => setCreating(true)}
               navigate={navigate}
+              onDownload={() => {
+                const source = filtered.length ? filtered : list;
+                const headers = ["Business Name", "Category", "Username", "Password", "Plan Days", "Days Left", "Status", "Slug", "Phone", "Email", "Address", "City"];
+                const rows = source.map((b) => {
+                  const expired = isExpired(b);
+                  const remaining = daysLeft(b);
+                  return [
+                    b.name, b.category || "", b.username, b.password,
+                    b.planDays, expired ? "Expired" : remaining,
+                    expired ? "Expired" : "Active",
+                    b.slug, b.phone || "", b.email || "", b.address || "", b.city || "",
+                  ];
+                });
+                const csv = [headers, ...rows]
+                  .map((r) => r.map((c) => `"${String(c ?? "").replace(/"/g, '""')}"`).join(","))
+                  .join("\n");
+                const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `tapvybe_clients_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
             />
           )}
           {tab === "inquiries" && (
@@ -416,13 +440,13 @@ function OverviewTab({
 /* ── Clients Tab ── */
 function ClientsTab({
   list, paged, filtered, search, onSearch, safePage, totalPages, setPage, PAGE_SIZE,
-  copiedId, setCopiedId, onNewClient, navigate,
+  copiedId, setCopiedId, onNewClient, navigate, onDownload,
 }: {
   list: Business[]; paged: Business[]; filtered: Business[]; search: string;
   onSearch: (q: string) => void; safePage: number; totalPages: number;
   setPage: (fn: (p: number) => number) => void; PAGE_SIZE: number;
   copiedId: string; setCopiedId: (id: string) => void;
-  onNewClient: () => void; navigate: any;
+  onNewClient: () => void; navigate: any; onDownload: () => void;
 }) {
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
@@ -435,12 +459,22 @@ function ClientsTab({
               {search ? " found" : " registered"}
             </p>
           </div>
-          <button
-            onClick={onNewClient}
-            className="inline-flex items-center gap-1.5 px-3 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors sm:hidden"
-          >
-            <Plus className="h-4 w-4" /> New
-          </button>
+          <div className="flex items-center gap-2">
+            {list.length > 0 && (
+              <button
+                onClick={onDownload}
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl font-semibold transition-colors"
+              >
+                <Download className="h-4 w-4" /> Download Excel
+              </button>
+            )}
+            <button
+              onClick={onNewClient}
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors sm:hidden"
+            >
+              <Plus className="h-4 w-4" /> New
+            </button>
+          </div>
         </div>
         {/* Search */}
         <div className="relative">
