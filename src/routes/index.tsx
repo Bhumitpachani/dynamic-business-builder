@@ -432,7 +432,7 @@ function TestimonialsSection() {
 const PLANS = [
   {
     name: "Standard NFC Card",
-    price: "₹999",
+    price: "₹799",
     desc: "PVC card with NFC chip, QR code, and free digital profile.",
     highlight: false,
   },
