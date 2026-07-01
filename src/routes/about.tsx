@@ -19,7 +19,7 @@ function About() {
       <StorySection />
       <MissionSection />
       <ValuesSection />
-      <TeamSection />
+      {/* <TeamSection /> */}
       <CtaSection />
     </PublicLayout>
   );
