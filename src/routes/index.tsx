@@ -19,7 +19,6 @@ function Landing() {
   return (
     <PublicLayout>
       <HeroSection />
-      <StatsBar />
       <HowItWorksSection />
       <FeaturesSection />
       <MetalCardSection />
