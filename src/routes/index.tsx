@@ -366,20 +366,20 @@ function CardsShowcaseSection() {
 /* ─── Testimonials ───────────────────────────────────────────────────────── */
 const TESTIMONIALS = [
   {
-    name: "Priya Mehta",
-    role: "Founder, StyleHouse Mumbai",
+    name: "Bhargav Dodiya",
+    role: "Real Estate",
     quote: "I gave out 50 tapvybe cards at a fashion week event. Within 3 days I had 12 new enquiries. The reaction when people tap the card is priceless.",
     rating: 5,
   },
   {
-    name: "Rahul Sharma",
-    role: "Sales Director, TechVision India",
+    name: "Dhruv Sompura",
+    role: "Architect",
     quote: "Our whole sales team now uses tapvybe Metal Cards. It opens conversations at every meeting. The ability to update everyone's profiles from one dashboard is brilliant.",
     rating: 5,
   },
   {
-    name: "Ananya Reddy",
-    role: "Freelance Photographer, Bengaluru",
+    name: "Girirajstudio Madhada",
+    role: "Photography",
     quote: "I updated my portfolio link 4 times last year. With tapvybe, every card I ever gave anyone always shows my latest work. That's incredible.",
     rating: 5,
   },
