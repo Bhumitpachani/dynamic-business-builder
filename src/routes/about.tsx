@@ -1,12 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Heart, Target, Zap, Shield, Users, Award, Globe, TrendingUp } from "lucide-react";
+import {
+  ArrowRight,
+  Heart,
+  Target,
+  Zap,
+  Shield,
+  Users,
+  Award,
+  Globe,
+  TrendingUp,
+} from "lucide-react";
 import { PublicLayout } from "@/components/public-layout";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "About Us — tapvybe" },
-      { name: "description", content: "Learn about tapvybe — who we are, our mission, and why we built the smartest NFC business card platform in India." },
+      {
+        name: "description",
+        content:
+          "Learn about tapvybe — who we are, our mission, and why we built the smartest NFC business card platform in India.",
+      },
     ],
   }),
   component: About,
@@ -37,19 +51,14 @@ function HeroSection() {
           Our Story
         </span>
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-black tracking-tight leading-[1.1]">
-          Built to change<br />how you connect.
+          Built to change
+          <br />
+          how you connect.
         </h1>
         <p className="mt-6 text-base text-gray-600 leading-relaxed max-w-xl mx-auto">
-          We started tapvybe because paper business cards felt like a relic. We set out to build something smarter — a card that works as hard as you do.
+          We started tapvybe because paper business cards felt like a relic. We set out to build
+          something smarter — a card that works as hard as you do.
         </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-500 font-medium">
-          {["Founded 2022", "Mumbai, India", "10,000+ cards shipped"].map((s) => (
-            <span key={s} className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full inline-block" style={{ backgroundColor: "#6B3EF0" }} />
-              {s}
-            </span>
-          ))}
-        </div>
       </div>
     </section>
   );
@@ -58,10 +67,30 @@ function HeroSection() {
 /* ─── Story ─────────────────────────────────────────────────────────────── */
 function StorySection() {
   const timeline = [
-    { year: "2021", title: "The Idea", desc: "Our founders were tired of printing new business cards every time their phone number changed. There had to be a better way.", dot: "#6B3EF0" },
-    { year: "2022", title: "tapvybe v1", desc: "First NFC cards produced and shipped. 50 early users in Mumbai tested the product — feedback was overwhelmingly positive.", dot: "#000" },
-    { year: "2023", title: "Going Wide", desc: "Metal cards launched. Dashboard v2 released. Expanded to Pune, Bangalore, and Delhi. First 1,000 cards shipped.", dot: "#6B3EF0" },
-    { year: "2024", title: "10,000+ Cards", desc: "Over 10,000 tapvybe cards now in circulation across India. Bulk/team ordering launched for companies and events.", dot: "#000" },
+    {
+      year: "2021",
+      title: "The Idea",
+      desc: "Our founders were tired of printing new business cards every time their phone number changed. There had to be a better way.",
+      dot: "#6B3EF0",
+    },
+    {
+      year: "2022",
+      title: "tapvybe v1",
+      desc: "First NFC cards produced and shipped. 50 early users in Mumbai tested the product — feedback was overwhelmingly positive.",
+      dot: "#000",
+    },
+    {
+      year: "2023",
+      title: "Going Wide",
+      desc: "Metal cards launched. Dashboard v2 released. Expanded to Pune, Bangalore, and Delhi. First 1,000 cards shipped.",
+      dot: "#6B3EF0",
+    },
+    {
+      year: "2024",
+      title: "10,000+ Cards",
+      desc: "Over 10,000 tapvybe cards now in circulation across India. Bulk/team ordering launched for companies and events.",
+      dot: "#000",
+    },
   ];
 
   return (
@@ -77,20 +106,27 @@ function StorySection() {
               How We Started
             </span>
             <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight leading-tight">
-              From a frustration<br />to a movement.
+              From a frustration
+              <br />
+              to a movement.
             </h2>
             <div className="mt-6 space-y-4 text-gray-600 leading-relaxed text-sm">
               <p>
-                In 2021, our founding team was constantly running out of business cards at networking events. And the ones they had were always out of date — wrong number, old job title, missing Instagram handle.
+                In 2023, our founding team was constantly running out of business cards at
+                networking events. And the ones they had were always out of date — wrong number, old
+                job title, missing Instagram handle.
               </p>
               <p>
-                We knew NFC technology existed, but nothing on the market was designed for the Indian professional — affordable, good-looking, and actually easy to use.
+                We knew NFC technology existed, but nothing on the market was designed for the
+                Indian professional — affordable, good-looking, and actually easy to use.
               </p>
               <p>
-                So we built tapvybe. A card that never goes out of date. A profile that updates live. One tap and your entire professional world is at their fingertips.
+                So we built tapvybe. A card that never goes out of date. A profile that updates
+                live. One tap and your entire professional world is at their fingertips.
               </p>
               <p className="font-bold text-black">
-                Today, tapvybe cards are in the pockets of professionals, founders, and sales teams across India.
+                Today, tapvybe cards are in the pockets of professionals, founders, and sales teams
+                across India.
               </p>
             </div>
           </div>
@@ -128,7 +164,9 @@ function MissionSection() {
     <section className="bg-white py-20 md:py-28">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">What drives us every day</h2>
+          <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">
+            What drives us every day
+          </h2>
         </div>
         <div className="grid md:grid-cols-2 gap-6">
           {/* Mission — dark */}
@@ -141,7 +179,9 @@ function MissionSection() {
             </div>
             <h3 className="text-2xl font-black mb-4">Our Mission</h3>
             <p className="text-gray-400 leading-relaxed text-base">
-              To make professional networking effortless for every Indian professional — regardless of industry, budget, or tech-savviness. One tap should be all it takes to make a great first impression.
+              To make professional networking effortless for every Indian professional — regardless
+              of industry, budget, or tech-savviness. One tap should be all it takes to make a great
+              first impression.
             </p>
           </div>
           {/* Vision — light */}
@@ -154,7 +194,9 @@ function MissionSection() {
             </div>
             <h3 className="text-2xl font-black text-black mb-4">Our Vision</h3>
             <p className="text-gray-600 leading-relaxed text-base">
-              A world where paper business cards are a thing of the past — where every professional's contact information is always up to date, always shareable, and always on-brand.
+              A world where paper business cards are a thing of the past — where every
+              professional's contact information is always up to date, always shareable, and always
+              on-brand.
             </p>
           </div>
         </div>
@@ -165,12 +207,36 @@ function MissionSection() {
 
 /* ─── Values ─────────────────────────────────────────────────────────────── */
 const VALUES = [
-  { icon: Zap, title: "Speed First", desc: "From order to delivery in days, not weeks. Your card should arrive before your next networking event." },
-  { icon: Heart, title: "Design Obsessed", desc: "Every card we produce is reviewed by our design team. We won't ship something we wouldn't be proud to carry." },
-  { icon: Shield, title: "Built to Last", desc: "NFC chips don't expire. Your tapvybe card works today, in 5 years, and beyond — guaranteed." },
-  { icon: TrendingUp, title: "Always Improving", desc: "We ship new profile features and dashboard updates every month, based on real feedback from our users." },
-  { icon: Users, title: "Community Driven", desc: "Our users shape our roadmap. Every feature request is read and considered by the founding team." },
-  { icon: Award, title: "Quality Guaranteed", desc: "Defective card? We replace it, free of charge, no questions asked, within 12 months of purchase." },
+  {
+    icon: Zap,
+    title: "Speed First",
+    desc: "From order to delivery in days, not weeks. Your card should arrive before your next networking event.",
+  },
+  {
+    icon: Heart,
+    title: "Design Obsessed",
+    desc: "Every card we produce is reviewed by our design team. We won't ship something we wouldn't be proud to carry.",
+  },
+  {
+    icon: Shield,
+    title: "Built to Last",
+    desc: "NFC chips don't expire. Your tapvybe card works today, in 1 years, and beyond — guaranteed.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Always Improving",
+    desc: "We ship new profile features and dashboard updates every month, based on real feedback from our users.",
+  },
+  {
+    icon: Users,
+    title: "Community Driven",
+    desc: "Our users shape our roadmap. Every feature request is read and considered by the founding team.",
+  },
+  {
+    icon: Award,
+    title: "Quality Guaranteed",
+    desc: "Defective card? We replace it, free of charge, no questions asked, within 12 months of purchase.",
+  },
 ];
 
 function ValuesSection() {
@@ -178,12 +244,19 @@ function ValuesSection() {
     <section className="bg-gray-50 py-20 md:py-28">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="text-center mb-14">
-          <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">The principles we build by</h2>
-          <p className="mt-3 text-base text-gray-600 max-w-xl mx-auto">These aren't slogans — they're how we make every decision, every day.</p>
+          <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">
+            The principles we build by
+          </h2>
+          <p className="mt-3 text-base text-gray-600 max-w-xl mx-auto">
+            These aren't slogans — they're how we make every decision, every day.
+          </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {VALUES.map((v) => (
-            <div key={v.title} className="group p-7 rounded-2xl bg-white border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all">
+            <div
+              key={v.title}
+              className="group p-7 rounded-2xl bg-white border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all"
+            >
               <div
                 className="h-12 w-12 rounded-xl grid place-items-center mb-5 group-hover:scale-110 transition-transform"
                 style={{ backgroundColor: "#EDE8FE" }}
@@ -202,10 +275,30 @@ function ValuesSection() {
 
 /* ─── Team ───────────────────────────────────────────────────────────────── */
 const TEAM = [
-  { name: "Arjun Bhatia", role: "Co-Founder & CEO", bio: "Serial entrepreneur. Obsessed with product design and the way people connect in real life.", initials: "AB" },
-  { name: "Sneha Kulkarni", role: "Co-Founder & CTO", bio: "Full-stack engineer. Built the tapvybe platform end to end. Loves clean code and fast load times.", initials: "SK" },
-  { name: "Rohan Desai", role: "Head of Growth", bio: "Networking veteran. Has personally handed out 500+ business cards — now he hands out tapvybe cards.", initials: "RD" },
-  { name: "Meera Nair", role: "Head of Design", bio: "Every card design, every profile layout — Meera ensures it looks stunning before it ships.", initials: "MN" },
+  {
+    name: "Arjun Bhatia",
+    role: "Co-Founder & CEO",
+    bio: "Serial entrepreneur. Obsessed with product design and the way people connect in real life.",
+    initials: "AB",
+  },
+  {
+    name: "Sneha Kulkarni",
+    role: "Co-Founder & CTO",
+    bio: "Full-stack engineer. Built the tapvybe platform end to end. Loves clean code and fast load times.",
+    initials: "SK",
+  },
+  {
+    name: "Rohan Desai",
+    role: "Head of Growth",
+    bio: "Networking veteran. Has personally handed out 500+ business cards — now he hands out tapvybe cards.",
+    initials: "RD",
+  },
+  {
+    name: "Meera Nair",
+    role: "Head of Design",
+    bio: "Every card design, every profile layout — Meera ensures it looks stunning before it ships.",
+    initials: "MN",
+  },
 ];
 
 function TeamSection() {
@@ -213,12 +306,19 @@ function TeamSection() {
     <section className="bg-white py-20 md:py-28">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="text-center mb-14">
-          <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">The people behind tapvybe</h2>
-          <p className="mt-3 text-base text-gray-600 max-w-xl mx-auto">A small, passionate team building the future of professional networking.</p>
+          <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">
+            The people behind tapvybe
+          </h2>
+          <p className="mt-3 text-base text-gray-600 max-w-xl mx-auto">
+            A small, passionate team building the future of professional networking.
+          </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {TEAM.map((t, i) => (
-            <div key={t.name} className="bg-gray-50 rounded-3xl p-7 border border-gray-100 text-center hover:shadow-md transition-shadow group">
+            <div
+              key={t.name}
+              className="bg-gray-50 rounded-3xl p-7 border border-gray-100 text-center hover:shadow-md transition-shadow group"
+            >
               <div
                 className="h-16 w-16 rounded-2xl grid place-items-center font-black text-lg text-white mx-auto mb-5 group-hover:scale-105 transition-transform"
                 style={{ backgroundColor: i % 2 === 0 ? "#6B3EF0" : "#000" }}
@@ -226,7 +326,9 @@ function TeamSection() {
                 {t.initials}
               </div>
               <h3 className="font-bold text-black text-base">{t.name}</h3>
-              <p className="text-xs font-semibold mt-0.5 mb-3" style={{ color: "#6B3EF0" }}>{t.role}</p>
+              <p className="text-xs font-semibold mt-0.5 mb-3" style={{ color: "#6B3EF0" }}>
+                {t.role}
+              </p>
               <p className="text-xs text-gray-500 leading-relaxed">{t.bio}</p>
             </div>
           ))}

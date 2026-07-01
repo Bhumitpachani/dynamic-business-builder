@@ -1,5 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Check, ChevronDown, ChevronUp, Wifi, Layers, Zap, RefreshCw, Globe, Shield } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Wifi,
+  Layers,
+  Zap,
+  RefreshCw,
+  Globe,
+  Shield,
+} from "lucide-react";
 import { useState } from "react";
 import { PublicLayout } from "@/components/public-layout";
 
@@ -7,7 +18,11 @@ export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
       { title: "Services — tapvybe" },
-      { name: "description", content: "Explore tapvybe's smart NFC business card products — standard cards, metal cards, custom designs, and digital profiles." },
+      {
+        name: "description",
+        content:
+          "Explore tapvybe's smart NFC business card products — standard cards, metal cards, custom designs, and digital profiles.",
+      },
     ],
   }),
   component: Services,
@@ -38,10 +53,13 @@ function HeroSection() {
           Our Products
         </span>
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-black tracking-tight leading-[1.1]">
-          Everything you need to<br />make a lasting impression.
+          Everything you need to
+          <br />
+          make a lasting impression.
         </h1>
         <p className="mt-6 text-base text-gray-600 leading-relaxed max-w-xl mx-auto">
-          tapvybe smart NFC cards let you share your digital profile, collect leads, and stay connected — with a single tap. No app needed.
+          tapvybe smart NFC cards let you share your digital profile, collect leads, and stay
+          connected — with a single tap. No app needed.
         </p>
         <div className="mt-8 flex flex-wrap gap-4 justify-center">
           <Link
@@ -70,7 +88,7 @@ const PRODUCTS = [
     name: "Standard NFC Card",
     tagline: "The classic, reimagined.",
     desc: "A sleek PVC card embedded with NFC technology. Share your full digital profile — contact, social links, portfolio, and more — with one tap.",
-    price: "₹999",
+    price: "₹799",
     priceNote: "per card",
     features: [
       "NFC + QR Code",
@@ -130,7 +148,8 @@ function ProductsSection() {
             Pick your card
           </h2>
           <p className="mt-3 text-base text-gray-600 max-w-xl mx-auto">
-            Every card comes with a free digital profile, unlimited updates, and lifetime NFC functionality.
+            Every card comes with a free digital profile, unlimited updates, and lifetime NFC
+            functionality.
           </p>
         </div>
 
@@ -146,13 +165,29 @@ function ProductsSection() {
               >
                 {p.badge}
               </span>
-              <h3 className={`text-xl font-black mb-1 ${p.highlight ? "text-white" : "text-black"}`}>{p.name}</h3>
-              <p className={`text-sm mb-4 ${p.highlight ? "text-gray-400" : "text-gray-500"}`}>{p.tagline}</p>
-              <p className={`text-sm leading-relaxed mb-6 ${p.highlight ? "text-gray-300" : "text-gray-600"}`}>{p.desc}</p>
+              <h3
+                className={`text-xl font-black mb-1 ${p.highlight ? "text-white" : "text-black"}`}
+              >
+                {p.name}
+              </h3>
+              <p className={`text-sm mb-4 ${p.highlight ? "text-gray-400" : "text-gray-500"}`}>
+                {p.tagline}
+              </p>
+              <p
+                className={`text-sm leading-relaxed mb-6 ${p.highlight ? "text-gray-300" : "text-gray-600"}`}
+              >
+                {p.desc}
+              </p>
 
               <div className="mb-6">
-                <span className={`text-4xl font-black ${p.highlight ? "text-white" : "text-black"}`}>{p.price}</span>
-                <span className={`text-sm ml-2 ${p.highlight ? "text-gray-400" : "text-gray-500"}`}>{p.priceNote}</span>
+                <span
+                  className={`text-4xl font-black ${p.highlight ? "text-white" : "text-black"}`}
+                >
+                  {p.price}
+                </span>
+                <span className={`text-sm ml-2 ${p.highlight ? "text-gray-400" : "text-gray-500"}`}>
+                  {p.priceNote}
+                </span>
               </div>
 
               <ul className="space-y-2.5 mb-8 flex-1">
@@ -178,7 +213,8 @@ function ProductsSection() {
                 }`}
                 style={p.highlight ? {} : { backgroundColor: "#6B3EF0" }}
               >
-                {p.price === "Custom" ? "Get a Quote" : "Order Now"} <ArrowRight className="h-4 w-4" />
+                {p.price === "Custom" ? "Get a Quote" : "Order Now"}{" "}
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           ))}
@@ -190,12 +226,36 @@ function ProductsSection() {
 
 /* ─── Features ───────────────────────────────────────────────────────────── */
 const FEATURES = [
-  { icon: Wifi, title: "NFC Technology", desc: "Works with all modern iPhones and Android devices. Just tap — no app download required by the receiver." },
-  { icon: Globe, title: "Live Digital Profile", desc: "Your tapvybe profile updates in real time. Change your phone number, add a new social link — it's live instantly everywhere." },
-  { icon: Layers, title: "QR Code Backup", desc: "Every card also has a QR code. Works even with devices that don't support NFC, so you never miss a connection." },
-  { icon: RefreshCw, title: "Unlimited Updates", desc: "Update your profile as many times as you want, for life. No subscription required for the basics." },
-  { icon: Zap, title: "Lead Capture", desc: "Built-in enquiry form on your digital profile. Visitors can leave their name, email and message directly." },
-  { icon: Shield, title: "Privacy Control", desc: "You decide what's visible. Control which details are shown to the public and which stay private." },
+  {
+    icon: Wifi,
+    title: "NFC Technology",
+    desc: "Works with all modern iPhones and Android devices. Just tap — no app download required by the receiver.",
+  },
+  {
+    icon: Globe,
+    title: "Live Digital Profile",
+    desc: "Your tapvybe profile updates in real time. Change your phone number, add a new social link — it's live instantly everywhere.",
+  },
+  {
+    icon: Layers,
+    title: "QR Code Backup",
+    desc: "Every card also has a QR code. Works even with devices that don't support NFC, so you never miss a connection.",
+  },
+  {
+    icon: RefreshCw,
+    title: "Unlimited Updates",
+    desc: "Update your profile as many times as you want, for life. No subscription required for the basics.",
+  },
+  {
+    icon: Zap,
+    title: "Lead Capture",
+    desc: "Built-in enquiry form on your digital profile. Visitors can leave their name, email and message directly.",
+  },
+  {
+    icon: Shield,
+    title: "Privacy Control",
+    desc: "You decide what's visible. Control which details are shown to the public and which stay private.",
+  },
 ];
 
 function FeaturesSection() {
@@ -213,7 +273,10 @@ function FeaturesSection() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {FEATURES.map((f) => (
-            <div key={f.title} className="group p-7 rounded-2xl border border-gray-100 bg-white hover:border-gray-200 hover:shadow-lg transition-all">
+            <div
+              key={f.title}
+              className="group p-7 rounded-2xl border border-gray-100 bg-white hover:border-gray-200 hover:shadow-lg transition-all"
+            >
               <div
                 className="h-12 w-12 rounded-xl grid place-items-center mb-5"
                 style={{ backgroundColor: "#EDE8FE" }}
@@ -254,14 +317,25 @@ function MetalCardFeature() {
               Smart NFC
             </span>
             <h2 className="text-3xl sm:text-4xl font-black text-black leading-tight tracking-tight">
-              One tap.<br />Infinite connections.
+              One tap.
+              <br />
+              Infinite connections.
             </h2>
             <p className="mt-5 text-base text-gray-600 leading-relaxed max-w-sm">
-              Your digital profile updates live — change your details once and every card you've shared is updated automatically. No reprinting ever.
+              Your digital profile updates live — change your details once and every card you've
+              shared is updated automatically. No reprinting ever.
             </p>
             <ul className="mt-8 space-y-3">
-              {["Works on all iOS & Android devices", "No app required to receive", "Update your profile anytime, forever", "Built-in QR code for universal access"].map((item) => (
-                <li key={item} className="flex items-center gap-3 text-sm text-gray-700 font-medium">
+              {[
+                "Works on all iOS & Android devices",
+                "No app required to receive",
+                "Update your profile anytime, forever",
+                "Built-in QR code for universal access",
+              ].map((item) => (
+                <li
+                  key={item}
+                  className="flex items-center gap-3 text-sm text-gray-700 font-medium"
+                >
                   <span
                     className="h-5 w-5 rounded-full grid place-items-center shrink-0"
                     style={{ backgroundColor: "#EDE8FE" }}
@@ -323,7 +397,9 @@ function FaqSection() {
           <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">
             Frequently asked questions
           </h2>
-          <p className="mt-3 text-base text-gray-600">Everything you need to know about tapvybe cards.</p>
+          <p className="mt-3 text-base text-gray-600">
+            Everything you need to know about tapvybe cards.
+          </p>
         </div>
 
         <div className="space-y-2">
@@ -334,10 +410,11 @@ function FaqSection() {
                 className="w-full flex items-center justify-between px-6 py-5 text-left text-sm font-bold text-black hover:text-[#6B3EF0] transition-colors"
               >
                 {f.q}
-                {open === i
-                  ? <ChevronUp className="h-4 w-4 shrink-0" style={{ color: "#6B3EF0" }} />
-                  : <ChevronDown className="h-4 w-4 shrink-0 text-gray-400" />
-                }
+                {open === i ? (
+                  <ChevronUp className="h-4 w-4 shrink-0" style={{ color: "#6B3EF0" }} />
+                ) : (
+                  <ChevronDown className="h-4 w-4 shrink-0 text-gray-400" />
+                )}
               </button>
               {open === i && (
                 <div className="px-6 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-100 pt-4">
