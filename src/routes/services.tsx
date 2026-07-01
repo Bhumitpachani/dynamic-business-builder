@@ -88,7 +88,7 @@ const PRODUCTS = [
     name: "Standard NFC Card",
     tagline: "The classic, reimagined.",
     desc: "A sleek PVC card embedded with NFC technology. Share your full digital profile — contact, social links, portfolio, and more — with one tap.",
-    price: "₹799",
+    price: "₹699",
     priceNote: "per card",
     features: [
       "NFC + QR Code",
@@ -106,7 +106,7 @@ const PRODUCTS = [
     name: "Metal NFC Card",
     tagline: "Elegance meets innovation.",
     desc: "Precision-crafted metal card with laser-engraved branding. The ultimate first impression — built to last a lifetime and make people remember you.",
-    price: "₹2,499",
+    price: "₹1,111",
     priceNote: "per card",
     features: [
       "Stainless steel / Black metal",
@@ -244,7 +244,7 @@ const FEATURES = [
   {
     icon: RefreshCw,
     title: "Unlimited Updates",
-    desc: "Update your profile as many times as you want, for life. No subscription required for the basics.",
+    desc: "Update your profile as many times as you want, for life.",
   },
   {
     icon: Zap,
