@@ -216,7 +216,7 @@ function FeaturesSection() {
             Everything packed into one card
           </h2>
           <p className="mt-3 text-base text-gray-600 max-w-xl mx-auto">
-            Every tapvybe card comes loaded with features — no subscriptions, no hidden costs.
+            Every tapvybe card comes loaded with features — no hidden costs.
           </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -367,19 +367,19 @@ const TESTIMONIALS = [
   {
     name: "Bhargav Dodiya",
     role: "Real Estate",
-    quote: "I gave out 50 tapvybe cards at a fashion week event. Within 3 days I had 12 new enquiries. The reaction when people tap the card is priceless.",
+    quote: "The NFC Digital Card has been a great addition to my real estate business. It helps me share my contact information instantly and creates a professional impression. Highly recommended!",
     rating: 5,
   },
   {
     name: "Dhruv Sompura",
     role: "Architect",
-    quote: "Our whole sales team now uses tapvybe Metal Cards. It opens conversations at every meeting. The ability to update everyone's profiles from one dashboard is brilliant.",
+    quote: "I recently started using this NFC Digital Business Card, and I'm really impressed with it. As an architect, it has made networking so much easier. I can instantly share my contact details, portfolio, and social media with just a tap. I'm genuinely happy with the experience and would definitely recommend it to anyone looking for a professional way to connect.",
     rating: 5,
   },
   {
     name: "Girirajstudio Madhada",
     role: "Photography",
-    quote: "I updated my portfolio link 4 times last year. With tapvybe, every card I ever gave anyone always shows my latest work. That's incredible.",
+    quote: "Great experience with the Digital NFC Card! As a photographer, it helps me instantly share my contact details, portfolio, and social media with clients. It's professional, easy to use, and perfect for networking. Highly recommended!",
     rating: 5,
   },
 ];
@@ -431,13 +431,13 @@ function TestimonialsSection() {
 const PLANS = [
   {
     name: "Standard NFC Card",
-    price: "₹799",
+    price: "₹699",
     desc: "PVC card with NFC chip, QR code, and free digital profile.",
     highlight: false,
   },
   {
     name: "Metal NFC Card",
-    price: "₹2,499",
+    price: "₹1,111",
     desc: "Stainless steel with laser engraving, premium packaging.",
     highlight: true,
   },

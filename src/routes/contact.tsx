@@ -44,7 +44,7 @@ function HeroSection() {
           Get In Touch
         </span>
         <h1 className="text-4xl sm:text-5xl font-black text-black tracking-tight leading-[1.1]">
-          Let's get your<br />tapvybe card sorted.
+          Go Digital. Reduce Paper.<br />Recycle Responsibly. Plant More Trees.
         </h1>
         <p className="mt-5 text-base text-gray-600 leading-relaxed">
           Questions about an order, need a custom design, or want to order for your whole team? We're here. Our team responds within 2 hours.
@@ -74,9 +74,9 @@ const CONTACT_INFO = [
   {
     icon: Mail,
     title: "Email Us",
-    lines: ["tapvybe@gmail.com"],
+    lines: ["info@tapvybe.in"],
     sub: "Response within 2 hours",
-    href: "mailto:tapvybe@gmail.com",
+    href: "mailto:info@tapvybe.in",
   },
   {
     icon: Clock,

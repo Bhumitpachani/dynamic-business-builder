@@ -34,7 +34,7 @@ function About() {
       <MissionSection />
       <ValuesSection />
       {/* <TeamSection /> */}
-      <CtaSection />
+      {/* <CtaSection /> */}
     </PublicLayout>
   );
 }
@@ -112,21 +112,19 @@ function StorySection() {
             </h2>
             <div className="mt-6 space-y-4 text-gray-600 leading-relaxed text-sm">
               <p>
-                In 2023, our founding team was constantly running out of business cards at
-                networking events. And the ones they had were always out of date — wrong number, old
-                job title, missing Instagram handle.
+                TAPVYBE was born from a personal experience.
               </p>
               <p>
-                We knew NFC technology existed, but nothing on the market was designed for the
-                Indian professional — affordable, good-looking, and actually easy to use.
+                During a business meeting, I exchanged a traditional paper business card like everyone else. But as someone working in the IT and Digital Marketing industry, I couldn't ignore one simple thought:
+              </p>
+              <p className="font-bold text-black italic">
+                "If I'm asking businesses to embrace digital transformation, why am I still introducing myself with paper?"
               </p>
               <p>
-                So we built tapvybe. A card that never goes out of date. A profile that updates
-                live. One tap and your entire professional world is at their fingertips.
+                That question became the beginning of TAPVYBE.
               </p>
-              <p className="font-bold text-black">
-                Today, tapvybe cards are in the pockets of professionals, founders, and sales teams
-                across India.
+              <p>
+                We realized that networking deserved an upgrade — one that reflects today's digital-first world.
               </p>
             </div>
           </div>
@@ -179,9 +177,7 @@ function MissionSection() {
             </div>
             <h3 className="text-2xl font-black mb-4">Our Mission</h3>
             <p className="text-gray-400 leading-relaxed text-base">
-              To make professional networking effortless for every Indian professional — regardless
-              of industry, budget, or tech-savviness. One tap should be all it takes to make a great
-              first impression.
+              To make professional digital identity accessible, affordable, and effortless for every business. Whether you're a freelancer, entrepreneur, startup, salesperson, consultant, or established company, we believe your identity should be available instantly — with just one tap.
             </p>
           </div>
           {/* Vision — light */}
@@ -194,9 +190,8 @@ function MissionSection() {
             </div>
             <h3 className="text-2xl font-black text-black mb-4">Our Vision</h3>
             <p className="text-gray-600 leading-relaxed text-base">
-              A world where paper business cards are a thing of the past — where every
-              professional's contact information is always up to date, always shareable, and always
-              on-brand.
+              At TAPVYBE, we believe technology should create a smarter and greener future. By replacing disposable paper business cards with reusable NFC cards, we aim to reduce paper waste, encourage recycling, and inspire people to plant more trees.<br /><br />
+              <span className="font-bold text-black">Less Paper. More Trees. Smarter Connections.</span>
             </p>
           </div>
         </div>
@@ -209,33 +204,23 @@ function MissionSection() {
 const VALUES = [
   {
     icon: Zap,
-    title: "Speed First",
-    desc: "From order to delivery in days, not weeks. Your card should arrive before your next networking event.",
-  },
-  {
-    icon: Heart,
-    title: "Design Obsessed",
-    desc: "Every card we produce is reviewed by our design team. We won't ship something we wouldn't be proud to carry.",
-  },
-  {
-    icon: Shield,
-    title: "Built to Last",
-    desc: "NFC chips don't expire. Your tapvybe card works today, in 1 years, and beyond — guaranteed.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Always Improving",
-    desc: "We ship new profile features and dashboard updates every month, based on real feedback from our users.",
-  },
-  {
-    icon: Users,
-    title: "Community Driven",
-    desc: "Our users shape our roadmap. Every feature request is read and considered by the founding team.",
+    title: "Innovation First",
+    desc: "We embrace technology that simplifies business communication.",
   },
   {
     icon: Award,
-    title: "Quality Guaranteed",
-    desc: "Defective card? We replace it, free of charge, no questions asked, within 12 months of purchase.",
+    title: "Professional by Design",
+    desc: "Every interaction should leave a lasting impression.",
+  },
+  {
+    icon: Heart,
+    title: "Affordable for Everyone",
+    desc: "Digital transformation shouldn't be limited to large companies.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Customer Success",
+    desc: "Your growth is our greatest achievement.",
   },
 ];
 
@@ -245,11 +230,8 @@ function ValuesSection() {
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">
-            The principles we build by
+            Our Values
           </h2>
-          <p className="mt-3 text-base text-gray-600 max-w-xl mx-auto">
-            These aren't slogans — they're how we make every decision, every day.
-          </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {VALUES.map((v) => (

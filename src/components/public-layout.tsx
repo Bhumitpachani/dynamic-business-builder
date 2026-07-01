@@ -149,7 +149,7 @@ export function PublicFooter() {
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="h-4 w-4 text-[#6B3EF0] shrink-0" />
-                <a href="mailto:tapvybe@gmail.com" className="text-sm text-gray-500 hover:text-white transition-colors">tapvybe@gmail.com</a>
+                <a href="mailto:info@tapvybe.in" className="text-sm text-gray-500 hover:text-white transition-colors">info@tapvybe.in</a>
               </li>
             </ul>
           </div>
