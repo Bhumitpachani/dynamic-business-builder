@@ -107,7 +107,7 @@ export function PublicFooter() {
               <img src="/tapvybe-logo-horizontal.png" alt="tapvybe" className="h-8 w-auto brightness-0 invert" />
             </Link>
             <p className="mt-4 text-sm text-gray-500 leading-relaxed max-w-xs">
-              The smart NFC business card platform. Tap in, feel the vibes.
+              One Smart Card. Hundreds of Trees Saved. Countless Connections Created.
             </p>
             <div className="mt-6 flex gap-2.5">
               {([Facebook, Twitter, Instagram, Linkedin] as const).map((Icon, i) => (
