@@ -31,7 +31,6 @@ function About() {
     <PublicLayout>
       <HeroSection />
       <StorySection />
-      <WhySection />
       <MissionSection />
       <ValuesSection />
       {/* <TeamSection /> */}
@@ -105,28 +104,22 @@ function StorySection() {
               className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
               style={{ backgroundColor: "#6B3EF0" }}
             >
-              How We Started
+              Why TAPVYBE?
             </span>
             <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight leading-tight">
-              From a frustration
+              We don't just create NFC cards.
               <br />
-              to a movement.
+              <span style={{ color: "#6B3EF0" }}>We build digital identities.</span>
             </h2>
             <div className="mt-6 space-y-4 text-gray-600 leading-relaxed text-sm">
               <p>
-                TAPVYBE was born from a personal experience.
+                Every product we design is focused on helping businesses look more professional, build stronger trust, and create memorable first impressions.
               </p>
-              <p>
-                During a business meeting, I exchanged a traditional paper business card like everyone else. But as someone working in the IT and Digital Marketing industry, I couldn't ignore one simple thought:
+              <p className="font-bold text-black">
+                Because networking shouldn't end when someone puts your card in their pocket.
               </p>
-              <p className="font-bold text-black italic">
-                "If I'm asking businesses to embrace digital transformation, why am I still introducing myself with paper?"
-              </p>
-              <p>
-                That question became the beginning of TAPVYBE.
-              </p>
-              <p>
-                We realized that networking deserved an upgrade — one that reflects today's digital-first world.
+              <p style={{ color: "#6B3EF0" }} className="font-bold">
+                It should begin the moment they tap it.
               </p>
             </div>
           </div>
@@ -152,39 +145,6 @@ function StorySection() {
               </div>
             ))}
           </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── Why TAPVYBE ────────────────────────────────────────────────────────── */
-function WhySection() {
-  return (
-    <section className="bg-black py-20 md:py-28">
-      <div className="max-w-3xl mx-auto px-6 sm:px-8 text-center">
-        <span
-          className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-8 tracking-wide uppercase"
-          style={{ backgroundColor: "#6B3EF0" }}
-        >
-          Why TAPVYBE?
-        </span>
-        <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight mb-8">
-          We don't just create NFC cards.
-          <br />
-          <span style={{ color: "#6B3EF0" }}>We build digital identities.</span>
-        </h2>
-        <div className="space-y-5 text-white text-base md:text-lg leading-relaxed">
-          <p>
-            Every product we design is focused on helping businesses look more professional,
-            build stronger trust, and create memorable first impressions.
-          </p>
-          <p className="text-white font-semibold text-lg md:text-xl">
-            Because networking shouldn't end when someone puts your card in their pocket.
-          </p>
-          <p style={{ color: "#6B3EF0" }} className="font-bold text-lg md:text-xl">
-            It should begin the moment they tap it.
-          </p>
         </div>
       </div>
     </section>
