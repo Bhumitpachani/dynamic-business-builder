@@ -36,6 +36,7 @@ function About() {
       <ValuesSection />
       {/* <TeamSection /> */}
       {/* <CtaSection /> */}
+      <DigitalRevolutionSection />
     </PublicLayout>
   );
 }
@@ -284,6 +285,37 @@ function ValuesSection() {
             </div>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Digital Revolution ─────────────────────────────────────────────────── */
+function DigitalRevolutionSection() {
+  return (
+    <section className="bg-black py-20 md:py-28">
+      <div className="max-w-3xl mx-auto px-6 sm:px-8">
+        <span
+          className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-8 tracking-wide uppercase"
+          style={{ backgroundColor: "#6B3EF0" }}
+        >
+          Join the Digital Revolution
+        </span>
+        <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight mb-8">
+          The future of networking<br />
+          <span style={{ color: "#6B3EF0" }}>isn't paper.</span>
+        </h2>
+        <div className="space-y-4 mb-10">
+          {["It's instant.", "It's interactive.", "It's memorable."].map((line) => (
+            <p key={line} className="text-xl md:text-2xl font-semibold text-white">
+              {line}
+            </p>
+          ))}
+        </div>
+        <p className="text-base md:text-lg text-gray-400 leading-relaxed">
+          Whether you're meeting a client, attending an event, closing a deal, or growing your brand,{" "}
+          <span className="text-white font-semibold">TAPVYBE helps you make every connection count.</span>
+        </p>
       </div>
     </section>
   );
