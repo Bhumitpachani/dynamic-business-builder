@@ -147,7 +147,7 @@ function MissionSection() {
 function PhilosophySection() {
   return (
     <section className="bg-black py-20 md:py-28 text-center">
-      <div className="max-w-4xl mx-auto px-6 sm:px-8">
+      <div className="w-full mx-auto px-6 sm:px-8">
         <span
           className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
           style={{ backgroundColor: "#6B3EF0" }}
