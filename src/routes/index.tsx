@@ -1,12 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Check, Wifi, RefreshCw, Globe, Shield, Zap, Star, ChevronRight } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Wifi,
+  RefreshCw,
+  Globe,
+  Shield,
+  Zap,
+  Star,
+  ChevronRight,
+} from "lucide-react";
 import { PublicLayout } from "@/components/public-layout";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "tapvybe — tap in. feel the vibes." },
-      { name: "description", content: "tapvybe - a revolutionary smart NFC business card that allows you to exchange contact, collect data, and direct your potential customer to the info they need." },
+      {
+        name: "description",
+        content:
+          "tapvybe - a revolutionary smart NFC business card that allows you to exchange contact, collect data, and direct your potential customer to the info they need.",
+      },
     ],
   }),
   component: Landing,
@@ -37,7 +51,6 @@ function HeroSection() {
     <section className="bg-white min-h-[92vh] flex items-center">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full">
         <div className="grid lg:grid-cols-2 gap-12 items-center py-16 md:py-20">
-
           {/* Left — Text */}
           <div className="max-w-xl">
             <span
@@ -48,7 +61,8 @@ function HeroSection() {
               Smart NFC Business Cards
             </span>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-black leading-[1.0] tracking-tight">
-              Tap in.<br />
+              Tap in.
+              <br />
               <span
                 className="bg-clip-text text-transparent"
                 style={{ backgroundImage: `linear-gradient(135deg, #4B35D9, #9B35D9)` }}
@@ -57,7 +71,8 @@ function HeroSection() {
               </span>
             </h1>
             <p className="mt-6 text-base text-gray-600 leading-relaxed max-w-md">
-              One tap. Your entire professional world — contact, socials, portfolio — shared instantly. No app needed. Never goes out of date.
+              One tap. Your entire professional world — contact, socials, portfolio — shared
+              instantly. No app needed. Never goes out of date.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
@@ -77,14 +92,22 @@ function HeroSection() {
             </div>
 
             <div className="mt-10 flex flex-wrap gap-5">
-              {["No app needed to receive", "Updates live, forever", "Works on all phones"].map((f) => (
-                <span key={f} className="flex items-center gap-2 text-sm text-gray-600 font-medium">
-                  <span className="h-5 w-5 rounded-full grid place-items-center shrink-0" style={{ backgroundColor: BRAND_LIGHT }}>
-                    <Check className="h-3 w-3" style={{ color: BRAND }} strokeWidth={3} />
+              {["No app needed to receive", "Updates live, forever", "Works on all phones"].map(
+                (f) => (
+                  <span
+                    key={f}
+                    className="flex items-center gap-2 text-sm text-gray-600 font-medium"
+                  >
+                    <span
+                      className="h-5 w-5 rounded-full grid place-items-center shrink-0"
+                      style={{ backgroundColor: BRAND_LIGHT }}
+                    >
+                      <Check className="h-3 w-3" style={{ color: BRAND }} strokeWidth={3} />
+                    </span>
+                    {f}
                   </span>
-                  {f}
-                </span>
-              ))}
+                ),
+              )}
             </div>
           </div>
 
@@ -185,7 +208,10 @@ function HowItWorksSection() {
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
-              <span className="text-xs font-black tracking-widest uppercase mb-2" style={{ color: BRAND }}>
+              <span
+                className="text-xs font-black tracking-widest uppercase mb-2"
+                style={{ color: BRAND }}
+              >
                 Step {step.step}
               </span>
               <h3 className="text-xl font-black text-black mb-3">{step.title}</h3>
@@ -200,12 +226,36 @@ function HowItWorksSection() {
 
 /* ─── Features ───────────────────────────────────────────────────────────── */
 const FEATURES = [
-  { icon: Wifi, title: "NFC + QR Code", desc: "Works with all iPhones & Android. Also has a QR code backup — so you never miss a connection." },
-  { icon: Globe, title: "Live Digital Profile", desc: "Change your number, add a new link — your profile updates everywhere instantly, no reprinting." },
-  { icon: RefreshCw, title: "Unlimited Updates", desc: "Update your profile as many times as you want, for life. Basics are always free." },
-  { icon: Zap, title: "Instant Sharing", desc: "One tap is all it takes. The receiver sees your profile in their browser — no download required." },
-  { icon: Shield, title: "Privacy Control", desc: "Choose exactly what's visible publicly and what stays private. You're always in control." },
-  { icon: Star, title: "Lead Capture", desc: "Built-in enquiry form on your profile. Visitors can drop their details — you capture every lead." },
+  {
+    icon: Wifi,
+    title: "NFC + QR Code",
+    desc: "Works with all iPhones & Android. Also has a QR code backup — so you never miss a connection.",
+  },
+  {
+    icon: Globe,
+    title: "Live Digital Profile",
+    desc: "Change your number, add a new link — your profile updates everywhere instantly, no reprinting.",
+  },
+  {
+    icon: RefreshCw,
+    title: "Unlimited Updates",
+    desc: "Update your profile as many times as you want, for life. Basics are always free.",
+  },
+  {
+    icon: Zap,
+    title: "Instant Sharing",
+    desc: "One tap is all it takes. The receiver sees your profile in their browser — no download required.",
+  },
+  {
+    icon: Shield,
+    title: "Privacy Control",
+    desc: "Choose exactly what's visible publicly and what stays private. You're always in control.",
+  },
+  {
+    icon: Star,
+    title: "Lead Capture",
+    desc: "Built-in enquiry form on your profile. Visitors can drop their details — you capture every lead.",
+  },
 ];
 
 function FeaturesSection() {
@@ -257,7 +307,8 @@ function MetalCardSection() {
               Premium
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight tracking-tight">
-              Premium Metal.<br />
+              Premium Metal.
+              <br />
               <span
                 className="bg-clip-text text-transparent"
                 style={{ backgroundImage: `linear-gradient(135deg, #8B70F8, #C470F8)` }}
@@ -266,11 +317,20 @@ function MetalCardSection() {
               </span>
             </h2>
             <p className="mt-5 text-base text-gray-400 leading-relaxed max-w-sm">
-              Precision-crafted stainless steel with laser-engraved branding. Built to outlast any paper card — and infinitely smarter.
+              Precision-crafted stainless steel with laser-engraved branding. Built to outlast any
+              paper card — and infinitely smarter.
             </p>
             <ul className="mt-7 space-y-3">
-              {["Stainless steel / Black metal finish", "Laser-engraved custom branding", "NFC chip embedded — lasts forever", "Arrives in premium gift packaging"].map((item) => (
-                <li key={item} className="flex items-center gap-3 text-sm text-gray-300 font-medium">
+              {[
+                "Stainless steel / Black metal finish",
+                "Laser-engraved custom branding",
+                "NFC chip embedded — lasts forever",
+                "Arrives in premium gift packaging",
+              ].map((item) => (
+                <li
+                  key={item}
+                  className="flex items-center gap-3 text-sm text-gray-300 font-medium"
+                >
                   <span
                     className="h-5 w-5 rounded-full grid place-items-center shrink-0"
                     style={{ backgroundColor: "rgba(107,62,240,0.3)" }}
@@ -316,11 +376,9 @@ function FutureSection() {
           Join The Digital Revolution
         </span>
         <h2 className="text-[clamp(1.1rem,5.4vw,3rem)] font-black text-white leading-tight tracking-tight whitespace-nowrap">
-          The future of networking
+          The future of networking Isn't paper.
         </h2>
-        <h2 className="text-[clamp(1.1rem,5.4vw,3rem)] font-black tracking-tight leading-tight whitespace-nowrap" style={{ color: BRAND }}>
-          Isn't paper.
-        </h2>
+
         <div className="mt-8 space-y-2">
           {["It's instant.", "It's interactive.", "It's memorable."].map((line) => (
             <p key={line} className="text-base sm:text-lg font-medium text-gray-300">
@@ -347,10 +405,14 @@ function CardsShowcaseSection() {
               Always Up to Date
             </span>
             <h2 className="text-3xl md:text-4xl font-black text-black leading-tight tracking-tight">
-              One card.<br />Infinite updates.
+              One card.
+              <br />
+              Infinite updates.
             </h2>
             <p className="mt-5 text-base text-gray-600 leading-relaxed max-w-md">
-              Change jobs? New phone number? Launch a new Instagram? Update your tapvybe profile once and every card you've ever handed out is updated automatically. No reprinting. Ever.
+              Change jobs? New phone number? Launch a new Instagram? Update your tapvybe profile
+              once and every card you've ever handed out is updated automatically. No reprinting.
+              Ever.
             </p>
             <div className="mt-8 space-y-3">
               {[
@@ -359,7 +421,10 @@ function CardsShowcaseSection() {
                 "Add new links, remove old ones anytime",
                 "No limits on how many times you update",
               ].map((item) => (
-                <div key={item} className="flex items-center gap-3 text-sm text-gray-700 font-medium">
+                <div
+                  key={item}
+                  className="flex items-center gap-3 text-sm text-gray-700 font-medium"
+                >
                   <span
                     className="h-5 w-5 rounded-full grid place-items-center shrink-0"
                     style={{ backgroundColor: BRAND_LIGHT }}
@@ -397,19 +462,22 @@ const TESTIMONIALS = [
   {
     name: "Bhargav Dodiya",
     role: "Real Estate",
-    quote: "The NFC Digital Card has been a great addition to my real estate business. It helps me share my contact information instantly and creates a professional impression. Highly recommended!",
+    quote:
+      "The NFC Digital Card has been a great addition to my real estate business. It helps me share my contact information instantly and creates a professional impression. Highly recommended!",
     rating: 5,
   },
   {
     name: "Dhruv Sompura",
     role: "Architect",
-    quote: "I recently started using this NFC Digital Business Card, and I'm really impressed with it. As an architect, it has made networking so much easier. I can instantly share my contact details, portfolio, and social media with just a tap. I'm genuinely happy with the experience and would definitely recommend it to anyone looking for a professional way to connect.",
+    quote:
+      "I recently started using this NFC Digital Business Card, and I'm really impressed with it. As an architect, it has made networking so much easier. I can instantly share my contact details, portfolio, and social media with just a tap. I'm genuinely happy with the experience and would definitely recommend it to anyone looking for a professional way to connect.",
     rating: 5,
   },
   {
     name: "Girirajstudio Madhada",
     role: "Photography",
-    quote: "Great experience with the Digital NFC Card! As a photographer, it helps me instantly share my contact details, portfolio, and social media with clients. It's professional, easy to use, and perfect for networking. Highly recommended!",
+    quote:
+      "Great experience with the Digital NFC Card! As a photographer, it helps me instantly share my contact details, portfolio, and social media with clients. It's professional, easy to use, and perfect for networking. Highly recommended!",
     rating: 5,
   },
 ];
@@ -484,9 +552,12 @@ function PricingTeaser() {
     <section className="bg-white py-20 md:py-28">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">Simple pricing</h2>
+          <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">
+            Simple pricing
+          </h2>
           <p className="mt-3 text-base text-gray-600 max-w-lg mx-auto">
-            Every card includes a free digital profile, unlimited updates, and lifetime NFC functionality.
+            Every card includes a free digital profile, unlimited updates, and lifetime NFC
+            functionality.
           </p>
         </div>
 
@@ -497,9 +568,21 @@ function PricingTeaser() {
               className={`rounded-3xl p-8 text-center flex flex-col items-center ${p.highlight ? "text-white scale-[1.04] shadow-2xl" : "bg-gray-50 border border-gray-200"}`}
               style={p.highlight ? { backgroundColor: BRAND } : {}}
             >
-              <p className={`text-sm font-bold mb-3 ${p.highlight ? "text-purple-200" : "text-gray-500"}`}>{p.name}</p>
-              <p className={`text-4xl font-black mb-3 ${p.highlight ? "text-white" : "text-black"}`}>{p.price}</p>
-              <p className={`text-sm leading-relaxed mb-6 flex-1 ${p.highlight ? "text-purple-100" : "text-gray-600"}`}>{p.desc}</p>
+              <p
+                className={`text-sm font-bold mb-3 ${p.highlight ? "text-purple-200" : "text-gray-500"}`}
+              >
+                {p.name}
+              </p>
+              <p
+                className={`text-4xl font-black mb-3 ${p.highlight ? "text-white" : "text-black"}`}
+              >
+                {p.price}
+              </p>
+              <p
+                className={`text-sm leading-relaxed mb-6 flex-1 ${p.highlight ? "text-purple-100" : "text-gray-600"}`}
+              >
+                {p.desc}
+              </p>
               <Link
                 to="/contact"
                 className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all ${p.highlight ? "bg-white text-black hover:bg-gray-100" : "text-white hover:opacity-90"}`}
@@ -534,7 +617,8 @@ function CtaSection() {
           Ready to tap in?
         </h2>
         <p className="mt-4 text-base text-purple-200 leading-relaxed max-w-lg mx-auto">
-          Join thousands of Indian professionals already using tapvybe to make connections that last.
+          Join thousands of Indian professionals already using tapvybe to make connections that
+          last.
         </p>
         <div className="mt-8 flex flex-wrap gap-4 justify-center">
           <Link

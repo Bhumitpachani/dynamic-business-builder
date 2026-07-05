@@ -68,7 +68,6 @@ function HeroSection() {
 
 /* ─── Story ─────────────────────────────────────────────────────────────── */
 function StorySection() {
-
   return (
     <section className="bg-gray-50 py-20 md:py-28">
       <div className="max-w-3xl mx-auto px-6 sm:px-8 text-center">
@@ -78,14 +77,15 @@ function StorySection() {
         >
           Why TAPVYBE?
         </span>
-        <h2 className="text-3xl md:text-5xl font-black text-black tracking-tight leading-tight mb-8">
+        <h2 className="text-1xl md:text-5xl font-black text-black tracking-tight leading-tight mb-8">
           We don't just create NFC cards.
           <br />
           <span style={{ color: "#6B3EF0" }}>We build digital identities.</span>
         </h2>
         <div className="space-y-5 text-gray-600 text-base md:text-lg leading-relaxed">
           <p>
-            Every product we design is focused on helping businesses look more professional, build stronger trust, and create memorable first impressions.
+            Every product we design is focused on helping businesses look more professional, build
+            stronger trust, and create memorable first impressions.
           </p>
           <p className="font-bold text-black text-lg md:text-xl">
             Because networking shouldn't end when someone puts your card in their pocket.
@@ -120,7 +120,10 @@ function MissionSection() {
             </div>
             <h3 className="text-2xl font-black mb-4">Our Mission</h3>
             <p className="text-gray-400 leading-relaxed text-base">
-              To make professional digital identity accessible, affordable, and effortless for every business. Whether you're a freelancer, entrepreneur, startup, salesperson, consultant, or established company, we believe your identity should be available instantly — with just one tap.
+              To make professional digital identity accessible, affordable, and effortless for every
+              business. Whether you're a freelancer, entrepreneur, startup, salesperson, consultant,
+              or established company, we believe your identity should be available instantly — with
+              just one tap.
             </p>
           </div>
           {/* Vision — light */}
@@ -133,8 +136,14 @@ function MissionSection() {
             </div>
             <h3 className="text-2xl font-black text-black mb-4">Our Vision</h3>
             <p className="text-gray-600 leading-relaxed text-base">
-              At TAPVYBE, we believe technology should create a smarter and greener future. By replacing disposable paper business cards with reusable NFC cards, we aim to reduce paper waste, encourage recycling, and inspire people to plant more trees.<br /><br />
-              <span className="font-bold text-black">Less Paper. More Trees. Smarter Connections.</span>
+              At TAPVYBE, we believe technology should create a smarter and greener future. By
+              replacing disposable paper business cards with reusable NFC cards, we aim to reduce
+              paper waste, encourage recycling, and inspire people to plant more trees.
+              <br />
+              <br />
+              <span className="font-bold text-black">
+                Less Paper. More Trees. Smarter Connections.
+              </span>
             </p>
           </div>
         </div>
@@ -154,14 +163,18 @@ function PhilosophySection() {
         >
           Our Philosophy
         </span>
-        <h2 className="text-[clamp(0.95rem,4.4vw,2.75rem)] font-black text-white tracking-tight leading-tight whitespace-nowrap">
+        <h5 className="text-[clamp(0.95rem,4.4vw,2.75rem)] font-black text-white tracking-tight leading-tight whitespace-nowrap">
           We don't just create NFC cards.
-        </h2>
-        <h2 className="mt-1 text-[clamp(0.95rem,4.4vw,2.75rem)] font-black tracking-tight leading-tight whitespace-nowrap" style={{ color: "#6B3EF0" }}>
+        </h5>
+        <h2
+          className="mt-1 text-[clamp(0.95rem,4.4vw,2.75rem)] font-black tracking-tight leading-tight whitespace-nowrap"
+          style={{ color: "#6B3EF0" }}
+        >
           We build digital identities.
         </h2>
         <p className="mt-6 text-base text-gray-400 leading-relaxed max-w-2xl mx-auto">
-          Every product we design is focused on helping businesses look more professional, build stronger trust, and create memorable first impressions.
+          Every product we design is focused on helping businesses look more professional, build
+          stronger trust, and create memorable first impressions.
         </p>
         <p className="mt-4 text-base font-bold text-white leading-relaxed">
           Because networking shouldn't end when someone puts your card in their pocket.
@@ -203,9 +216,7 @@ function ValuesSection() {
     <section className="bg-gray-50 py-20 md:py-28">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="text-center mb-14">
-          <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">
-            Our Values
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">Our Values</h2>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {VALUES.map((v) => (
@@ -241,8 +252,7 @@ function DigitalRevolutionSection() {
           Join the Digital Revolution
         </span>
         <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight mb-8">
-          The future of networking<br />
-          <span style={{ color: "#6B3EF0" }}>isn't paper.</span>
+          The future of networking isn't paper.
         </h2>
         <div className="space-y-4 mb-10">
           {["It's instant.", "It's interactive.", "It's memorable."].map((line) => (
@@ -252,8 +262,11 @@ function DigitalRevolutionSection() {
           ))}
         </div>
         <p className="text-base md:text-lg text-gray-400 leading-relaxed">
-          Whether you're meeting a client, attending an event, closing a deal, or growing your brand,{" "}
-          <span className="text-white font-semibold">TAPVYBE helps you make every connection count.</span>
+          Whether you're meeting a client, attending an event, closing a deal, or growing your
+          brand,{" "}
+          <span className="text-white font-semibold">
+            TAPVYBE helps you make every connection count.
+          </span>
         </p>
       </div>
     </section>
