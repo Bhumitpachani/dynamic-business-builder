@@ -21,6 +21,7 @@ function Landing() {
       <HeroSection />
       <HowItWorksSection />
       <FeaturesSection />
+      <FutureSection />
       <MetalCardSection />
       <CardsShowcaseSection />
       <TestimonialsSection />
@@ -297,6 +298,35 @@ function MetalCardSection() {
               className="absolute inset-0 w-full h-full object-cover"
             />
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Future ──────────────────────────────────────────────────────────────── */
+function FutureSection() {
+  return (
+    <section className="bg-black py-20 md:py-28">
+      <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12">
+        <span
+          className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
+          style={{ backgroundColor: BRAND }}
+        >
+          Join The Digital Revolution
+        </span>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight tracking-tight whitespace-nowrap">
+          The future of networking
+        </h2>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight" style={{ color: BRAND }}>
+          Isn't paper.
+        </h2>
+        <div className="mt-8 space-y-2">
+          {["It's instant.", "It's interactive.", "It's memorable."].map((line) => (
+            <p key={line} className="text-base sm:text-lg font-medium text-gray-300">
+              {line}
+            </p>
+          ))}
         </div>
       </div>
     </section>
