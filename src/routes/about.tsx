@@ -32,6 +32,7 @@ function About() {
       <HeroSection />
       <StorySection />
       <MissionSection />
+      <PhilosophySection />
       <ValuesSection />
       {/* <TeamSection /> */}
       {/* <CtaSection /> */}
@@ -137,6 +138,37 @@ function MissionSection() {
             </p>
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Philosophy ─────────────────────────────────────────────────────────── */
+function PhilosophySection() {
+  return (
+    <section className="bg-black py-20 md:py-28 text-center">
+      <div className="max-w-4xl mx-auto px-6 sm:px-8">
+        <span
+          className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
+          style={{ backgroundColor: "#6B3EF0" }}
+        >
+          Our Philosophy
+        </span>
+        <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white tracking-tight leading-tight whitespace-nowrap">
+          We don't just create NFC cards.
+        </h2>
+        <h2 className="mt-1 text-2xl sm:text-3xl md:text-5xl font-black tracking-tight leading-tight" style={{ color: "#6B3EF0" }}>
+          We build digital identities.
+        </h2>
+        <p className="mt-6 text-base text-gray-400 leading-relaxed max-w-2xl mx-auto">
+          Every product we design is focused on helping businesses look more professional, build stronger trust, and create memorable first impressions.
+        </p>
+        <p className="mt-4 text-base font-bold text-white leading-relaxed">
+          Because networking shouldn't end when someone puts your card in their pocket.
+        </p>
+        <p className="mt-2 text-base font-bold" style={{ color: "#6B3EF0" }}>
+          It should begin the moment they tap it.
+        </p>
       </div>
     </section>
   );
