@@ -315,10 +315,10 @@ function FutureSection() {
         >
           Join The Digital Revolution
         </span>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight tracking-tight whitespace-nowrap">
+        <h2 className="text-[clamp(1.1rem,5.4vw,3rem)] font-black text-white leading-tight tracking-tight whitespace-nowrap">
           The future of networking
         </h2>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight" style={{ color: BRAND }}>
+        <h2 className="text-[clamp(1.1rem,5.4vw,3rem)] font-black tracking-tight leading-tight whitespace-nowrap" style={{ color: BRAND }}>
           Isn't paper.
         </h2>
         <div className="mt-8 space-y-2">

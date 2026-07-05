@@ -154,10 +154,10 @@ function PhilosophySection() {
         >
           Our Philosophy
         </span>
-        <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white tracking-tight leading-tight whitespace-nowrap">
+        <h2 className="text-[clamp(0.95rem,4.4vw,2.75rem)] font-black text-white tracking-tight leading-tight whitespace-nowrap">
           We don't just create NFC cards.
         </h2>
-        <h2 className="mt-1 text-2xl sm:text-3xl md:text-5xl font-black tracking-tight leading-tight" style={{ color: "#6B3EF0" }}>
+        <h2 className="mt-1 text-[clamp(0.95rem,4.4vw,2.75rem)] font-black tracking-tight leading-tight whitespace-nowrap" style={{ color: "#6B3EF0" }}>
           We build digital identities.
         </h2>
         <p className="mt-6 text-base text-gray-400 leading-relaxed max-w-2xl mx-auto">
