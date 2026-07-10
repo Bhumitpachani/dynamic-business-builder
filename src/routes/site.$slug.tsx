@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { store, isExpired, newId, type Business, type Inquiry, type Appointment } from "@/lib/store";
 
 import { Phone, MessageCircle, MapPin, Globe, Star, Facebook, Instagram, Twitter, Linkedin, Youtube, UserPlus, QrCode, X } from "lucide-react";
+import { LazySection } from "@/components/lazy-section";
 
 export const Route = createFileRoute("/site/$slug")({
   component: PublicSite,
@@ -168,89 +169,102 @@ function PublicSite() {
 
         {/* About */}
         {biz.about && (
-          <Section title="About">
-            <p className="text-sm text-slate-700 whitespace-pre-wrap">{biz.about}</p>
-          </Section>
+          <LazySection>
+            <Section title="About">
+              <p className="text-sm text-slate-700 whitespace-pre-wrap">{biz.about}</p>
+            </Section>
+          </LazySection>
         )}
 
         {/* Products */}
         {biz.products.length > 0 && (
-          <Section title="Products & Services">
-            <div className="grid sm:grid-cols-2 gap-3">
-              {biz.products.map((p, idx) => (
-                <div key={p.id} className="border rounded-xl overflow-hidden bg-white">
-                  {p.image && (
-                    <LazyImage
-                      src={p.image}
-                      alt={p.name}
-                      className="w-full h-40 object-cover"
-                      // First two product images load eagerly, rest lazily
-                      eager={idx < 2}
-                    />
-                  )}
-                  <div className="p-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-semibold text-sm">{p.name}</h3>
-                      {p.price && <span className="text-sm font-bold shrink-0" style={{ color: primary }}>{p.price}</span>}
+          <LazySection>
+            <Section title="Products & Services">
+              <div className="grid sm:grid-cols-2 gap-3">
+                {biz.products.map((p, idx) => (
+                  <div key={p.id} className="border rounded-xl overflow-hidden bg-white">
+                    {p.image && (
+                      <LazyImage
+                        src={p.image}
+                        alt={p.name}
+                        className="w-full h-40 object-cover"
+                        eager={idx < 2}
+                      />
+                    )}
+                    <div className="p-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="font-semibold text-sm">{p.name}</h3>
+                        {p.price && <span className="text-sm font-bold shrink-0" style={{ color: primary }}>{p.price}</span>}
+                      </div>
+                      {p.description && <p className="text-xs text-slate-600 mt-1">{p.description}</p>}
                     </div>
-                    {p.description && <p className="text-xs text-slate-600 mt-1">{p.description}</p>}
                   </div>
-                </div>
-              ))}
-            </div>
-          </Section>
+                ))}
+              </div>
+            </Section>
+          </LazySection>
         )}
 
         {/* Gallery */}
         {biz.gallery.length > 0 && (
-          <Section title="Gallery">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {biz.gallery.map((g) => (
-                <div key={g.id} className="aspect-square rounded-lg overflow-hidden bg-slate-100">
-                  {g.image && (
-                    <LazyImage
-                      src={g.image}
-                      alt={g.caption}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </Section>
+          <LazySection>
+            <Section title="Gallery">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {biz.gallery.map((g) => (
+                  <div key={g.id} className="aspect-square rounded-lg overflow-hidden bg-slate-100">
+                    {g.image && (
+                      <LazyImage
+                        src={g.image}
+                        alt={g.caption}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          </LazySection>
         )}
 
         {/* CTA */}
-        <Section title="Get in Touch">
-          <div className="grid sm:grid-cols-2 gap-2">
-            <button onClick={() => setShowInquiry(true)} className="py-3 rounded-xl font-semibold text-white transition-opacity hover:opacity-90" style={{ background: primary }}>Send Inquiry</button>
-            <button onClick={() => setShowAppt(true)} className="py-3 rounded-xl font-semibold border-2 transition-colors hover:opacity-90" style={{ borderColor: primary, color: primary }}>Book Appointment</button>
-          </div>
-        </Section>
+        <LazySection>
+          <Section title="Get in Touch">
+            <div className="grid sm:grid-cols-2 gap-2">
+              <button onClick={() => setShowInquiry(true)} className="py-3 rounded-xl font-semibold text-white transition-opacity hover:opacity-90" style={{ background: primary }}>Send Inquiry</button>
+              <button onClick={() => setShowAppt(true)} className="py-3 rounded-xl font-semibold border-2 transition-colors hover:opacity-90" style={{ borderColor: primary, color: primary }}>Book Appointment</button>
+            </div>
+          </Section>
+        </LazySection>
 
         {/* Location */}
         {(biz.address || biz.mapsLink) && (
-          <Section title="Location">
-            {biz.address && <p className="text-sm text-slate-700">{biz.address}</p>}
-            {biz.mapsLink && <a href={biz.mapsLink} target="_blank" className="inline-flex items-center gap-1.5 mt-2 text-sm font-medium" style={{ color: primary }}><MapPin className="h-4 w-4" /> Open in Google Maps</a>}
-          </Section>
+          <LazySection>
+            <Section title="Location">
+              {biz.address && <p className="text-sm text-slate-700">{biz.address}</p>}
+              {biz.mapsLink && <a href={biz.mapsLink} target="_blank" className="inline-flex items-center gap-1.5 mt-2 text-sm font-medium" style={{ color: primary }}><MapPin className="h-4 w-4" /> Open in Google Maps</a>}
+            </Section>
+          </LazySection>
         )}
 
         {/* Links */}
-        <Section title="Links">
-          <div className="flex flex-wrap gap-2">
-            {biz.websiteLink && <LinkChip icon={Globe} label="Website" href={biz.websiteLink} />}
-            {biz.googleReviewLink && <LinkChip icon={Star} label="Review on Google" href={biz.googleReviewLink} color="#f59e0b" />}
-            {biz.social.facebook && <LinkChip icon={Facebook} label="Facebook" href={biz.social.facebook} color="#1877f2" />}
-            {biz.social.instagram && <LinkChip icon={Instagram} label="Instagram" href={biz.social.instagram} color="#e4405f" />}
-            {biz.social.twitter && <LinkChip icon={Twitter} label="Twitter" href={biz.social.twitter} color="#1da1f2" />}
-            {biz.social.linkedin && <LinkChip icon={Linkedin} label="LinkedIn" href={biz.social.linkedin} color="#0a66c2" />}
-            {biz.social.youtube && <LinkChip icon={Youtube} label="YouTube" href={biz.social.youtube} color="#ff0000" />}
-            {(biz.paymentQr || biz.upiId) && <button onClick={() => setShowQR(true)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border text-sm font-medium hover:bg-slate-50"><QrCode className="h-4 w-4" /> Pay</button>}
-          </div>
-        </Section>
+        <LazySection>
+          <Section title="Links">
+            <div className="flex flex-wrap gap-2">
+              {biz.websiteLink && <LinkChip icon={Globe} label="Website" href={biz.websiteLink} />}
+              {biz.googleReviewLink && <LinkChip icon={Star} label="Review on Google" href={biz.googleReviewLink} color="#f59e0b" />}
+              {biz.social.facebook && <LinkChip icon={Facebook} label="Facebook" href={biz.social.facebook} color="#1877f2" />}
+              {biz.social.instagram && <LinkChip icon={Instagram} label="Instagram" href={biz.social.instagram} color="#e4405f" />}
+              {biz.social.twitter && <LinkChip icon={Twitter} label="Twitter" href={biz.social.twitter} color="#1da1f2" />}
+              {biz.social.linkedin && <LinkChip icon={Linkedin} label="LinkedIn" href={biz.social.linkedin} color="#0a66c2" />}
+              {biz.social.youtube && <LinkChip icon={Youtube} label="YouTube" href={biz.social.youtube} color="#ff0000" />}
+              {(biz.paymentQr || biz.upiId) && <button onClick={() => setShowQR(true)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border text-sm font-medium hover:bg-slate-50"><QrCode className="h-4 w-4" /> Pay</button>}
+            </div>
+          </Section>
+        </LazySection>
 
-        <p className="text-center text-xs text-slate-400 py-6">Powered by tapvybe</p>
+        <LazySection>
+          <p className="text-center text-xs text-slate-400 py-6">Powered by tapvybe</p>
+        </LazySection>
       </div>
 
       {/* Sticky bottom bar mobile */}
