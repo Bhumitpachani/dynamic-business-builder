@@ -67,11 +67,19 @@ function PublicSite() {
   const [showInquiry, setShowInquiry] = useState(false);
   const [showAppt, setShowAppt] = useState(false);
   const [showQR, setShowQR] = useState(false);
+  const [showSaveContact, setShowSaveContact] = useState(false);
 
   useEffect(() => {
     store.getBySlug(slug).then((b) => {
       setBiz(b ?? null);
-      if (b) store.incrementVisit(slug).catch(() => {});
+      if (b) {
+        store.incrementVisit(slug).catch(() => {});
+        // Show save-contact prompt once per session
+        const key = `tapvybe_saved_${slug}`;
+        if (!sessionStorage.getItem(key)) {
+          setTimeout(() => setShowSaveContact(true), 800);
+        }
+      }
     });
   }, [slug]);
 
@@ -277,6 +285,21 @@ function PublicSite() {
       {showInquiry && <InquiryModal biz={biz} onClose={() => setShowInquiry(false)} />}
       {showAppt && <AppointmentModal biz={biz} onClose={() => setShowAppt(false)} />}
       {showQR && <QRModal biz={biz} onClose={() => setShowQR(false)} />}
+      {showSaveContact && (
+        <SaveContactModal
+          biz={biz}
+          primary={primary}
+          onSave={() => {
+            saveContact();
+            sessionStorage.setItem(`tapvybe_saved_${slug}`, "1");
+            setShowSaveContact(false);
+          }}
+          onClose={() => {
+            sessionStorage.setItem(`tapvybe_saved_${slug}`, "1");
+            setShowSaveContact(false);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -409,5 +432,69 @@ function QRModal({ biz, onClose }: { biz: Business; onClose: () => void }) {
         {biz.upiId && <p className="mt-3 text-sm">UPI: <span className="font-mono font-semibold">{biz.upiId}</span></p>}
       </div>
     </Modal>
+  );
+}
+
+// ── Save Contact Modal — shown once on page open ──────────────────────────────
+function SaveContactModal({
+  biz,
+  primary,
+  onSave,
+  onClose,
+}: {
+  biz: Business;
+  primary: string;
+  onSave: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 grid place-items-end sm:place-items-center p-0 sm:p-4">
+      <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-6 text-center animate-in slide-in-from-bottom duration-300">
+        {/* Logo / Avatar */}
+        <div className="flex justify-center mb-4">
+          {biz.logo ? (
+            <img
+              src={biz.logo}
+              alt={biz.name}
+              className="h-20 w-20 rounded-2xl object-cover border-4 border-white shadow-lg"
+            />
+          ) : (
+            <div
+              className="h-20 w-20 rounded-2xl grid place-items-center text-white text-3xl font-black shadow-lg"
+              style={{ background: primary }}
+            >
+              {biz.name[0]?.toUpperCase()}
+            </div>
+          )}
+        </div>
+
+        {/* Text */}
+        <h3 className="text-lg font-extrabold text-slate-900">{biz.name}</h3>
+        {biz.phone && (
+          <p className="text-sm text-slate-500 mt-1 font-medium">{biz.phone}</p>
+        )}
+        <p className="text-sm text-slate-600 mt-3 leading-relaxed">
+          Save our contact so you can reach us anytime — directly from your phone.
+        </p>
+
+        {/* Actions */}
+        <div className="mt-5 space-y-2">
+          <button
+            onClick={onSave}
+            className="w-full py-3 rounded-2xl text-white font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+            style={{ background: primary }}
+          >
+            <UserPlus className="h-4 w-4" />
+            Save Contact
+          </button>
+          <button
+            onClick={onClose}
+            className="w-full py-2.5 rounded-2xl text-slate-500 text-sm font-medium hover:bg-slate-50 transition-colors"
+          >
+            Maybe Later
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
