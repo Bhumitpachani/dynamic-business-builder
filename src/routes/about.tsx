@@ -33,13 +33,23 @@ function About() {
   return (
     <PublicLayout>
       <HeroSection />
-      <LazySection><StorySection /></LazySection>
-      <LazySection><MissionSection /></LazySection>
-      <LazySection><PhilosophySection /></LazySection>
-      <LazySection><ValuesSection /></LazySection>
+      <LazySection>
+        <StorySection />
+      </LazySection>
+      <LazySection>
+        <MissionSection />
+      </LazySection>
+      <LazySection>
+        <PhilosophySection />
+      </LazySection>
+      <LazySection>
+        <ValuesSection />
+      </LazySection>
       {/* <TeamSection /> */}
       {/* <CtaSection /> */}
-      <LazySection><DigitalRevolutionSection /></LazySection>
+      <LazySection>
+        <DigitalRevolutionSection />
+      </LazySection>
     </PublicLayout>
   );
 }
@@ -92,7 +102,7 @@ function StorySection() {
     },
     {
       icon: Award,
-      title: "10,000+ Identities",
+      title: "1000+ Identities",
       desc: "Over 10,000 digital identities created. tapvybe became the go-to NFC card platform for professionals across India.",
       dot: "#000",
     },
@@ -117,7 +127,8 @@ function StorySection() {
             </h2>
             <div className="mt-6 space-y-4 leading-relaxed text-sm">
               <p className="text-gray-600">
-                Every product we design is focused on helping businesses look more professional, build stronger trust, and create memorable first impressions.
+                Every product we design is focused on helping businesses look more professional,
+                build stronger trust, and create memorable first impressions.
               </p>
               <p className="font-bold text-black">
                 Because networking shouldn't end when someone puts your card in their pocket.

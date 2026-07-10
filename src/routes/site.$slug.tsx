@@ -74,10 +74,11 @@ function PublicSite() {
       setBiz(b ?? null);
       if (b) {
         store.incrementVisit(slug).catch(() => {});
-        // Show save-contact prompt once per session
+        // Show save-contact prompt once per session — minimal delay so modal
+        // appears right after the hero card paints, not seconds later.
         const key = `tapvybe_saved_${slug}`;
         if (!sessionStorage.getItem(key)) {
-          setTimeout(() => setShowSaveContact(true), 800);
+          setTimeout(() => setShowSaveContact(true), 300);
         }
       }
     });
@@ -122,23 +123,20 @@ function PublicSite() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24" style={{ ["--brand" as any]: primary }}>
-      {/* Cover — eager load, it's above the fold */}
-      <div
-        className="relative h-56 md:h-72 bg-gradient-to-br from-slate-700 to-slate-900"
-        style={biz.coverImage ? { backgroundImage: `url(${biz.coverImage})`, backgroundSize: "cover", backgroundPosition: "center" } : {}}
-      >
-        <div className="absolute inset-0 bg-black/40" />
-        {/* Preload cover via hidden img for fast paint */}
+      {/* Cover — proper <img> so browser can prioritize it immediately */}
+      <div className="relative h-56 md:h-72 bg-gradient-to-br from-slate-700 to-slate-900 overflow-hidden">
         {biz.coverImage && (
           <img
             src={biz.coverImage}
             alt=""
             aria-hidden
             fetchPriority="high"
-            decoding="async"
-            className="hidden"
+            loading="eager"
+            decoding="sync"
+            className="absolute inset-0 w-full h-full object-cover"
           />
         )}
+        <div className="absolute inset-0 bg-black/40" />
       </div>
 
       <div className="max-w-3xl mx-auto px-4 -mt-20 relative">
@@ -177,7 +175,7 @@ function PublicSite() {
 
         {/* About */}
         {biz.about && (
-          <LazySection>
+          <LazySection rootMargin="500px">
             <Section title="About">
               <p className="text-sm text-slate-700 whitespace-pre-wrap">{biz.about}</p>
             </Section>
@@ -186,7 +184,7 @@ function PublicSite() {
 
         {/* Products */}
         {biz.products.length > 0 && (
-          <LazySection>
+          <LazySection rootMargin="500px">
             <Section title="Products & Services">
               <div className="grid sm:grid-cols-2 gap-3">
                 {biz.products.map((p, idx) => (
@@ -215,7 +213,7 @@ function PublicSite() {
 
         {/* Gallery */}
         {biz.gallery.length > 0 && (
-          <LazySection>
+          <LazySection rootMargin="500px">
             <Section title="Gallery">
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {biz.gallery.map((g) => (
@@ -235,7 +233,7 @@ function PublicSite() {
         )}
 
         {/* CTA */}
-        <LazySection>
+        <LazySection rootMargin="500px">
           <Section title="Get in Touch">
             <div className="grid sm:grid-cols-2 gap-2">
               <button onClick={() => setShowInquiry(true)} className="py-3 rounded-xl font-semibold text-white transition-opacity hover:opacity-90" style={{ background: primary }}>Send Inquiry</button>
@@ -246,7 +244,7 @@ function PublicSite() {
 
         {/* Location */}
         {(biz.address || biz.mapsLink) && (
-          <LazySection>
+          <LazySection rootMargin="500px">
             <Section title="Location">
               {biz.address && <p className="text-sm text-slate-700">{biz.address}</p>}
               {biz.mapsLink && <a href={biz.mapsLink} target="_blank" className="inline-flex items-center gap-1.5 mt-2 text-sm font-medium" style={{ color: primary }}><MapPin className="h-4 w-4" /> Open in Google Maps</a>}
@@ -255,7 +253,7 @@ function PublicSite() {
         )}
 
         {/* Links */}
-        <LazySection>
+        <LazySection rootMargin="500px">
           <Section title="Links">
             <div className="flex flex-wrap gap-2">
               {biz.websiteLink && <LinkChip icon={Globe} label="Website" href={biz.websiteLink} />}
@@ -270,7 +268,7 @@ function PublicSite() {
           </Section>
         </LazySection>
 
-        <LazySection>
+        <LazySection rootMargin="500px">
           <p className="text-center text-xs text-slate-400 py-6">Powered by tapvybe</p>
         </LazySection>
       </div>
@@ -317,7 +315,7 @@ function LazyImage({ src, alt, className, eager = false }: { src: string; alt: s
         className={`${className} transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
         loading={eager ? "eager" : "lazy"}
         decoding="async"
-        fetchPriority={eager ? "high" : "low"}
+        fetchPriority={eager ? "high" : "auto"}
         onLoad={() => setLoaded(true)}
       />
     </div>

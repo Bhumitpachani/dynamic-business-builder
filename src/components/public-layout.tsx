@@ -45,9 +45,6 @@ export function PublicNav() {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <Link to="/client/login" className="text-sm font-medium text-gray-600 hover:text-black transition-colors">
-              Login
-            </Link>
             <Link
               to="/contact"
               className="inline-flex items-center px-5 py-2 text-sm font-bold text-white rounded-full transition-all hover:opacity-90"
@@ -77,14 +74,11 @@ export function PublicNav() {
               {l.label}
             </Link>
           ))}
-          <div className="pt-3 mt-2 border-t border-gray-100 flex gap-2">
-            <Link to="/client/login" onClick={() => setOpen(false)} className="flex-1 text-center py-2.5 text-sm font-medium border border-gray-300 rounded-full text-gray-600 hover:bg-gray-50 transition-colors">
-              Login
-            </Link>
+          <div className="pt-3 mt-2 border-t border-gray-100">
             <Link
               to="/contact"
               onClick={() => setOpen(false)}
-              className="flex-1 text-center py-2.5 text-sm font-bold text-white rounded-full transition-all hover:opacity-90"
+              className="block text-center py-2.5 text-sm font-bold text-white rounded-full transition-all hover:opacity-90"
               style={{ backgroundColor: "#6B3EF0" }}
             >
               Get Started
