@@ -103,7 +103,7 @@ function StorySection() {
     {
       icon: Award,
       title: "1000+ Identities",
-      desc: "Over 10,000 digital identities created. tapvybe became the go-to NFC card platform for professionals across India.",
+      desc: "Over 1000 digital identities created. tapvybe became the go-to NFC card platform for professionals across India.",
       dot: "#000",
     },
   ];

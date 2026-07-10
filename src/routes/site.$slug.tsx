@@ -113,12 +113,94 @@ function PublicSite() {
   const waLink = biz.whatsapp ? `https://wa.me/${biz.whatsapp.replace(/[^0-9]/g, "")}?text=Hi%2C%20I%20found%20you%20via%20your%20website` : "";
 
   function saveContact() {
-    const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${biz!.name}\nORG:${biz!.name}\nTEL:${biz!.phone}\nEMAIL:${biz!.email}\nADR:;;${biz!.address};;;;\nURL:${biz!.websiteLink || ""}\nEND:VCARD`;
-    const blob = new Blob([vcard], { type: "text/vcard" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = `${biz!.name}.vcf`; a.click();
-    URL.revokeObjectURL(url);
+    const b = biz!;
+
+    // ── helpers ──────────────────────────────────────────────────────────────
+    // Escape a string for vCard 3.0 (backslash, semicolon, comma, newlines).
+    const vc = (s: string) =>
+      s.replace(/\\/g, "\\\\")
+       .replace(/;/g, "\\;")
+       .replace(/,/g, "\\,")
+       .replace(/\r?\n/g, "\\n");
+
+    // Escape a string so it is safe to embed inside an HTML attribute or text node.
+    const he = (s: string) =>
+      s.replace(/&/g, "&amp;")
+       .replace(/</g, "&lt;")
+       .replace(/>/g, "&gt;")
+       .replace(/"/g, "&quot;")
+       .replace(/'/g, "&#39;");
+
+    // ── vCard ─────────────────────────────────────────────────────────────────
+    const displayName = b.name?.trim() || "Contact";
+    const vcard = [
+      "BEGIN:VCARD",
+      "VERSION:3.0",
+      `FN:${vc(displayName)}`,
+      `ORG:${vc(displayName)}`,
+      b.phone    ? `TEL;TYPE=CELL:${b.phone.replace(/\s/g, "")}`   : "",
+      b.whatsapp && b.whatsapp !== b.phone
+                 ? `TEL;TYPE=WORK:${b.whatsapp.replace(/\s/g, "")}` : "",
+      b.email    ? `EMAIL:${b.email.trim()}`                         : "",
+      b.address  ? `ADR:;;${vc(b.address)};;;;`                      : "",
+      b.websiteLink ? `URL:${b.websiteLink.trim()}`                   : "",
+      "END:VCARD",
+    ].filter(Boolean).join("\r\n");
+
+    // Safe filename — never empty
+    const safeName = (displayName.replace(/[^a-z0-9]/gi, "_").replace(/_+/g, "_").replace(/^_|_$/g, "") || "contact");
+
+    // ── HTML launcher ─────────────────────────────────────────────────────────
+    // When opened on mobile the script immediately downloads the .vcf which
+    // iOS / Android handle natively ("Add to Contacts"). window.close() is
+    // best-effort; the fallback copy tells users they can close the tab.
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saving ${he(displayName)}\u2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;
+     min-height:100vh;background:#f0f4ff;font-family:system-ui,sans-serif;
+     gap:14px;padding:24px;text-align:center}
+.icon{font-size:52px}
+p{color:#333;font-size:17px;font-weight:600}
+small{color:#888;font-size:13px;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="icon">📱</div>
+<p>Saving <em>${he(displayName)}</em> to your contacts\u2026</p>
+<small>Contact saved! You can now close this tab.</small>
+<script>
+(function(){
+  var v=${JSON.stringify(vcard)};
+  var blob=new Blob([v],{type:'text/vcard;charset=utf-8'});
+  var u=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=u; a.download=${JSON.stringify(safeName+".vcf")};
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  // Revoke after browser has had time to read the blob, then try to close.
+  setTimeout(function(){URL.revokeObjectURL(u);},3000);
+  setTimeout(function(){try{window.close();}catch(e){}},2000);
+})();
+</script>
+</body>
+</html>`;
+
+    // Download the HTML launcher — defer blob revocation so the browser
+    // finishes writing the file before we free the object URL.
+    const htmlBlob = new Blob([html], { type: "text/html" });
+    const htmlUrl = URL.createObjectURL(htmlBlob);
+    const link = document.createElement("a");
+    link.href = htmlUrl;
+    link.download = `Save_${safeName}_Contact.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(htmlUrl), 5000);
   }
 
   return (
