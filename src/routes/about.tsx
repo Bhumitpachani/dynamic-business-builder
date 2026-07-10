@@ -9,6 +9,8 @@ import {
   Award,
   Globe,
   TrendingUp,
+  Leaf,
+  Handshake,
 } from "lucide-react";
 import { PublicLayout } from "@/components/public-layout";
 import { LazySection } from "@/components/lazy-section";
@@ -262,6 +264,16 @@ const VALUES = [
     icon: TrendingUp,
     title: "Customer Success",
     desc: "Your growth is our greatest achievement.",
+  },
+  {
+    icon: Leaf,
+    title: "Sustainability",
+    desc: "Every NFC card replaces hundreds of paper cards — we're building a greener way to connect.",
+  },
+  {
+    icon: Handshake,
+    title: "Trust & Transparency",
+    desc: "We build long-term relationships by being honest, reliable, and always putting people first.",
   },
 ];
 
