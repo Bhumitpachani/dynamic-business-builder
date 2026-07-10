@@ -73,25 +73,25 @@ function HeroSection() {
 function StorySection() {
   const timeline = [
     {
-      year: "2021",
+      icon: Zap,
       title: "The Spark",
       desc: "We saw professionals still handing out paper cards in a digital-first world. There had to be a smarter way to connect.",
       dot: "#6B3EF0",
     },
     {
-      year: "2022",
+      icon: Shield,
       title: "First Tap",
       desc: "tapvybe launched its first NFC cards. One tap replaced a hundred paper cards — and professionals never looked back.",
       dot: "#000",
     },
     {
-      year: "2023",
+      icon: Globe,
       title: "Growing Fast",
       desc: "Metal cards, custom designs, and bulk orders launched. tapvybe expanded across India — city by city, tap by tap.",
       dot: "#6B3EF0",
     },
     {
-      year: "2024",
+      icon: Award,
       title: "10,000+ Identities",
       desc: "Over 10,000 digital identities created. tapvybe became the go-to NFC card platform for professionals across India.",
       dot: "#000",
@@ -131,18 +131,17 @@ function StorySection() {
           {/* Timeline */}
           <div className="space-y-0">
             {timeline.map((t, i, arr) => (
-              <div key={t.year} className="flex gap-5">
+              <div key={t.title} className="flex gap-5">
                 <div className="flex flex-col items-center">
                   <div
                     className="h-10 w-10 rounded-full grid place-items-center shrink-0 shadow-sm"
                     style={{ backgroundColor: t.dot }}
                   >
-                    <span className="text-white text-xs font-bold">{t.year.slice(2)}</span>
+                    <t.icon className="h-5 w-5 text-white" />
                   </div>
                   {i < arr.length - 1 && <div className="w-0.5 flex-1 bg-gray-200 my-1" />}
                 </div>
                 <div className="pb-8">
-                  <p className="text-xs font-semibold text-gray-400 mb-0.5">{t.year}</p>
                   <h4 className="font-bold text-black text-sm">{t.title}</h4>
                   <p className="mt-1 text-sm text-gray-600 leading-relaxed">{t.desc}</p>
                 </div>
