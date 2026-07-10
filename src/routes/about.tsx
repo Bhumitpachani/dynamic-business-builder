@@ -68,31 +68,84 @@ function HeroSection() {
 
 /* ─── Story ─────────────────────────────────────────────────────────────── */
 function StorySection() {
+  const timeline = [
+    {
+      year: "2021",
+      title: "The Spark",
+      desc: "We saw professionals still handing out paper cards in a digital-first world. There had to be a smarter way to connect.",
+      dot: "#6B3EF0",
+    },
+    {
+      year: "2022",
+      title: "First Tap",
+      desc: "tapvybe launched its first NFC cards. One tap replaced a hundred paper cards — and professionals never looked back.",
+      dot: "#000",
+    },
+    {
+      year: "2023",
+      title: "Growing Fast",
+      desc: "Metal cards, custom designs, and bulk orders launched. tapvybe expanded across India — city by city, tap by tap.",
+      dot: "#6B3EF0",
+    },
+    {
+      year: "2024",
+      title: "10,000+ Identities",
+      desc: "Over 10,000 digital identities created. tapvybe became the go-to NFC card platform for professionals across India.",
+      dot: "#000",
+    },
+  ];
+
   return (
     <section className="bg-gray-50 py-20 md:py-28">
-      <div className="max-w-3xl mx-auto px-6 sm:px-8 text-center">
-        <span
-          className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
-          style={{ backgroundColor: "#6B3EF0" }}
-        >
-          Why TAPVYBE?
-        </span>
-        <h2 className="text-1xl md:text-5xl font-black text-black tracking-tight leading-tight mb-8">
-          We don't just create NFC cards.
-          <br />
-          <span style={{ color: "#6B3EF0" }}>We build digital identities.</span>
-        </h2>
-        <div className="space-y-5 text-gray-600 text-base md:text-lg leading-relaxed">
-          <p>
-            Every product we design is focused on helping businesses look more professional, build
-            stronger trust, and create memorable first impressions.
-          </p>
-          <p className="font-bold text-black text-lg md:text-xl">
-            Because networking shouldn't end when someone puts your card in their pocket.
-          </p>
-          <p className="font-bold text-lg md:text-xl" style={{ color: "#6B3EF0" }}>
-            It should begin the moment they tap it.
-          </p>
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="grid lg:grid-cols-2 gap-14 items-center">
+          {/* Why TAPVYBE text */}
+          <div>
+            <span
+              className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
+              style={{ backgroundColor: "#6B3EF0" }}
+            >
+              Why TAPVYBE?
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight leading-tight">
+              We don't just create NFC cards.
+              <br />
+              <span style={{ color: "#6B3EF0" }}>We build digital identities.</span>
+            </h2>
+            <div className="mt-6 space-y-4 leading-relaxed text-sm">
+              <p className="text-gray-600">
+                Every product we design is focused on helping businesses look more professional, build stronger trust, and create memorable first impressions.
+              </p>
+              <p className="font-bold text-black">
+                Because networking shouldn't end when someone puts your card in their pocket.
+              </p>
+              <p className="font-bold" style={{ color: "#6B3EF0" }}>
+                It should begin the moment they tap it.
+              </p>
+            </div>
+          </div>
+
+          {/* Timeline */}
+          <div className="space-y-0">
+            {timeline.map((t, i, arr) => (
+              <div key={t.year} className="flex gap-5">
+                <div className="flex flex-col items-center">
+                  <div
+                    className="h-10 w-10 rounded-full grid place-items-center shrink-0 shadow-sm"
+                    style={{ backgroundColor: t.dot }}
+                  >
+                    <span className="text-white text-xs font-bold">{t.year.slice(2)}</span>
+                  </div>
+                  {i < arr.length - 1 && <div className="w-0.5 flex-1 bg-gray-200 my-1" />}
+                </div>
+                <div className="pb-8">
+                  <p className="text-xs font-semibold text-gray-400 mb-0.5">{t.year}</p>
+                  <h4 className="font-bold text-black text-sm">{t.title}</h4>
+                  <p className="mt-1 text-sm text-gray-600 leading-relaxed">{t.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
