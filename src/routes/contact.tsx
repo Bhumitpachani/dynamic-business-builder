@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Phone, Mail, Clock, CheckCircle, ArrowRight, MessageSquare } from "lucide-react";
 import { PublicLayout } from "@/components/public-layout";
+import { LazySection } from "@/components/lazy-section";
 import { contactInquiries } from "@/lib/store";
 import { toast } from "sonner";
 
@@ -27,7 +28,7 @@ function Contact() {
   return (
     <PublicLayout>
       <HeroSection />
-      <MainSection />
+      <LazySection><MainSection /></LazySection>
     </PublicLayout>
   );
 }

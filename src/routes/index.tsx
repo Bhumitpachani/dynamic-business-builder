@@ -11,6 +11,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { PublicLayout } from "@/components/public-layout";
+import { LazySection } from "@/components/lazy-section";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,14 +34,14 @@ function Landing() {
   return (
     <PublicLayout>
       <HeroSection />
-      <HowItWorksSection />
-      <FeaturesSection />
-      <FutureSection />
-      <MetalCardSection />
-      <CardsShowcaseSection />
-      <TestimonialsSection />
-      <PricingTeaser />
-      <CtaSection />
+      <LazySection><HowItWorksSection /></LazySection>
+      <LazySection><FeaturesSection /></LazySection>
+      <LazySection><FutureSection /></LazySection>
+      <LazySection><MetalCardSection /></LazySection>
+      <LazySection><CardsShowcaseSection /></LazySection>
+      <LazySection><TestimonialsSection /></LazySection>
+      <LazySection><PricingTeaser /></LazySection>
+      <LazySection><CtaSection /></LazySection>
     </PublicLayout>
   );
 }

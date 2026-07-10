@@ -11,6 +11,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { PublicLayout } from "@/components/public-layout";
+import { LazySection } from "@/components/lazy-section";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -30,13 +31,13 @@ function About() {
   return (
     <PublicLayout>
       <HeroSection />
-      <StorySection />
-      <MissionSection />
-      <PhilosophySection />
-      <ValuesSection />
+      <LazySection><StorySection /></LazySection>
+      <LazySection><MissionSection /></LazySection>
+      <LazySection><PhilosophySection /></LazySection>
+      <LazySection><ValuesSection /></LazySection>
       {/* <TeamSection /> */}
       {/* <CtaSection /> */}
-      <DigitalRevolutionSection />
+      <LazySection><DigitalRevolutionSection /></LazySection>
     </PublicLayout>
   );
 }

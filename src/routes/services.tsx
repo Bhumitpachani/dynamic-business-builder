@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { PublicLayout } from "@/components/public-layout";
+import { LazySection } from "@/components/lazy-section";
 
 export const Route = createFileRoute("/services")({
   head: () => ({
@@ -32,11 +33,11 @@ function Services() {
   return (
     <PublicLayout>
       <HeroSection />
-      <ProductsSection />
-      <FeaturesSection />
-      <MetalCardFeature />
-      <FaqSection />
-      <CtaSection />
+      <LazySection><ProductsSection /></LazySection>
+      <LazySection><FeaturesSection /></LazySection>
+      <LazySection><MetalCardFeature /></LazySection>
+      <LazySection><FaqSection /></LazySection>
+      <LazySection><CtaSection /></LazySection>
     </PublicLayout>
   );
 }
