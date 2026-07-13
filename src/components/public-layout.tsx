@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X, Phone, Mail, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Menu, X, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, LogIn } from "lucide-react";
 import type { ReactNode } from "react";
 
 const NAV_LINKS = [
@@ -46,6 +46,13 @@ export function PublicNav() {
 
           <div className="hidden md:flex items-center gap-3">
             <Link
+              to="/client/login"
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-[#6B3EF0] border border-[#6B3EF0] rounded-full transition-all hover:bg-[#6B3EF0] hover:text-white"
+            >
+              <LogIn className="h-4 w-4" />
+              Client Login
+            </Link>
+            <Link
               to="/contact"
               className="inline-flex items-center px-5 py-2 text-sm font-bold text-white rounded-full transition-all hover:opacity-90"
               style={{ backgroundColor: "#6B3EF0" }}
@@ -74,7 +81,15 @@ export function PublicNav() {
               {l.label}
             </Link>
           ))}
-          <div className="pt-3 mt-2 border-t border-gray-100">
+          <div className="pt-3 mt-2 border-t border-gray-100 space-y-2">
+            <Link
+              to="/client/login"
+              onClick={() => setOpen(false)}
+              className="flex items-center justify-center gap-1.5 py-2.5 text-sm font-semibold text-[#6B3EF0] border border-[#6B3EF0] rounded-full transition-all hover:bg-[#6B3EF0] hover:text-white"
+            >
+              <LogIn className="h-4 w-4" />
+              Client Login
+            </Link>
             <Link
               to="/contact"
               onClick={() => setOpen(false)}
