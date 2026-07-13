@@ -2,7 +2,7 @@ import { createFileRoute, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { store, isExpired, newId, type Business, type Inquiry, type Appointment } from "@/lib/store";
 
-import { Phone, MessageCircle, MapPin, Globe, Star, Facebook, Instagram, Twitter, Linkedin, Youtube, UserPlus, QrCode, X } from "lucide-react";
+import { Phone, MessageCircle, MapPin, Globe, Star, Facebook, Instagram, Twitter, Linkedin, Youtube, UserPlus, QrCode, X, Download } from "lucide-react";
 import { LazySection } from "@/components/lazy-section";
 
 export const Route = createFileRoute("/site/$slug")({
@@ -190,17 +190,168 @@ small{color:#888;font-size:13px;margin-top:4px}
 </body>
 </html>`;
 
-    // Download the HTML launcher — defer blob revocation so the browser
-    // finishes writing the file before we free the object URL.
+    // Open the HTML launcher in a new tab — the page auto-downloads the .vcf
     const htmlBlob = new Blob([html], { type: "text/html" });
     const htmlUrl = URL.createObjectURL(htmlBlob);
+    const w = window.open(htmlUrl, "_blank");
+    // Fallback: if popup was blocked, download the file instead
+    if (!w) {
+      const link = document.createElement("a");
+      link.href = htmlUrl;
+      link.download = `Save_${safeName}_Contact.html`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    setTimeout(() => URL.revokeObjectURL(htmlUrl), 8000);
+  }
+
+  function downloadCard() {
+    const b = biz!;
+    const he = (s: string) =>
+      s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+    const displayName = b.name?.trim() || "Business";
+    const safeName = displayName.replace(/[^a-z0-9]/gi, "_").replace(/_+/g, "_").replace(/^_|_$/g, "") || "card";
+    const brandColor = b.theme.primary || "#6B3EF0";
+
+    const productsHtml = b.products.length > 0 ? `
+      <div class="section">
+        <h2 class="section-title">Products &amp; Services</h2>
+        <div class="products-grid">
+          ${b.products.map(p => `
+            <div class="product-card">
+              ${p.image ? `<img src="${he(p.image)}" alt="${he(p.name)}" class="product-img" />` : ""}
+              <div class="product-body">
+                <div class="product-name">${he(p.name)}</div>
+                ${p.price ? `<div class="product-price" style="color:${brandColor}">${he(p.price)}</div>` : ""}
+                ${p.description ? `<div class="product-desc">${he(p.description)}</div>` : ""}
+              </div>
+            </div>`).join("")}
+        </div>
+      </div>` : "";
+
+    const galleryHtml = b.gallery.length > 0 ? `
+      <div class="section">
+        <h2 class="section-title">Gallery</h2>
+        <div class="gallery-grid">
+          ${b.gallery.map(g => g.image ? `<img src="${he(g.image)}" alt="${he(g.caption || "")}" class="gallery-img" />` : "").join("")}
+        </div>
+      </div>` : "";
+
+    const socialLinks = [
+      b.websiteLink && `<a href="${he(b.websiteLink)}" target="_blank" class="chip">🌐 Website</a>`,
+      b.googleReviewLink && `<a href="${he(b.googleReviewLink)}" target="_blank" class="chip">⭐ Google Review</a>`,
+      b.social?.facebook && `<a href="${he(b.social.facebook)}" target="_blank" class="chip" style="color:#1877f2;border-color:#1877f2">Facebook</a>`,
+      b.social?.instagram && `<a href="${he(b.social.instagram)}" target="_blank" class="chip" style="color:#e4405f;border-color:#e4405f">Instagram</a>`,
+      b.social?.twitter && `<a href="${he(b.social.twitter)}" target="_blank" class="chip" style="color:#1da1f2;border-color:#1da1f2">Twitter</a>`,
+      b.social?.linkedin && `<a href="${he(b.social.linkedin)}" target="_blank" class="chip" style="color:#0a66c2;border-color:#0a66c2">LinkedIn</a>`,
+      b.social?.youtube && `<a href="${he(b.social.youtube)}" target="_blank" class="chip" style="color:#ff0000;border-color:#ff0000">YouTube</a>`,
+    ].filter(Boolean).join("");
+
+    const waLink2 = b.whatsapp ? `https://wa.me/${b.whatsapp.replace(/[^0-9]/g, "")}?text=Hi` : "";
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${he(displayName)} — tapvybe Card</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh;padding-bottom:40px}
+.cover{height:200px;background:linear-gradient(135deg,#334155,#0f172a);position:relative;overflow:hidden}
+.cover img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.cover-overlay{position:absolute;inset:0;background:rgba(0,0,0,.4)}
+.container{max-width:680px;margin:0 auto;padding:0 16px}
+.hero{background:#fff;border-radius:20px;box-shadow:0 4px 24px rgba(0,0,0,.1);padding:20px;margin-top:-60px;position:relative}
+.avatar{width:90px;height:90px;border-radius:16px;border:4px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.15);object-fit:cover;margin-top:-60px;background:${brandColor};display:flex;align-items:center;justify-content:center;color:#fff;font-size:2rem;font-weight:900;overflow:hidden;flex-shrink:0}
+.hero-top{display:flex;gap:14px;align-items:flex-start}
+.hero-info{flex:1;min-width:0;padding-top:4px}
+h1{font-size:1.4rem;font-weight:800;color:#0f172a;word-break:break-word}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.75rem;font-weight:700;margin-top:6px}
+.tagline{font-size:.85rem;color:#64748b;margin-top:6px;line-height:1.5}
+.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-top:16px}
+.btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border:1px solid #e2e8f0;border-radius:14px;text-decoration:none;color:#1e293b;font-size:.75rem;font-weight:600;background:#fff;cursor:pointer;transition:.15s}
+.btn-icon{font-size:1.3rem}
+.btn-primary{background:${brandColor};color:#fff;border-color:${brandColor}}
+.section{background:#fff;border-radius:20px;padding:20px;margin-top:12px;border:1px solid #e2e8f0}
+.section-title{font-size:1rem;font-weight:800;color:#0f172a;margin-bottom:12px}
+.about-text{font-size:.875rem;color:#475569;line-height:1.7;white-space:pre-wrap}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.product-card{border:1px solid #e2e8f0;border-radius:14px;overflow:hidden}
+.product-img{width:100%;height:150px;object-fit:cover}
+.product-body{padding:12px}
+.product-name{font-weight:700;font-size:.875rem}
+.product-price{font-weight:800;font-size:.9rem;margin-top:4px}
+.product-desc{font-size:.8rem;color:#64748b;margin-top:4px;line-height:1.5}
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gallery-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #cbd5e1;border-radius:999px;font-size:.8rem;font-weight:600;text-decoration:none;color:#475569}
+.contact-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:.875rem}
+.contact-item:last-child{border-bottom:none}
+.contact-icon{font-size:1.1rem;width:28px;flex-shrink:0;text-align:center}
+.contact-link{color:#1e293b;text-decoration:none;font-weight:500}
+.footer{text-align:center;margin-top:20px;font-size:.75rem;color:#94a3b8}
+.footer a{color:#6B3EF0;font-weight:700;text-decoration:none}
+@media(max-width:480px){.gallery-grid{grid-template-columns:repeat(2,1fr)}.products-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="cover">
+  ${b.coverImage ? `<img src="${he(b.coverImage)}" alt="cover" />` : ""}
+  <div class="cover-overlay"></div>
+</div>
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      ${b.logo
+        ? `<img src="${he(b.logo)}" alt="${he(b.name)}" class="avatar" />`
+        : `<div class="avatar">${he(b.name[0]?.toUpperCase() || "?")}</div>`}
+      <div class="hero-info">
+        <h1>${he(displayName)}</h1>
+        ${b.category ? `<span class="badge" style="background:${brandColor}22;color:${brandColor}">${he(b.category)}</span>` : ""}
+        ${b.tagline ? `<p class="tagline">${he(b.tagline)}</p>` : ""}
+      </div>
+    </div>
+    <div class="actions">
+      ${b.phone ? `<a href="tel:${he(b.phone)}" class="btn"><span class="btn-icon">📞</span>Call</a>` : ""}
+      ${waLink2 ? `<a href="${he(waLink2)}" target="_blank" class="btn"><span class="btn-icon">💬</span>WhatsApp</a>` : ""}
+      ${b.mapsLink ? `<a href="${he(b.mapsLink)}" target="_blank" class="btn"><span class="btn-icon">📍</span>Directions</a>` : ""}
+      ${b.email ? `<a href="mailto:${he(b.email)}" class="btn"><span class="btn-icon">✉️</span>Email</a>` : ""}
+    </div>
+  </div>
+
+  ${b.about ? `<div class="section"><h2 class="section-title">About</h2><p class="about-text">${he(b.about)}</p></div>` : ""}
+
+  ${productsHtml}
+  ${galleryHtml}
+
+  <div class="section">
+    <h2 class="section-title">Contact</h2>
+    ${b.phone ? `<div class="contact-item"><span class="contact-icon">📞</span><a href="tel:${he(b.phone)}" class="contact-link">${he(b.phone)}</a></div>` : ""}
+    ${b.whatsapp ? `<div class="contact-item"><span class="contact-icon">💬</span><a href="${he(waLink2)}" class="contact-link">${he(b.whatsapp)} (WhatsApp)</a></div>` : ""}
+    ${b.email ? `<div class="contact-item"><span class="contact-icon">✉️</span><a href="mailto:${he(b.email)}" class="contact-link">${he(b.email)}</a></div>` : ""}
+    ${b.address ? `<div class="contact-item"><span class="contact-icon">📍</span><span>${he(b.address)}</span></div>` : ""}
+  </div>
+
+  ${socialLinks ? `<div class="section"><h2 class="section-title">Links</h2><div class="chips">${socialLinks}</div></div>` : ""}
+
+  <div class="footer">Powered by <a href="https://tapvybe.in" target="_blank">tapvybe</a></div>
+</div>
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.href = htmlUrl;
-    link.download = `Save_${safeName}_Contact.html`;
+    link.href = url;
+    link.download = `${safeName}_tapvybe_card.html`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setTimeout(() => URL.revokeObjectURL(htmlUrl), 5000);
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
   }
 
   return (
@@ -348,6 +499,21 @@ small{color:#888;font-size:13px;margin-top:4px}
               {(biz.paymentQr || biz.upiId) && <button onClick={() => setShowQR(true)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border text-sm font-medium hover:bg-slate-50"><QrCode className="h-4 w-4" /> Pay</button>}
             </div>
           </Section>
+        </LazySection>
+
+        <LazySection rootMargin="500px">
+          <div className="mt-4 bg-white rounded-2xl border p-5 text-center">
+            <p className="text-sm font-semibold text-slate-700 mb-1">Save this card for later</p>
+            <p className="text-xs text-slate-500 mb-4">Download a copy of this profile you can open anytime, even offline.</p>
+            <button
+              onClick={downloadCard}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-bold text-sm hover:opacity-90 transition-opacity"
+              style={{ background: primary }}
+            >
+              <Download className="h-4 w-4" />
+              Download Card
+            </button>
+          </div>
         </LazySection>
 
         <LazySection rootMargin="500px">
