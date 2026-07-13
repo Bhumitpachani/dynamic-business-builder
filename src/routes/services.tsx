@@ -46,7 +46,7 @@ function Services() {
 function HeroSection() {
   return (
     <section className="bg-white py-20 md:py-28 text-center">
-      <div className="max-w-3xl mx-auto px-6 sm:px-8">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <span
           className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
           style={{ backgroundColor: "#6B3EF0" }}
@@ -143,7 +143,7 @@ const PRODUCTS = [
 function ProductsSection() {
   return (
     <section id="products" className="bg-gray-50 py-20 md:py-28">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">
             Pick your card
@@ -262,7 +262,7 @@ const FEATURES = [
 function FeaturesSection() {
   return (
     <section className="bg-white py-20 md:py-28">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">
             What's included with every card
@@ -298,7 +298,7 @@ function FeaturesSection() {
 function MetalCardFeature() {
   return (
     <section className="bg-white">
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full">
         <div className="grid lg:grid-cols-2 items-center">
           {/* Right image first on large screens */}
           <div className="relative h-72 lg:h-[520px] order-2 lg:order-1">
@@ -393,7 +393,7 @@ function FaqSection() {
   const [open, setOpen] = useState<number | null>(0);
   return (
     <section className="bg-gray-50 py-20 md:py-28">
-      <div className="max-w-3xl mx-auto px-6 sm:px-8">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">
             Frequently asked questions
@@ -434,7 +434,7 @@ function FaqSection() {
 function CtaSection() {
   return (
     <section className="bg-black py-20 md:py-24 text-center">
-      <div className="max-w-2xl mx-auto px-6">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">
           Ready to tap in?
         </h2>

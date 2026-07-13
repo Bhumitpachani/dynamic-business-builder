@@ -58,7 +58,7 @@ function About() {
 function HeroSection() {
   return (
     <section className="bg-white py-20 md:py-28 text-center">
-      <div className="max-w-3xl mx-auto px-6 sm:px-8">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <span
           className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
           style={{ backgroundColor: "#6B3EF0" }}
@@ -110,7 +110,7 @@ function StorySection() {
 
   return (
     <section className="bg-gray-50 py-20 md:py-28">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <div className="grid lg:grid-cols-2 gap-14 items-center">
           {/* Why TAPVYBE text */}
           <div>
@@ -169,7 +169,7 @@ function StorySection() {
 function MissionSection() {
   return (
     <section className="bg-white py-20 md:py-28">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">
             What drives us every day
@@ -290,7 +290,7 @@ const VALUES = [
 function ValuesSection() {
   return (
     <section className="bg-gray-50 py-20 md:py-28">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">Our Values</h2>
         </div>
@@ -320,7 +320,7 @@ function ValuesSection() {
 function DigitalRevolutionSection() {
   return (
     <section className="bg-black py-20 md:py-28">
-      <div className="max-w-3xl mx-auto px-6 sm:px-8">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <span
           className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-8 tracking-wide uppercase"
           style={{ backgroundColor: "#6B3EF0" }}
@@ -380,7 +380,7 @@ const TEAM = [
 function TeamSection() {
   return (
     <section className="bg-white py-20 md:py-28">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">
             The people behind tapvybe
@@ -418,7 +418,7 @@ function TeamSection() {
 function CtaSection() {
   return (
     <section className="bg-black py-20 md:py-24 text-center">
-      <div className="max-w-2xl mx-auto px-6">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">
           Want to join our journey?
         </h2>

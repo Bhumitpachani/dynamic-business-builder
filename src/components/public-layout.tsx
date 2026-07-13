@@ -24,7 +24,7 @@ export function PublicNav() {
   const [open, setOpen] = useState(false);
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center shrink-0">
             <img src="/tapvybe-logo-horizontal.png" alt="tapvybe" className="h-8 w-auto" />
@@ -109,7 +109,7 @@ export function PublicFooter() {
   const year = new Date().getFullYear();
   return (
     <footer className="bg-black text-gray-400">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-16 pb-10">
+      <div className="w-full px-6 sm:px-10 lg:px-20 pt-16 pb-10">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-10">
           <div className="col-span-2 lg:col-span-2">
             <Link to="/" className="inline-flex items-center">
@@ -166,7 +166,7 @@ export function PublicFooter() {
       </div>
 
       <div className="border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-600">
+        <div className="w-full px-6 sm:px-10 lg:px-20 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-600">
           <p>© {year} tapvybe. All rights reserved.</p>
           <div className="flex gap-5">
             <a href="#" className="hover:text-gray-300 transition-colors">Privacy Policy</a>

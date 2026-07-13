@@ -37,7 +37,7 @@ function Contact() {
 function HeroSection() {
   return (
     <section className="bg-white py-20 md:py-28 text-center">
-      <div className="max-w-2xl mx-auto px-6 sm:px-8">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <span
           className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-6 tracking-wide uppercase"
           style={{ backgroundColor: "#6B3EF0" }}
@@ -210,7 +210,7 @@ function ContactForm() {
 function MainSection() {
   return (
     <section className="bg-gray-50 py-16 md:py-20">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
 
         {/* Contact info cards */}
         <div className="grid sm:grid-cols-3 gap-4 mb-14">

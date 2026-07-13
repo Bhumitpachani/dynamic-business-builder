@@ -50,7 +50,7 @@ function Landing() {
 function HeroSection() {
   return (
     <section className="bg-white min-h-[92vh] flex items-center">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center py-16 md:py-20">
           {/* Left — Text */}
           <div className="max-w-xl">
@@ -140,7 +140,7 @@ function StatsBar() {
   ];
   return (
     <section className="bg-black py-10">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {stats.map((s) => (
             <div key={s.label}>
@@ -179,7 +179,7 @@ const HOW_STEPS = [
 function HowItWorksSection() {
   return (
     <section className="bg-gray-50 py-20 md:py-28">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <div className="text-center mb-14">
           <span
             className="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-white mb-4 tracking-wide uppercase"
@@ -262,7 +262,7 @@ const FEATURES = [
 function FeaturesSection() {
   return (
     <section className="bg-white py-20 md:py-28">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">
             Everything packed into one card
@@ -297,7 +297,7 @@ function FeaturesSection() {
 function MetalCardSection() {
   return (
     <section className="bg-black overflow-hidden">
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full">
         <div className="grid lg:grid-cols-2 items-stretch">
           {/* Text */}
           <div className="px-8 sm:px-12 lg:px-16 py-20 md:py-28 flex flex-col justify-center">
@@ -396,7 +396,7 @@ function FutureSection() {
 function CardsShowcaseSection() {
   return (
     <section className="bg-white py-20 md:py-28">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <span
@@ -486,7 +486,7 @@ const TESTIMONIALS = [
 function TestimonialsSection() {
   return (
     <section className="bg-gray-50 py-20 md:py-28">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">
             Loved by professionals across India
@@ -551,7 +551,7 @@ const PLANS = [
 function PricingTeaser() {
   return (
     <section className="bg-white py-20 md:py-28">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-black text-black tracking-tight">
             Simple pricing
@@ -613,7 +613,7 @@ function CtaSection() {
       className="py-20 md:py-28 text-center text-white"
       style={{ background: `linear-gradient(135deg, #3B2ED9 0%, #8B35D9 100%)` }}
     >
-      <div className="max-w-2xl mx-auto px-6">
+      <div className="w-full px-6 sm:px-10 lg:px-20">
         <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
           Ready to tap in?
         </h2>
