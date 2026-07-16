@@ -1,4 +1,4 @@
-import { createFileRoute, useParams } from "@tanstack/react-router";
+﻿import { createFileRoute, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { store, isExpired, newId, type Business, type Inquiry, type Appointment } from "@/lib/store";
 
@@ -115,7 +115,6 @@ function PublicSite() {
   function saveContact() {
     const b = biz!;
 
-    // ── helpers ──────────────────────────────────────────────────────────────
     // Escape a string for vCard 3.0 (backslash, semicolon, comma, newlines).
     const vc = (s: string) =>
       s.replace(/\\/g, "\\\\")
@@ -123,15 +122,6 @@ function PublicSite() {
        .replace(/,/g, "\\,")
        .replace(/\r?\n/g, "\\n");
 
-    // Escape a string so it is safe to embed inside an HTML attribute or text node.
-    const he = (s: string) =>
-      s.replace(/&/g, "&amp;")
-       .replace(/</g, "&lt;")
-       .replace(/>/g, "&gt;")
-       .replace(/"/g, "&quot;")
-       .replace(/'/g, "&#39;");
-
-    // ── vCard ─────────────────────────────────────────────────────────────────
     const displayName = b.name?.trim() || "Contact";
     const vcard = [
       "BEGIN:VCARD",
@@ -147,109 +137,81 @@ function PublicSite() {
       "END:VCARD",
     ].filter(Boolean).join("\r\n");
 
-    // Safe filename — never empty
-    const safeName = (displayName.replace(/[^a-z0-9]/gi, "_").replace(/_+/g, "_").replace(/^_|_$/g, "") || "contact");
-
-    // ── HTML launcher ─────────────────────────────────────────────────────────
-    // When opened on mobile the script immediately downloads the .vcf which
-    // iOS / Android handle natively ("Add to Contacts"). window.close() is
-    // best-effort; the fallback copy tells users they can close the tab.
-    const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Saving ${he(displayName)}\u2026</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{display:flex;flex-direction:column;align-items:center;justify-content:center;
-     min-height:100vh;background:#f0f4ff;font-family:system-ui,sans-serif;
-     gap:14px;padding:24px;text-align:center}
-.icon{font-size:52px}
-p{color:#333;font-size:17px;font-weight:600}
-small{color:#888;font-size:13px;margin-top:4px}
-</style>
-</head>
-<body>
-<div class="icon">📱</div>
-<p>Saving <em>${he(displayName)}</em> to your contacts\u2026</p>
-<small>Contact saved! You can now close this tab.</small>
-<script>
-(function(){
-  var v=${JSON.stringify(vcard)};
-  var blob=new Blob([v],{type:'text/vcard;charset=utf-8'});
-  var u=URL.createObjectURL(blob);
-  var a=document.createElement('a');
-  a.href=u; a.download=${JSON.stringify(safeName+".vcf")};
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  // Revoke after browser has had time to read the blob, then try to close.
-  setTimeout(function(){URL.revokeObjectURL(u);},3000);
-  setTimeout(function(){try{window.close();}catch(e){}},2000);
-})();
-</script>
-</body>
-</html>`;
-
-    // Open the HTML launcher in a new tab — the page auto-downloads the .vcf
-    const htmlBlob = new Blob([html], { type: "text/html" });
-    const htmlUrl = URL.createObjectURL(htmlBlob);
-    const w = window.open(htmlUrl, "_blank");
-    // Fallback: if popup was blocked, download the file instead
-    if (!w) {
-      const link = document.createElement("a");
-      link.href = htmlUrl;
-      link.download = `Save_${safeName}_Contact.html`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-    setTimeout(() => URL.revokeObjectURL(htmlUrl), 8000);
+    // Serve the vCard directly (no `download` attribute, no intermediate
+    // HTML page) — mobile browsers recognize the text/vcard MIME type and
+    // open the native "Add to Contacts" screen instead of saving a file.
+    const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const w = window.open(url, "_blank");
+    if (!w) window.location.href = url;
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
   }
 
   function downloadCard() {
     const b = biz!;
     const he = (s: string) =>
       s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    const vc = (s: string) =>
+      s.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
 
     const displayName = b.name?.trim() || "Business";
     const safeName = displayName.replace(/[^a-z0-9]/gi, "_").replace(/_+/g, "_").replace(/^_|_$/g, "") || "card";
-    const brandColor = b.theme.primary || "#6B3EF0";
+    const brandColor = b.theme.primary || "#2563eb";
+    const liveUrl = `${window.location.origin}/site/${slug}`;
+
+    // Same vCard the "Save Contact" button generates, embedded as a data URI
+    // so the standalone file can still offer native "Add to Contacts".
+    const vcard = [
+      "BEGIN:VCARD",
+      "VERSION:3.0",
+      `FN:${vc(displayName)}`,
+      `ORG:${vc(displayName)}`,
+      b.phone ? `TEL;TYPE=CELL:${b.phone.replace(/\s/g, "")}` : "",
+      b.whatsapp && b.whatsapp !== b.phone ? `TEL;TYPE=WORK:${b.whatsapp.replace(/\s/g, "")}` : "",
+      b.email ? `EMAIL:${b.email.trim()}` : "",
+      b.address ? `ADR:;;${vc(b.address)};;;;` : "",
+      b.websiteLink ? `URL:${b.websiteLink.trim()}` : "",
+      "END:VCARD",
+    ].filter(Boolean).join("\r\n");
+    const vcardHref = `data:text/vcard;charset=utf-8,${encodeURIComponent(vcard)}`;
 
     const productsHtml = b.products.length > 0 ? `
-      <div class="section">
-        <h2 class="section-title">Products &amp; Services</h2>
-        <div class="products-grid">
-          ${b.products.map(p => `
-            <div class="product-card">
-              ${p.image ? `<img src="${he(p.image)}" alt="${he(p.name)}" class="product-img" />` : ""}
-              <div class="product-body">
-                <div class="product-name">${he(p.name)}</div>
-                ${p.price ? `<div class="product-price" style="color:${brandColor}">${he(p.price)}</div>` : ""}
-                ${p.description ? `<div class="product-desc">${he(p.description)}</div>` : ""}
-              </div>
-            </div>`).join("")}
+  <div class="section">
+    <h2 class="section-title">Products &amp; Services</h2>
+    <div class="products-grid">
+      ${b.products.map(p => `
+      <div class="product-card">
+        ${p.image ? `<img src="${he(p.image)}" alt="${he(p.name)}" class="product-img" />` : ""}
+        <div class="product-body">
+          <div class="product-row">
+            <div class="product-name">${he(p.name)}</div>
+            ${p.price ? `<div class="product-price" style="color:${brandColor}">${he(p.price)}</div>` : ""}
+          </div>
+          ${p.description ? `<div class="product-desc">${he(p.description)}</div>` : ""}
         </div>
-      </div>` : "";
+      </div>`).join("")}
+    </div>
+  </div>` : "";
 
     const galleryHtml = b.gallery.length > 0 ? `
-      <div class="section">
-        <h2 class="section-title">Gallery</h2>
-        <div class="gallery-grid">
-          ${b.gallery.map(g => g.image ? `<img src="${he(g.image)}" alt="${he(g.caption || "")}" class="gallery-img" />` : "").join("")}
-        </div>
-      </div>` : "";
+  <div class="section">
+    <h2 class="section-title">Gallery</h2>
+    <div class="gallery-grid">
+      ${b.gallery.map(g => g.image ? `<div class="gallery-item"><img src="${he(g.image)}" alt="${he(g.caption || "")}" /></div>` : "").join("")}
+    </div>
+  </div>` : "";
 
     const socialLinks = [
       b.websiteLink && `<a href="${he(b.websiteLink)}" target="_blank" class="chip">🌐 Website</a>`,
-      b.googleReviewLink && `<a href="${he(b.googleReviewLink)}" target="_blank" class="chip">⭐ Google Review</a>`,
-      b.social?.facebook && `<a href="${he(b.social.facebook)}" target="_blank" class="chip" style="color:#1877f2;border-color:#1877f2">Facebook</a>`,
-      b.social?.instagram && `<a href="${he(b.social.instagram)}" target="_blank" class="chip" style="color:#e4405f;border-color:#e4405f">Instagram</a>`,
-      b.social?.twitter && `<a href="${he(b.social.twitter)}" target="_blank" class="chip" style="color:#1da1f2;border-color:#1da1f2">Twitter</a>`,
-      b.social?.linkedin && `<a href="${he(b.social.linkedin)}" target="_blank" class="chip" style="color:#0a66c2;border-color:#0a66c2">LinkedIn</a>`,
-      b.social?.youtube && `<a href="${he(b.social.youtube)}" target="_blank" class="chip" style="color:#ff0000;border-color:#ff0000">YouTube</a>`,
+      b.googleReviewLink && `<a href="${he(b.googleReviewLink)}" target="_blank" class="chip">⭐ Review on Google</a>`,
+      b.social?.facebook && `<a href="${he(b.social.facebook)}" target="_blank" class="chip" style="color:#1877f2">Facebook</a>`,
+      b.social?.instagram && `<a href="${he(b.social.instagram)}" target="_blank" class="chip" style="color:#e4405f">Instagram</a>`,
+      b.social?.twitter && `<a href="${he(b.social.twitter)}" target="_blank" class="chip" style="color:#1da1f2">Twitter</a>`,
+      b.social?.linkedin && `<a href="${he(b.social.linkedin)}" target="_blank" class="chip" style="color:#0a66c2">LinkedIn</a>`,
+      b.social?.youtube && `<a href="${he(b.social.youtube)}" target="_blank" class="chip" style="color:#ff0000">YouTube</a>`,
     ].filter(Boolean).join("");
 
-    const waLink2 = b.whatsapp ? `https://wa.me/${b.whatsapp.replace(/[^0-9]/g, "")}?text=Hi` : "";
+    const waLink2 = b.whatsapp ? `https://wa.me/${b.whatsapp.replace(/[^0-9]/g, "")}?text=Hi%2C%20I%20found%20you%20via%20your%20website` : "";
 
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -259,48 +221,61 @@ small{color:#888;font-size:13px;margin-top:4px}
 <title>${he(displayName)} — tapvybe Card</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh;padding-bottom:40px}
-.cover{height:200px;background:linear-gradient(135deg,#334155,#0f172a);position:relative;overflow:hidden}
-.cover img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f8fafc;color:#1e293b}
+.cover{position:relative;height:224px;background:linear-gradient(135deg,#334155,#0f172a);overflow:hidden}
+.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .cover-overlay{position:absolute;inset:0;background:rgba(0,0,0,.4)}
-.container{max-width:680px;margin:0 auto;padding:0 16px}
-.hero{background:#fff;border-radius:20px;box-shadow:0 4px 24px rgba(0,0,0,.1);padding:20px;margin-top:-60px;position:relative}
-.avatar{width:90px;height:90px;border-radius:16px;border:4px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.15);object-fit:cover;margin-top:-60px;background:${brandColor};display:flex;align-items:center;justify-content:center;color:#fff;font-size:2rem;font-weight:900;overflow:hidden;flex-shrink:0}
-.hero-top{display:flex;gap:14px;align-items:flex-start}
+@media(min-width:768px){.cover{height:288px}}
+.container{max-width:768px;margin:0 auto;padding:0 16px;position:relative;margin-top:-80px}
+.hero{background:#fff;border-radius:16px;box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);padding:20px}
+.hero-top{display:flex;align-items:flex-start;gap:16px}
+.avatar{width:112px;height:112px;border-radius:16px;border:4px solid #fff;box-shadow:0 20px 25px -5px rgba(0,0,0,.1);object-fit:cover;margin-top:-64px;flex-shrink:0;background:#fff;padding:4px}
+.avatar-fallback{width:112px;height:112px;border-radius:16px;border:4px solid #fff;box-shadow:0 20px 25px -5px rgba(0,0,0,.1);margin-top:-64px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:36px;font-weight:900;background:${brandColor}}
 .hero-info{flex:1;min-width:0;padding-top:4px}
-h1{font-size:1.4rem;font-weight:800;color:#0f172a;word-break:break-word}
-.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.75rem;font-weight:700;margin-top:6px}
-.tagline{font-size:.85rem;color:#64748b;margin-top:6px;line-height:1.5}
-.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-top:16px}
-.btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border:1px solid #e2e8f0;border-radius:14px;text-decoration:none;color:#1e293b;font-size:.75rem;font-weight:600;background:#fff;cursor:pointer;transition:.15s}
-.btn-icon{font-size:1.3rem}
-.btn-primary{background:${brandColor};color:#fff;border-color:${brandColor}}
-.section{background:#fff;border-radius:20px;padding:20px;margin-top:12px;border:1px solid #e2e8f0}
-.section-title{font-size:1rem;font-weight:800;color:#0f172a;margin-bottom:12px}
-.about-text{font-size:.875rem;color:#475569;line-height:1.7;white-space:pre-wrap}
-.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.product-card{border:1px solid #e2e8f0;border-radius:14px;overflow:hidden}
-.product-img{width:100%;height:150px;object-fit:cover}
+h1{font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(min-width:768px){h1{font-size:24px}}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600;margin-top:6px}
+.tagline{font-size:14px;color:#475569;margin-top:8px;line-height:1.6}
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:20px}
+@media(min-width:640px){.actions{grid-template-columns:repeat(4,1fr)}}
+.btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px;border:1px solid #e2e8f0;border-radius:12px;text-decoration:none;color:#1e293b;font-size:12px;font-weight:500;background:#fff}
+.btn-icon{font-size:20px}
+.section{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:20px;margin-top:16px}
+.section-title{font-size:16px;font-weight:700;color:#0f172a;margin-bottom:12px}
+.about-text{font-size:14px;color:#334155;line-height:1.6;white-space:pre-wrap}
+.products-grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:640px){.products-grid{grid-template-columns:repeat(2,1fr)}}
+.product-card{border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;background:#fff}
+.product-img{width:100%;height:160px;object-fit:cover}
 .product-body{padding:12px}
-.product-name{font-weight:700;font-size:.875rem}
-.product-price{font-weight:800;font-size:.9rem;margin-top:4px}
-.product-desc{font-size:.8rem;color:#64748b;margin-top:4px;line-height:1.5}
-.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.gallery-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px}
+.product-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.product-name{font-weight:600;font-size:14px}
+.product-price{font-weight:700;font-size:14px;flex-shrink:0}
+.product-desc{font-size:12px;color:#64748b;margin-top:4px}
+.gallery-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+@media(min-width:640px){.gallery-grid{grid-template-columns:repeat(3,1fr)}}
+.gallery-item{aspect-ratio:1;border-radius:8px;overflow:hidden;background:#f1f5f9}
+.gallery-item img{width:100%;height:100%;object-fit:cover}
+.cta-grid{display:grid;grid-template-columns:1fr;gap:8px}
+@media(min-width:640px){.cta-grid{grid-template-columns:repeat(2,1fr)}}
+.cta-btn{display:block;text-align:center;padding:12px;border-radius:12px;font-weight:600;font-size:14px;text-decoration:none}
+.cta-primary{background:${brandColor};color:#fff}
+.cta-outline{border:2px solid ${brandColor};color:${brandColor}}
+.location-text{font-size:14px;color:#334155}
+.location-link{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:14px;font-weight:500;color:${brandColor};text-decoration:none}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #cbd5e1;border-radius:999px;font-size:.8rem;font-weight:600;text-decoration:none;color:#475569}
-.contact-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:.875rem}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid #cbd5e1;border-radius:999px;font-size:14px;font-weight:500;text-decoration:none;color:#475569}
+.contact-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:14px}
 .contact-item:last-child{border-bottom:none}
-.contact-icon{font-size:1.1rem;width:28px;flex-shrink:0;text-align:center}
+.contact-icon{font-size:16px;width:24px;flex-shrink:0;text-align:center}
 .contact-link{color:#1e293b;text-decoration:none;font-weight:500}
-.footer{text-align:center;margin-top:20px;font-size:.75rem;color:#94a3b8}
-.footer a{color:#6B3EF0;font-weight:700;text-decoration:none}
-@media(max-width:480px){.gallery-grid{grid-template-columns:repeat(2,1fr)}.products-grid{grid-template-columns:1fr}}
+.footer{text-align:center;font-size:12px;color:#94a3b8;padding:24px 0}
+.footer a{color:${brandColor};font-weight:700;text-decoration:none}
 </style>
 </head>
 <body>
 <div class="cover">
-  ${b.coverImage ? `<img src="${he(b.coverImage)}" alt="cover" />` : ""}
+  ${b.coverImage ? `<img src="${he(b.coverImage)}" alt="" />` : ""}
   <div class="cover-overlay"></div>
 </div>
 <div class="container">
@@ -308,10 +283,10 @@ h1{font-size:1.4rem;font-weight:800;color:#0f172a;word-break:break-word}
     <div class="hero-top">
       ${b.logo
         ? `<img src="${he(b.logo)}" alt="${he(b.name)}" class="avatar" />`
-        : `<div class="avatar">${he(b.name[0]?.toUpperCase() || "?")}</div>`}
+        : `<div class="avatar-fallback">${he(b.name[0]?.toUpperCase() || "?")}</div>`}
       <div class="hero-info">
         <h1>${he(displayName)}</h1>
-        ${b.category ? `<span class="badge" style="background:${brandColor}22;color:${brandColor}">${he(b.category)}</span>` : ""}
+        ${b.category ? `<span class="badge" style="background:${brandColor}20;color:${brandColor}">${he(b.category)}</span>` : ""}
         ${b.tagline ? `<p class="tagline">${he(b.tagline)}</p>` : ""}
       </div>
     </div>
@@ -319,7 +294,7 @@ h1{font-size:1.4rem;font-weight:800;color:#0f172a;word-break:break-word}
       ${b.phone ? `<a href="tel:${he(b.phone)}" class="btn"><span class="btn-icon">📞</span>Call</a>` : ""}
       ${waLink2 ? `<a href="${he(waLink2)}" target="_blank" class="btn"><span class="btn-icon">💬</span>WhatsApp</a>` : ""}
       ${b.mapsLink ? `<a href="${he(b.mapsLink)}" target="_blank" class="btn"><span class="btn-icon">📍</span>Directions</a>` : ""}
-      ${b.email ? `<a href="mailto:${he(b.email)}" class="btn"><span class="btn-icon">✉️</span>Email</a>` : ""}
+      <a href="${vcardHref}" class="btn"><span class="btn-icon">👤</span>Save Contact</a>
     </div>
   </div>
 
@@ -327,6 +302,20 @@ h1{font-size:1.4rem;font-weight:800;color:#0f172a;word-break:break-word}
 
   ${productsHtml}
   ${galleryHtml}
+
+  <div class="section">
+    <h2 class="section-title">Get in Touch</h2>
+    <div class="cta-grid">
+      <a href="${he(liveUrl)}" target="_blank" class="cta-btn cta-primary">Send Inquiry</a>
+      <a href="${he(liveUrl)}" target="_blank" class="cta-btn cta-outline">Book Appointment</a>
+    </div>
+  </div>
+
+  ${(b.address || b.mapsLink) ? `<div class="section">
+    <h2 class="section-title">Location</h2>
+    ${b.address ? `<p class="location-text">${he(b.address)}</p>` : ""}
+    ${b.mapsLink ? `<a href="${he(b.mapsLink)}" target="_blank" class="location-link">📍 Open in Google Maps</a>` : ""}
+  </div>` : ""}
 
   <div class="section">
     <h2 class="section-title">Contact</h2>
