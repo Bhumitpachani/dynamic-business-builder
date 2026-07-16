@@ -111,6 +111,27 @@ function PublicSite() {
 
   const primary = biz.theme.primary || "#2563eb";
   const waLink = biz.whatsapp ? `https://wa.me/${biz.whatsapp.replace(/[^0-9]/g, "")}?text=Hi%2C%20I%20found%20you%20via%20your%20website` : "";
+  const liveUrl = `${window.location.origin}/site/${slug}`;
+
+  // vCard as a data URI so the "Save Contact" tile still works when the page
+  // has been cloned into a standalone downloaded file (no React/JS there).
+  const vcardHref = (() => {
+    const vc = (s: string) => s.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+    const displayName = biz.name?.trim() || "Contact";
+    const vcard = [
+      "BEGIN:VCARD",
+      "VERSION:3.0",
+      `FN:${vc(displayName)}`,
+      `ORG:${vc(displayName)}`,
+      biz.phone ? `TEL;TYPE=CELL:${biz.phone.replace(/\s/g, "")}` : "",
+      biz.whatsapp && biz.whatsapp !== biz.phone ? `TEL;TYPE=WORK:${biz.whatsapp.replace(/\s/g, "")}` : "",
+      biz.email ? `EMAIL:${biz.email.trim()}` : "",
+      biz.address ? `ADR:;;${vc(biz.address)};;;;` : "",
+      biz.websiteLink ? `URL:${biz.websiteLink.trim()}` : "",
+      "END:VCARD",
+    ].filter(Boolean).join("\r\n");
+    return `data:text/vcard;charset=utf-8,${encodeURIComponent(vcard)}`;
+  })();
 
   function saveContact() {
     const b = biz!;
@@ -150,185 +171,64 @@ function PublicSite() {
   function downloadCard() {
     const b = biz!;
     const he = (s: string) =>
-      s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    const vc = (s: string) =>
-      s.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+      s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
     const displayName = b.name?.trim() || "Business";
     const safeName = displayName.replace(/[^a-z0-9]/gi, "_").replace(/_+/g, "_").replace(/^_|_$/g, "") || "card";
-    const brandColor = b.theme.primary || "#2563eb";
-    const liveUrl = `${window.location.origin}/site/${slug}`;
 
-    // Same vCard the "Save Contact" button generates, embedded as a data URI
-    // so the standalone file can still offer native "Add to Contacts".
-    const vcard = [
-      "BEGIN:VCARD",
-      "VERSION:3.0",
-      `FN:${vc(displayName)}`,
-      `ORG:${vc(displayName)}`,
-      b.phone ? `TEL;TYPE=CELL:${b.phone.replace(/\s/g, "")}` : "",
-      b.whatsapp && b.whatsapp !== b.phone ? `TEL;TYPE=WORK:${b.whatsapp.replace(/\s/g, "")}` : "",
-      b.email ? `EMAIL:${b.email.trim()}` : "",
-      b.address ? `ADR:;;${vc(b.address)};;;;` : "",
-      b.websiteLink ? `URL:${b.websiteLink.trim()}` : "",
-      "END:VCARD",
-    ].filter(Boolean).join("\r\n");
-    const vcardHref = `data:text/vcard;charset=utf-8,${encodeURIComponent(vcard)}`;
+    const root = document.getElementById("tapvybe-card-root");
+    if (!root) return;
+    const clone = root.cloneNode(true) as HTMLElement;
 
-    const productsHtml = b.products.length > 0 ? `
-  <div class="section">
-    <h2 class="section-title">Products &amp; Services</h2>
-    <div class="products-grid">
-      ${b.products.map(p => `
-      <div class="product-card">
-        ${p.image ? `<img src="${he(p.image)}" alt="${he(p.name)}" class="product-img" />` : ""}
-        <div class="product-body">
-          <div class="product-row">
-            <div class="product-name">${he(p.name)}</div>
-            ${p.price ? `<div class="product-price" style="color:${brandColor}">${he(p.price)}</div>` : ""}
-          </div>
-          ${p.description ? `<div class="product-desc">${he(p.description)}</div>` : ""}
-        </div>
-      </div>`).join("")}
-    </div>
-  </div>` : "";
+    // Strip anything that only makes sense on the live, scripted page (the
+    // "Download Card" button itself would be dead weight inside its own file).
+    clone.querySelectorAll("[data-dl-remove]").forEach((el) => el.remove());
 
-    const galleryHtml = b.gallery.length > 0 ? `
-  <div class="section">
-    <h2 class="section-title">Gallery</h2>
-    <div class="gallery-grid">
-      ${b.gallery.map(g => g.image ? `<div class="gallery-item"><img src="${he(g.image)}" alt="${he(g.caption || "")}" /></div>` : "").join("")}
-    </div>
-  </div>` : "";
+    // The quick actions / CTA buttons rely on React onClick handlers that
+    // won't exist in a plain downloaded file — swap each for a real <a> so
+    // it still works standalone.
+    clone.querySelectorAll<HTMLElement>("[data-dl-href]").forEach((el) => {
+      const href = el.getAttribute("data-dl-href")!;
+      const a = document.createElement("a");
+      a.href = href;
+      a.className = el.className;
+      a.innerHTML = el.innerHTML;
+      if (!href.startsWith("data:") && !href.startsWith("tel:")) a.target = "_blank";
+      el.replaceWith(a);
+    });
 
-    const socialLinks = [
-      b.websiteLink && `<a href="${he(b.websiteLink)}" target="_blank" class="chip">🌐 Website</a>`,
-      b.googleReviewLink && `<a href="${he(b.googleReviewLink)}" target="_blank" class="chip">⭐ Review on Google</a>`,
-      b.social?.facebook && `<a href="${he(b.social.facebook)}" target="_blank" class="chip" style="color:#1877f2">Facebook</a>`,
-      b.social?.instagram && `<a href="${he(b.social.instagram)}" target="_blank" class="chip" style="color:#e4405f">Instagram</a>`,
-      b.social?.twitter && `<a href="${he(b.social.twitter)}" target="_blank" class="chip" style="color:#1da1f2">Twitter</a>`,
-      b.social?.linkedin && `<a href="${he(b.social.linkedin)}" target="_blank" class="chip" style="color:#0a66c2">LinkedIn</a>`,
-      b.social?.youtube && `<a href="${he(b.social.youtube)}" target="_blank" class="chip" style="color:#ff0000">YouTube</a>`,
-    ].filter(Boolean).join("");
+    // Lazily-loaded images stay invisible (opacity-0 + shimmer skeleton)
+    // until their onLoad fires — there's no React here to fire it, so force
+    // every image visible and drop the now-permanent shimmer placeholders.
+    clone.querySelectorAll(".animate-pulse").forEach((el) => el.remove());
+    clone.querySelectorAll("img").forEach((img) => {
+      img.classList.remove("opacity-0");
+      img.classList.add("opacity-100");
+    });
 
-    const waLink2 = b.whatsapp ? `https://wa.me/${b.whatsapp.replace(/[^0-9]/g, "")}?text=Hi%2C%20I%20found%20you%20via%20your%20website` : "";
+    // Pull in the site's actual stylesheet so the clone renders pixel-identical
+    // to the live page — no hand-maintained CSS to drift out of sync.
+    const styleTags = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+      .map((el) => {
+        if (el.tagName === "LINK") {
+          const href = new URL((el as HTMLLinkElement).href, document.baseURI).href;
+          return `<link rel="stylesheet" href="${href}">`;
+        }
+        return el.outerHTML;
+      })
+      .join("\n");
 
     const html = `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="${document.documentElement.className}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<base href="${window.location.origin}/">
 <title>${he(displayName)} — tapvybe Card</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,sans-serif;background:#f8fafc;color:#1e293b}
-.cover{position:relative;height:224px;background:linear-gradient(135deg,#334155,#0f172a);overflow:hidden}
-.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.cover-overlay{position:absolute;inset:0;background:rgba(0,0,0,.4)}
-@media(min-width:768px){.cover{height:288px}}
-.container{max-width:768px;margin:0 auto;padding:0 16px;position:relative;margin-top:-80px}
-.hero{background:#fff;border-radius:16px;box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);padding:20px}
-.hero-top{display:flex;align-items:flex-start;gap:16px}
-.avatar{width:112px;height:112px;border-radius:16px;border:4px solid #fff;box-shadow:0 20px 25px -5px rgba(0,0,0,.1);object-fit:cover;margin-top:-64px;flex-shrink:0;background:#fff;padding:4px}
-.avatar-fallback{width:112px;height:112px;border-radius:16px;border:4px solid #fff;box-shadow:0 20px 25px -5px rgba(0,0,0,.1);margin-top:-64px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:36px;font-weight:900;background:${brandColor}}
-.hero-info{flex:1;min-width:0;padding-top:4px}
-h1{font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media(min-width:768px){h1{font-size:24px}}
-.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600;margin-top:6px}
-.tagline{font-size:14px;color:#475569;margin-top:8px;line-height:1.6}
-.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:20px}
-@media(min-width:640px){.actions{grid-template-columns:repeat(4,1fr)}}
-.btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px;border:1px solid #e2e8f0;border-radius:12px;text-decoration:none;color:#1e293b;font-size:12px;font-weight:500;background:#fff}
-.btn-icon{font-size:20px}
-.section{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:20px;margin-top:16px}
-.section-title{font-size:16px;font-weight:700;color:#0f172a;margin-bottom:12px}
-.about-text{font-size:14px;color:#334155;line-height:1.6;white-space:pre-wrap}
-.products-grid{display:grid;grid-template-columns:1fr;gap:12px}
-@media(min-width:640px){.products-grid{grid-template-columns:repeat(2,1fr)}}
-.product-card{border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;background:#fff}
-.product-img{width:100%;height:160px;object-fit:cover}
-.product-body{padding:12px}
-.product-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
-.product-name{font-weight:600;font-size:14px}
-.product-price{font-weight:700;font-size:14px;flex-shrink:0}
-.product-desc{font-size:12px;color:#64748b;margin-top:4px}
-.gallery-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-@media(min-width:640px){.gallery-grid{grid-template-columns:repeat(3,1fr)}}
-.gallery-item{aspect-ratio:1;border-radius:8px;overflow:hidden;background:#f1f5f9}
-.gallery-item img{width:100%;height:100%;object-fit:cover}
-.cta-grid{display:grid;grid-template-columns:1fr;gap:8px}
-@media(min-width:640px){.cta-grid{grid-template-columns:repeat(2,1fr)}}
-.cta-btn{display:block;text-align:center;padding:12px;border-radius:12px;font-weight:600;font-size:14px;text-decoration:none}
-.cta-primary{background:${brandColor};color:#fff}
-.cta-outline{border:2px solid ${brandColor};color:${brandColor}}
-.location-text{font-size:14px;color:#334155}
-.location-link{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:14px;font-weight:500;color:${brandColor};text-decoration:none}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid #cbd5e1;border-radius:999px;font-size:14px;font-weight:500;text-decoration:none;color:#475569}
-.contact-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:14px}
-.contact-item:last-child{border-bottom:none}
-.contact-icon{font-size:16px;width:24px;flex-shrink:0;text-align:center}
-.contact-link{color:#1e293b;text-decoration:none;font-weight:500}
-.footer{text-align:center;font-size:12px;color:#94a3b8;padding:24px 0}
-.footer a{color:${brandColor};font-weight:700;text-decoration:none}
-</style>
+${styleTags}
 </head>
-<body>
-<div class="cover">
-  ${b.coverImage ? `<img src="${he(b.coverImage)}" alt="" />` : ""}
-  <div class="cover-overlay"></div>
-</div>
-<div class="container">
-  <div class="hero">
-    <div class="hero-top">
-      ${b.logo
-        ? `<img src="${he(b.logo)}" alt="${he(b.name)}" class="avatar" />`
-        : `<div class="avatar-fallback">${he(b.name[0]?.toUpperCase() || "?")}</div>`}
-      <div class="hero-info">
-        <h1>${he(displayName)}</h1>
-        ${b.category ? `<span class="badge" style="background:${brandColor}20;color:${brandColor}">${he(b.category)}</span>` : ""}
-        ${b.tagline ? `<p class="tagline">${he(b.tagline)}</p>` : ""}
-      </div>
-    </div>
-    <div class="actions">
-      ${b.phone ? `<a href="tel:${he(b.phone)}" class="btn"><span class="btn-icon">📞</span>Call</a>` : ""}
-      ${waLink2 ? `<a href="${he(waLink2)}" target="_blank" class="btn"><span class="btn-icon">💬</span>WhatsApp</a>` : ""}
-      ${b.mapsLink ? `<a href="${he(b.mapsLink)}" target="_blank" class="btn"><span class="btn-icon">📍</span>Directions</a>` : ""}
-      <a href="${vcardHref}" class="btn"><span class="btn-icon">👤</span>Save Contact</a>
-    </div>
-  </div>
-
-  ${b.about ? `<div class="section"><h2 class="section-title">About</h2><p class="about-text">${he(b.about)}</p></div>` : ""}
-
-  ${productsHtml}
-  ${galleryHtml}
-
-  <div class="section">
-    <h2 class="section-title">Get in Touch</h2>
-    <div class="cta-grid">
-      <a href="${he(liveUrl)}" target="_blank" class="cta-btn cta-primary">Send Inquiry</a>
-      <a href="${he(liveUrl)}" target="_blank" class="cta-btn cta-outline">Book Appointment</a>
-    </div>
-  </div>
-
-  ${(b.address || b.mapsLink) ? `<div class="section">
-    <h2 class="section-title">Location</h2>
-    ${b.address ? `<p class="location-text">${he(b.address)}</p>` : ""}
-    ${b.mapsLink ? `<a href="${he(b.mapsLink)}" target="_blank" class="location-link">📍 Open in Google Maps</a>` : ""}
-  </div>` : ""}
-
-  <div class="section">
-    <h2 class="section-title">Contact</h2>
-    ${b.phone ? `<div class="contact-item"><span class="contact-icon">📞</span><a href="tel:${he(b.phone)}" class="contact-link">${he(b.phone)}</a></div>` : ""}
-    ${b.whatsapp ? `<div class="contact-item"><span class="contact-icon">💬</span><a href="${he(waLink2)}" class="contact-link">${he(b.whatsapp)} (WhatsApp)</a></div>` : ""}
-    ${b.email ? `<div class="contact-item"><span class="contact-icon">✉️</span><a href="mailto:${he(b.email)}" class="contact-link">${he(b.email)}</a></div>` : ""}
-    ${b.address ? `<div class="contact-item"><span class="contact-icon">📍</span><span>${he(b.address)}</span></div>` : ""}
-  </div>
-
-  ${socialLinks ? `<div class="section"><h2 class="section-title">Links</h2><div class="chips">${socialLinks}</div></div>` : ""}
-
-  <div class="footer">Powered by <a href="https://tapvybe.in" target="_blank">tapvybe</a></div>
-</div>
+<body class="${document.body.className}">
+${clone.outerHTML}
 </body>
 </html>`;
 
@@ -344,7 +244,7 @@ h1{font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap;overflow:hidd
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24" style={{ ["--brand" as any]: primary }}>
+    <div id="tapvybe-card-root" className="min-h-screen bg-slate-50 pb-24" style={{ ["--brand" as any]: primary }}>
       {/* Cover — proper <img> so browser can prioritize it immediately */}
       <div className="relative h-56 md:h-72 bg-gradient-to-br from-slate-700 to-slate-900 overflow-hidden">
         {biz.coverImage && (
@@ -391,7 +291,7 @@ h1{font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap;overflow:hidd
             {biz.phone && <a href={`tel:${biz.phone}`} className="flex flex-col items-center gap-1 p-3 rounded-xl border hover:shadow text-xs font-medium transition-shadow"><Phone className="h-5 w-5" style={{ color: primary }} /> Call</a>}
             {waLink && <a href={waLink} target="_blank" className="flex flex-col items-center gap-1 p-3 rounded-xl border hover:shadow text-xs font-medium transition-shadow"><MessageCircle className="h-5 w-5 text-green-600" /> WhatsApp</a>}
             {biz.mapsLink && <a href={biz.mapsLink} target="_blank" className="flex flex-col items-center gap-1 p-3 rounded-xl border hover:shadow text-xs font-medium transition-shadow"><MapPin className="h-5 w-5 text-red-600" /> Directions</a>}
-            <button onClick={saveContact} className="flex flex-col items-center gap-1 p-3 rounded-xl border hover:shadow text-xs font-medium transition-shadow"><UserPlus className="h-5 w-5" style={{ color: primary }} /> Save Contact</button>
+            <button onClick={saveContact} data-dl-href={vcardHref} className="flex flex-col items-center gap-1 p-3 rounded-xl border hover:shadow text-xs font-medium transition-shadow"><UserPlus className="h-5 w-5" style={{ color: primary }} /> Save Contact</button>
           </div>
         </div>
 
@@ -458,8 +358,8 @@ h1{font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap;overflow:hidd
         <LazySection rootMargin="500px">
           <Section title="Get in Touch">
             <div className="grid sm:grid-cols-2 gap-2">
-              <button onClick={() => setShowInquiry(true)} className="py-3 rounded-xl font-semibold text-white transition-opacity hover:opacity-90" style={{ background: primary }}>Send Inquiry</button>
-              <button onClick={() => setShowAppt(true)} className="py-3 rounded-xl font-semibold border-2 transition-colors hover:opacity-90" style={{ borderColor: primary, color: primary }}>Book Appointment</button>
+              <button onClick={() => setShowInquiry(true)} data-dl-href={liveUrl} className="py-3 rounded-xl font-semibold text-white transition-opacity hover:opacity-90" style={{ background: primary }}>Send Inquiry</button>
+              <button onClick={() => setShowAppt(true)} data-dl-href={liveUrl} className="py-3 rounded-xl font-semibold border-2 transition-colors hover:opacity-90" style={{ borderColor: primary, color: primary }}>Book Appointment</button>
             </div>
           </Section>
         </LazySection>
@@ -485,13 +385,13 @@ h1{font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap;overflow:hidd
               {biz.social.twitter && <LinkChip icon={Twitter} label="Twitter" href={biz.social.twitter} color="#1da1f2" />}
               {biz.social.linkedin && <LinkChip icon={Linkedin} label="LinkedIn" href={biz.social.linkedin} color="#0a66c2" />}
               {biz.social.youtube && <LinkChip icon={Youtube} label="YouTube" href={biz.social.youtube} color="#ff0000" />}
-              {(biz.paymentQr || biz.upiId) && <button onClick={() => setShowQR(true)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border text-sm font-medium hover:bg-slate-50"><QrCode className="h-4 w-4" /> Pay</button>}
+              {(biz.paymentQr || biz.upiId) && <button onClick={() => setShowQR(true)} data-dl-href={liveUrl} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border text-sm font-medium hover:bg-slate-50"><QrCode className="h-4 w-4" /> Pay</button>}
             </div>
           </Section>
         </LazySection>
 
         <LazySection rootMargin="500px">
-          <div className="mt-4 bg-white rounded-2xl border p-5 text-center">
+          <div data-dl-remove="true" className="mt-4 bg-white rounded-2xl border p-5 text-center">
             <p className="text-sm font-semibold text-slate-700 mb-1">Save this card for later</p>
             <p className="text-xs text-slate-500 mb-4">Download a copy of this profile you can open anytime, even offline.</p>
             <button
@@ -514,7 +414,7 @@ h1{font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap;overflow:hidd
       <div className="fixed bottom-0 inset-x-0 bg-white border-t p-2 grid grid-cols-3 gap-2 sm:hidden z-40">
         {biz.phone && <a href={`tel:${biz.phone}`} className="py-2.5 rounded-lg text-white text-sm font-semibold text-center" style={{ background: primary }}>Call</a>}
         {waLink && <a href={waLink} target="_blank" className="py-2.5 rounded-lg bg-green-600 text-white text-sm font-semibold text-center">WhatsApp</a>}
-        <button onClick={() => setShowInquiry(true)} className="py-2.5 rounded-lg border text-sm font-semibold">Inquiry</button>
+        <button onClick={() => setShowInquiry(true)} data-dl-href={liveUrl} className="py-2.5 rounded-lg border text-sm font-semibold">Inquiry</button>
       </div>
 
       {showInquiry && <InquiryModal biz={biz} onClose={() => setShowInquiry(false)} />}
