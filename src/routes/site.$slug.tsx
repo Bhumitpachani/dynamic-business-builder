@@ -168,7 +168,7 @@ function PublicSite() {
     setTimeout(() => URL.revokeObjectURL(url), 10000);
   }
 
-  function downloadCard() {
+  async function downloadCard() {
     const b = biz!;
     const he = (s: string) =>
       s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -206,26 +206,57 @@ function PublicSite() {
       img.classList.add("opacity-100");
     });
 
-    // Pull in the site's actual stylesheet so the clone renders pixel-identical
-    // to the live page — no hand-maintained CSS to drift out of sync.
-    const styleTags = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-      .map((el) => {
-        if (el.tagName === "LINK") {
-          const href = new URL((el as HTMLLinkElement).href, document.baseURI).href;
-          return `<link rel="stylesheet" href="${href}">`;
+    // Inline every image as base64 so the file is genuinely self-contained —
+    // works offline, and never breaks if the original URL later changes.
+    const toDataUri = (src: string) =>
+      fetch(src)
+        .then((res) => res.blob())
+        .then(
+          (blob) =>
+            new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result as string);
+              reader.onerror = () => reject(reader.error);
+              reader.readAsDataURL(blob);
+            })
+        );
+    await Promise.all(
+      Array.from(clone.querySelectorAll("img")).map(async (img) => {
+        const src = img.getAttribute("src");
+        if (!src || src.startsWith("data:")) return;
+        try {
+          img.src = await toDataUri(src);
+        } catch {
+          // Leave the original URL — better a working link than a broken one.
         }
-        return el.outerHTML;
       })
-      .join("\n");
+    );
+
+    // Inline the site's actual CSS as text (not a <link>) — reading it straight
+    // off document.styleSheets/adoptedStyleSheets works no matter how the
+    // build tool injected it, and keeps the file working fully offline.
+    const cssParts: string[] = [];
+    const seen = new Set<CSSStyleSheet>();
+    const addSheet = (sheet: CSSStyleSheet) => {
+      if (seen.has(sheet)) return;
+      seen.add(sheet);
+      try {
+        const text = Array.from(sheet.cssRules).map((r) => r.cssText).join("\n");
+        if (text) cssParts.push(text);
+      } catch {
+        if (sheet.href) cssParts.push(`@import url("${sheet.href}");`);
+      }
+    };
+    Array.from(document.styleSheets).forEach(addSheet);
+    (document.adoptedStyleSheets || []).forEach(addSheet);
 
     const html = `<!DOCTYPE html>
 <html lang="en" class="${document.documentElement.className}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<base href="${window.location.origin}/">
 <title>${he(displayName)} — tapvybe Card</title>
-${styleTags}
+<style>${cssParts.join("\n")}</style>
 </head>
 <body class="${document.body.className}">
 ${clone.outerHTML}
