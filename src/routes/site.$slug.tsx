@@ -210,45 +210,10 @@ function PublicSite() {
       img.classList.add("opacity-100");
     });
 
-    // Inline every image as base64 so the file is genuinely self-contained —
-    // works offline, and never breaks if the original URL later changes.
-    // Bounded by a timeout so one slow/CORS-blocked image can't hang the
-    // whole download — it just falls back to the original URL instead.
-    const toDataUri = (src: string) =>
-      fetch(src)
-        .then((res) => {
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return res.blob();
-        })
-        .then(
-          (blob) =>
-            new Promise<string>((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result as string);
-              reader.onerror = () => reject(reader.error);
-              reader.readAsDataURL(blob);
-            })
-        );
-    const withTimeout = <T,>(p: Promise<T>, ms: number) =>
-      new Promise<T>((resolve, reject) => {
-        const timer = setTimeout(() => reject(new Error("timed out")), ms);
-        p.then(
-          (v) => { clearTimeout(timer); resolve(v); },
-          (e) => { clearTimeout(timer); reject(e); },
-        );
-      });
-    await Promise.all(
-      Array.from(clone.querySelectorAll("img")).map(async (img) => {
-        const src = img.getAttribute("src");
-        if (!src || src.startsWith("data:")) return;
-        try {
-          img.src = await withTimeout(toDataUri(src), 8000);
-        } catch (err) {
-          // Leave the original URL — better a working link than a broken one.
-          console.warn("[downloadCard] couldn't inline image, keeping original URL:", src, err);
-        }
-      })
-    );
+    // Images stay referenced by their real hosted URL (same one the live page
+    // already uses) — no fetch/CORS/base64 conversion in the way. If it shows
+    // on the live page, it shows here; if it doesn't, converting to base64
+    // wouldn't have fixed that anyway.
 
     // Inline the site's actual CSS as text (not a <link>) — reading it straight
     // off document.styleSheets/adoptedStyleSheets works no matter how the
