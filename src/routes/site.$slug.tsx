@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { store, isExpired, newId, type Business, type Inquiry, type Appointment } from "@/lib/store";
 
-import { Phone, MessageCircle, MapPin, Globe, Star, Facebook, Instagram, Twitter, Linkedin, Youtube, UserPlus, QrCode, X, Download } from "lucide-react";
+import { Phone, MessageCircle, MapPin, Globe, Star, Facebook, Instagram, Twitter, Linkedin, Youtube, UserPlus, QrCode, X, Download, Loader2 } from "lucide-react";
 import { LazySection } from "@/components/lazy-section";
 
 export const Route = createFileRoute("/site/$slug")({
@@ -68,6 +68,7 @@ function PublicSite() {
   const [showAppt, setShowAppt] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const [showSaveContact, setShowSaveContact] = useState(false);
+  const [downloadingCard, setDownloadingCard] = useState(false);
 
   useEffect(() => {
     store.getBySlug(slug).then((b) => {
@@ -178,6 +179,9 @@ function PublicSite() {
 
     const root = document.getElementById("tapvybe-card-root");
     if (!root) return;
+    if (downloadingCard) return;
+    setDownloadingCard(true);
+    try {
     const clone = root.cloneNode(true) as HTMLElement;
 
     // Strip anything that only makes sense on the live, scripted page (the
@@ -208,9 +212,14 @@ function PublicSite() {
 
     // Inline every image as base64 so the file is genuinely self-contained —
     // works offline, and never breaks if the original URL later changes.
+    // Bounded by a timeout so one slow/CORS-blocked image can't hang the
+    // whole download — it just falls back to the original URL instead.
     const toDataUri = (src: string) =>
       fetch(src)
-        .then((res) => res.blob())
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.blob();
+        })
         .then(
           (blob) =>
             new Promise<string>((resolve, reject) => {
@@ -220,14 +229,23 @@ function PublicSite() {
               reader.readAsDataURL(blob);
             })
         );
+    const withTimeout = <T,>(p: Promise<T>, ms: number) =>
+      new Promise<T>((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error("timed out")), ms);
+        p.then(
+          (v) => { clearTimeout(timer); resolve(v); },
+          (e) => { clearTimeout(timer); reject(e); },
+        );
+      });
     await Promise.all(
       Array.from(clone.querySelectorAll("img")).map(async (img) => {
         const src = img.getAttribute("src");
         if (!src || src.startsWith("data:")) return;
         try {
-          img.src = await toDataUri(src);
-        } catch {
+          img.src = await withTimeout(toDataUri(src), 8000);
+        } catch (err) {
           // Leave the original URL — better a working link than a broken one.
+          console.warn("[downloadCard] couldn't inline image, keeping original URL:", src, err);
         }
       })
     );
@@ -272,6 +290,9 @@ ${clone.outerHTML}
     link.click();
     document.body.removeChild(link);
     setTimeout(() => URL.revokeObjectURL(url), 5000);
+    } finally {
+      setDownloadingCard(false);
+    }
   }
 
   return (
@@ -427,11 +448,21 @@ ${clone.outerHTML}
             <p className="text-xs text-slate-500 mb-4">Download a copy of this profile you can open anytime, even offline.</p>
             <button
               onClick={downloadCard}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-bold text-sm hover:opacity-90 transition-opacity"
+              disabled={downloadingCard}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
               style={{ background: primary }}
             >
-              <Download className="h-4 w-4" />
-              Download Card
+              {downloadingCard ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Preparing…
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4" />
+                  Download Card
+                </>
+              )}
             </button>
           </div>
         </LazySection>
